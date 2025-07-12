@@ -17,7 +17,6 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({})
   const { showToast } = useToast()
 
-
   // 이메일 유효성 검사
   const validateEmail = (email) => {
     // 간단한 이메일 정규식
@@ -93,6 +92,10 @@ const LoginPage = () => {
       if (response.data && response.data.resultCode === 200) {
         // 토큰 저장
         const accessToken = response.headers['authorization'];
+
+        // response.data.data = user-info 변수에 저장
+        const userInfo = response.data.data
+
         if (accessToken) {
           // localStorage에 토큰 저장
           localStorage.setItem("access-token", accessToken)
@@ -107,11 +110,15 @@ const LoginPage = () => {
         // 성공 토스트 메시지
         showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
 
-        // 잠시 후 메인 페이지로 이동
-        setTimeout(() => {
-          // 메인 페이지로 이동하는 로직 추가
-          window.location.href = "/TestMain";
-        }, 1500);
+        if(userInfo.user_role_index === "2"){
+          setTimeout(() => window.location.href = "/TestMainBusiness", 1500);
+        } else if(userInfo.user_role_index === "3"){
+          setTimeout(() => window.location.href = "/TestMainStore", 1500);
+        } else if(userInfo.user_role_index === "7"){
+          setTimeout(() => window.location.href = "/TestMainRegular", 1500);
+        } else {
+          showToast("error", "허용되지 않은 사용자입니다");
+        }
       }
     } catch (error) {
       console.error("로그인 에러:", error);

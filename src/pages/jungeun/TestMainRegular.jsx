@@ -1,6 +1,6 @@
 import { test } from "../../api/Auth";
 
-export default function TestMain() {
+export default function TestMainRegular() {
   const handleTestBackend = async (e) => {
     e.preventDefault();
 
@@ -15,7 +15,7 @@ export default function TestMain() {
 
   return (
     <div>
-      <h1>로그인 후 이동하는 메인 페이지</h1>
+      <h1>정회원 로그인 후 이동하는 메인 페이지</h1>
       <button onClick={handleTestBackend}>테스트 백엔드 호출</button>
     </div>
   );
