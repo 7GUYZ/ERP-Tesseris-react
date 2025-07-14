@@ -1,0 +1,60 @@
+.terms-container {
+  background: white;
+  min-height: 100vh;
+  padding: 0 16px;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+.terms-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.terms-header h2 {
+  font-size: 18px;
+  color: #170f58;
+  font-weight: 700;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #000;
+  padding: 0 12px;
+}
+
+.terms-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.terms-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.terms-item:hover {
+  background-color: #f9f9f9;
+}
+
+.arrow {
+  color: #999;
+  font-size: 14px;
+}
