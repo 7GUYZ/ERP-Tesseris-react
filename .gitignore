@@ -26,4 +26,6 @@ yarn-error.log*
 /src/App.js
 /src/api/Auth.jsx
 /src/api/Http.jsx
+.env
+
 
