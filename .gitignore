@@ -24,13 +24,6 @@ yarn-error.log*
 
 # App.js 제외
 /src/App.js
-
 /src/api/Auth.jsx
 /src/api/Http.jsx
 
-# 테스트용 nullFolder 제외
-/src/components/*/nullFolder
-/src/context/nullFolder
-/src/pages/nullFolder
-/src/store/nullFolder
-/src/styles/nullFolder
