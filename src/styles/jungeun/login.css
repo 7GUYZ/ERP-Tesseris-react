@@ -1,12 +1,24 @@
-/* LoginForm */
+/* LoginPage - 페이지 레이아웃 */
 .login-container {
     width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #170F58;
+    background: linear-gradient(135deg, #170F58 0%, #2D1B69 50%, #170F58 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
 }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* LoginForm - 폼 스타일 */
 .login-form {
     background: #F5F5F9;
     border: 1px solid #FDCD0040;
@@ -29,7 +41,7 @@
     text-shadow: 0 2px 4px #170F581A;
 }
 .login-subtitle {
-    font-size: 16px;
+    font-size: 14px;
     color: #170F58;
     opacity: 0.7;
     text-align: center;
@@ -248,12 +260,6 @@
         gap: 10px;
     }
     .toast span {
-        white-space: pre-line;
         font-size: 13px;
-        word-break: break-word;
-        overflow-wrap: break-word;
-        display: inline-block;
     }
-
-
 }

@@ -27,3 +27,10 @@ yarn-error.log*
 
 /src/api/Auth.jsx
 /src/api/Http.jsx
+
+# 테스트용 nullFolder 제외
+/src/components/*/nullFolder
+/src/context/nullFolder
+/src/pages/nullFolder
+/src/store/nullFolder
+/src/styles/nullFolder
