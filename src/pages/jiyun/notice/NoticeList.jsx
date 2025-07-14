@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { noticeList } from "../../api/auth";
-import "../../styles/jiyun/notice/noticeList.css";
+import { noticeList } from "../../../api/auth";
+import "../../../styles/jiyun/notice/noticeList.css";
 
 export default function NoticeList() {
   const [list, setList] = useState([]);
