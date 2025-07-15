@@ -1,16 +1,18 @@
 import React from "react";
-import Header from "./TestHeader";
 import { Outlet } from "react-router-dom";
+import TestHeader from "./TestHeader";
+import TestNavi from "./TestNavi";
 
-const Layout = () => {
+const TestLayout = () => {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", width:"100vw"}}>
-      <Header />
-      <main style={{ display:"flex", flex: 1, justifyContent:"center", alignItems:"center", margin:"0 auto"}}>
-        <Outlet />
+    <div>
+      <TestHeader />
+      <main style={{ padding: "20px" }}>
+        <Outlet /> {/* 자식 페이지 렌더링 */}
       </main>
+      <TestNavi />
     </div>
   );
 };
 
-export default Layout;
+export default TestLayout;

@@ -1,4 +1,4 @@
-import { test } from "../../api/Auth";
+import { test } from "../../api/auth/JungeunAuth";
 
 export default function TestFindPw() {
     const handleTestBackend = async (e) => {
