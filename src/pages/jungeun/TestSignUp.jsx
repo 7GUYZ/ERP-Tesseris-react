@@ -1,4 +1,4 @@
-import { test } from "../../api/Auth";
+import { test } from "../../api/auth/JungeunAuth";
 
 export default function TestSignUp() {
     const handleTestBackend = async (e) => {

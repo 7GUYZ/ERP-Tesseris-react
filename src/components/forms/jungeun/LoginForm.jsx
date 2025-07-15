@@ -4,7 +4,7 @@ import { useState } from "react"
 import InputField from "./LoginInputField.jsx"
 import LoginButton from "./LoginButton.jsx"
 import ErrorMessage from "../../ui/jungeun/ErrorMessage.jsx"
-import { login } from "../../../api/Auth.jsx"
+import { login } from "../../../api/auth/JungeunAuth.jsx"
 import useAuthStore from "../../../store/jungeun/AuthStore.js"
 import { useToast } from "../../../context/jungeun/ToastContext.jsx"
 
@@ -108,12 +108,8 @@ const LoginForm = () => {
         // 성공 토스트 메시지
         showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
 
-        if(userInfo.user_role_index === "2"){
-          setTimeout(() => window.location.href = "/TestMainBusiness", 1500);
-        } else if(userInfo.user_role_index === "3"){
-          setTimeout(() => window.location.href = "/TestMainStore", 1500);
-        } else if(userInfo.user_role_index === "7"){
-          setTimeout(() => window.location.href = "/TestMainRegular", 1500);
+        if (["2", "3", "7"].includes(userInfo.user_role_index)) {
+          setTimeout(() => window.location.href = "/TestMain", 1500);
         } else {
           showToast("error", "허용되지 않은 사용자입니다");
         }

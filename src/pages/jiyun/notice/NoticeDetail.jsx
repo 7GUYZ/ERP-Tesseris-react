@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { noticeDetail } from "../../../api/auth/JiyoonAuth";
 import "../../../styles/jiyun/notice/noticeDetail.css";
-import { noticeDetail } from "../../../api/Auth";
+
 
 export default function NoticeDetail() {
   const { noticeIdx } = useParams();
