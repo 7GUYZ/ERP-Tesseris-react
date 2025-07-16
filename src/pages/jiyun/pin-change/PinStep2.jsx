@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import PinInput from "../../../components/forms/jiyun/pin-change/PinInput";
-import { pinChange } from "../../../api/Auth";
 import "../../../styles/jiyun/pin-change/pin-change.css";
+import { pinChange } from "../../../api/auth/JiyoonAuth";
 
 export default function PinStep2() {
   const { state } = useLocation();

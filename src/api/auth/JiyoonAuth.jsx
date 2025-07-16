@@ -6,3 +6,6 @@ export const noticeDetail = (noticeIdx) =>
 
 //공지사항 목록
 export const noticeList = () => api.get("/notice/list");
+
+//핀번호 변경
+export const pinChange = (pin) => api.post(`/pinChange/update`, pin);
