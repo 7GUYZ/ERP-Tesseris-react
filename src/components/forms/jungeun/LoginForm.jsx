@@ -108,7 +108,7 @@ const LoginForm = () => {
         // 성공 토스트 메시지
         showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
 
-        if (["2", "3", "7"].includes(userInfo.user_role_index)) {
+        if (["1", "2", "3"].includes(userInfo.user_role_index)) {
           setTimeout(() => window.location.href = "/TestMain", 1500);
         } else {
           showToast("error", "허용되지 않은 사용자입니다");
