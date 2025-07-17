@@ -1,9 +1,9 @@
 import React from "react";
-import { logout } from "../../../api/Auth";
+import { logout } from "../../../api/auth/JungeunAuth";
 import useAuthStore from "../../../store/jungeun/AuthStore";
 
 
-const Header = () => {
+const TestHeader = () => {
 
     const handleLogout = async (e) => {
         e.preventDefault()
@@ -66,4 +66,4 @@ const Header = () => {
     );
 };
 
-export default Header;
+export default TestHeader;

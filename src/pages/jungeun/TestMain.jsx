@@ -1,6 +1,6 @@
-import { test } from "../../api/Auth";
+import { test } from "../../api/auth/JungeunAuth";
 
-export default function TestMainRegular() {
+export default function TestMain() {
   const handleTestBackend = async (e) => {
     e.preventDefault();
 

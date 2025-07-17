@@ -22,10 +22,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# App.js 제외
-/src/App.js
-/src/api/Auth.jsx
-/src/api/Http.jsx
+# # App.js 제외 - 정은꺼 pull 받고 나서는 gitignore 안 해도 됨
+# /src/App.js
+# /src/api/Auth.jsx
+# /src/api/Http.jsx
 .env
 /package-lock.json
 
