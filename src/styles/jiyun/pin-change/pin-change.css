@@ -3,9 +3,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 85vh;
   padding: 20px;
   font-family: "Helvetica Neue", sans-serif;
   background-color: #ffffff;
+  box-sizing: border-box;
 }
 
 .pin-header {
@@ -44,6 +46,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
+  justify-content: flex-start;
+  padding-top: 60px;
 }
 
 .pin-content h2 {
@@ -79,7 +84,7 @@
 }
 
 .pin-box.filled {
-  background-color: #0b3f91;
+  background-color: #170f58;
   color: white;
 }
 
@@ -132,4 +137,45 @@
 
 .shake {
   animation: shake 0.5s;
+}
+
+.pin-password-content {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 60px;
+}
+
+.pin-password-label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.pin-password-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.pin-next-button {
+  width: calc(100% - 32px);
+  margin: 0 16px 30px;
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #170f58;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  align-self: flex-end;
 }

@@ -6,7 +6,7 @@ export default function PinStep1() {
   const navigate = useNavigate();
 
   const handleComplete = (pin) => {
-    navigate("/pinconfirm", { state: { originalPin: pin } });
+    navigate("/pinChange/pinconfirm", { state: { originalPin: pin } });
   };
 
   return (

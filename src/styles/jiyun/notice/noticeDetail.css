@@ -1,7 +1,7 @@
 .notice-detail-page {
   background-color: #fff;
   padding: 20px;
-  min-height: 100vh;
+  min-height: 75vh;
   display: flex;
   flex-direction: column;
 }

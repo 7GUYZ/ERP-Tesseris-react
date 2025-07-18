@@ -17,6 +17,7 @@ export default function PinStep2() {
         try {
           const response = await pinChange({ userCmPincode: inputPin });
           alert("PIN 설정 완료");
+          navigate("/pinChange/pinComplete");
         } catch {
           alert("PIN 설정 실패");
         }
