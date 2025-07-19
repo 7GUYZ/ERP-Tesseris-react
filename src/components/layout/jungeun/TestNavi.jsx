@@ -48,9 +48,9 @@ const iconStyle = {
 
 const navItems = [
   { to: "/TestMain", label: "홈", icon: "🏠" },
-  { to: "/TestAlarm", label: "알림", icon: "🔔" },
-  { to: "/TestMyPage", label: "마이페이지", icon: "👤" },
-  { to: "/TestSettings", label: "설정", icon: "⚙️" },
+  { to: "/TestPay", label: "결제", icon: "💳" },
+  { to: "/TestGift", label: "선물", icon: "🎁" },
+  { to: "/TestFranchise", label: "가맹점 찾기", icon: "🏪" },
 ];
 
 const TestNavi = () => {
