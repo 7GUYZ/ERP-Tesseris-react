@@ -7,7 +7,7 @@ const TestLayout = () => {
   return (
     <div>
       <TestHeader />
-      <main style={{ padding: "20px" }}>
+      <main style={{ padding: "20px", backgroundColor: "#F5F5F9"}}>
         <Outlet /> {/* 자식 페이지 렌더링 */}
       </main>
       <TestNavi />

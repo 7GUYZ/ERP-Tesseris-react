@@ -85,3 +85,25 @@ export function setupInterceptors() {
     }
   );
 }
+
+// 산하 사업자 등급 불러오는 api
+export const businessGradeFilter = (user_index) => {
+  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
+  return api.get("/user/businessList", {
+    params: {user_index},
+    headers: {
+      Authorization: `${token}`
+    }
+  });
+}
+// 산하 사업자 등급 선택했을 때 사업자 리스트 불러오는 api
+export const businessList = (business_grade_index) => {
+  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
+  return api.get("/user/businessList/filtered", {
+    params: {business_grade_index},
+    headers: {
+      Authorization: `${token}`
+    }
+  });
+}
+

@@ -1,5 +1,6 @@
 .testmain-root {
     min-height: 100vh;
+    background: #F5F5F9;
   }
   
   /* 헤더는 여백 없이 중앙정렬만 */
