@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import "../../styles/jungeun/businessList.css";
-import { businessGradeFilter, businessList } from "../../api/auth/JungeunAuth";
+import "../../../styles/jungeun/businessList.css";
+import { businessGradeFilter, businessList } from "../../../api/auth/JungeunAuth";
 
 const MAIN_COLOR = "#170F58";
 const POINT_COLOR = "#FDCD00";

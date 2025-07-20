@@ -1,4 +1,4 @@
-import BusinessListForm from '../../form/jungeun/BusinessListForm';
+import BusinessListForm from '../../components/forms/jungeun/BusinessListForm';
 
 const BusinessListPage = () => {
   return <BusinessListForm />;

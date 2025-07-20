@@ -2,6 +2,7 @@ import { Route } from 'react-router-dom';
 import TestMain from "../pages/jungeun/TestMain";
 import ProtectedRoute from "./ProtectedRoute";
 import BusinessListPage from "../pages/jungeun/BusinessListPage";
+import StoreListPage from '../pages/jungeun/StoreListPage';
 
 function JungeunRoute() {
     return (
@@ -10,6 +11,7 @@ function JungeunRoute() {
             <Route element={<ProtectedRoute />}>
                 <Route path='/TestMain' element={<TestMain />} />
                 <Route path='/BusinessList' element={<BusinessListPage />} />
+                <Route path='/StoreList' element={<StoreListPage />} />
             </Route>
         </>
     );

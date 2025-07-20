@@ -48,7 +48,7 @@ export default function TestMain() {
           { id: "homepage", title: "씨엠바더 홈페이지", icon: Store, action: () => window.open("/TestMain", "_blank"), color: "#a21caf" },
           { id: "commission-status", title: "중개수수료 현황", icon: BarChart3, action: () => navigate("/TestMain"), color: "#eab308" },
           { id: "sub-business", title: "산하 사업자", icon: Users, action: () => navigate("/BusinessList"), color: "#6366f1" },
-          { id: "sub-franchise", title: "산하 가맹점", icon: ShoppingCart, action: () => navigate("/TestMain"), color: "#ef4444" },
+          { id: "sub-franchise", title: "산하 가맹점", icon: ShoppingCart, action: () => navigate("/StoreList"), color: "#ef4444" },
           { id: "kakao-consult", title: "카톡 상담", icon: HelpCircle, action: () => window.open("/TestMain", "_blank"), color: "#3b82f6" },
           { id: "shop", title: "쇼핑몰", icon: Store, action: () => window.open("/TestMain", "_blank"), color: "#a21caf" }
         ];
