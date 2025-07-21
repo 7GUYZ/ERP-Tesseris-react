@@ -963,3 +963,22 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+@media (max-width: 480px) {
+  .usermain-bottomnavi {
+    padding: 6px 6px 6px 6px;
+    border-radius: 14px;
+  }
+  .usermain-bottomnavi-inner {
+    gap: 18px;
+    height: 44px;
+  }
+  .usermain-bottomnavi-btn {
+    font-size: 10px;
+    padding: 2px 2px;
+  }
+  .usermain-bottomnavi-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
