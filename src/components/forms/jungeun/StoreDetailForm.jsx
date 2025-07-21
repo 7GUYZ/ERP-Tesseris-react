@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../../styles/jungeun/storeDetail.css";
 import { ChevronLeft, Phone, MapPin, Clock, ChevronRight, MoveLeftIcon as SlideLeft } from "lucide-react"
+import { useParams } from "react-router-dom";
+import { storeDetail } from "../../../api/auth/JungeunAuth";
 
 // 샘플 이미지만 남기고, 나머지는 props로 받음
 const sampleImages = [
@@ -23,8 +25,10 @@ const sampleImages = [
 //   menu: [ ... ],
 // }
 
-const StoreDetailForm = ({ store }) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0)
+const StoreDetailForm = () => {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const {storeIndex} = useParams();
+    const [store, setStore] = useState([]);
 
     // store가 없으면 빈 값 처리
     const name = store?.name || "";
@@ -59,6 +63,17 @@ const StoreDetailForm = ({ store }) => {
     const handleGoBack = () => {
         window.history.back()
     }
+
+    useEffect(() => {
+        const fetchStore = async () => {
+            if (!storeIndex) return;
+            // 실제 API 호출
+            const data = await storeDetail(storeIndex); // fetchStoreDetail은 실제 API 함수로 교체
+            console.log(data);
+            setStore(data);
+        };
+        fetchStore();
+    }, [storeIndex]);
 
     return (
         <div className="store-detail">
