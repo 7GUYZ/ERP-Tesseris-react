@@ -32,13 +32,6 @@ const StoreDetailForm = () => {
 
     // store가 없으면 빈 값 처리
     const name = store?.name || "";
-    // 별점 대신 업종명
-    const storeCategoryName = store?.storeCategoryName || "";
-    const address = store?.storeAddress || ""; // storeAddress로 수정
-    const phone = store?.phone || "";
-    const hours = store?.hours || "";
-    const description = store?.description || "";
-    const menu = store?.menu || [];
     // 이미지는 샘플 사용
     const images = sampleImages;
 
@@ -191,7 +184,7 @@ const StoreDetailForm = () => {
                     </div>
                     <div className="detail-item hours">
                         <Clock className="detail-icon" size={16} />
-                        <span>운영시간: &nbsp;{store.storeBusinessHour} &nbsp;( {convertDaysToKorean(store?.storeBusinessDate)} )</span>
+                        <span>운영시간: &nbsp;{store.storeBusinessHour} &nbsp;( {businessDays} )</span>
                     </div>
                     {store?.storeRestHour && (
                         <div className="detail-item rest-hour">
