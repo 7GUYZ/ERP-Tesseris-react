@@ -168,9 +168,45 @@
   font-size: 1.08em;
 }
 
-.detail-icon {
-  color: #6b7280;
-  flex-shrink: 0;
+.detail-item .detail-icon {
+    flex-shrink: 0;
+    margin-right: 4px; /* 아이콘과 텍스트 사이 여백 추가 */
+}
+
+/* 주소 아이콘 */
+.detail-item.address .detail-icon {
+    color: #3b82f6; /* 파란색 계열 */
+}
+/* 전화 아이콘 */
+.detail-item.phone .detail-icon {
+    color: #10b981; /* 초록색 계열 */
+}
+/* 영업시간 아이콘 */
+.detail-item.hours .detail-icon {
+    color: #f59e0b; /* 주황색 계열 */
+}
+/* 휴게시간 아이콘 */
+.detail-item.rest-hour .detail-icon {
+    color: #e53935; /* 빨간색 계열 */
+}
+
+/* 홈페이지 아이콘 */
+.detail-item.site .detail-icon {
+    color: #0ea5e9; /* 하늘색 계열 */
+}
+.detail-item.site a {
+    color: lightslategray; /* 하늘색 계열 */
+}
+.detail-item.site a:visited {
+    color: lightslategray; /* 하늘색 계열 */
+}
+/* 소개 아이콘 */
+.detail-item.memo .detail-icon {
+    color: #8b5cf6; /* 보라색 계열 */
+}
+/* CM 아이콘 */
+.detail-item.cm .detail-icon {
+    color: #f97316; /* 주황색 계열 */
 }
 
 .store-description {
@@ -182,8 +218,8 @@
 
 .action-buttons {
   display: flex;
-  gap: 16px;
-  padding: 0 32px 24px 32px;
+  gap: 40px;
+  padding: 0px 24px;
 }
 
 .action-button {
@@ -258,20 +294,6 @@
 .menu-price {
   font-weight: 600;
   color: #059669;
-}
-
-.position-badge {
-  background-color: #FDCD00;
-  color: #170F58;
-  border-color: #FDCD00;
-  font-size: 0.98rem;
-  padding: 0.3rem 0.9rem;
-  border-radius: 16px;
-  font-weight: 600;
-  display: inline-block;
-  margin-top: 6px;
-  margin-bottom: 2px;
-  white-space: nowrap;
 }
 
 @media (max-width: 700px) {

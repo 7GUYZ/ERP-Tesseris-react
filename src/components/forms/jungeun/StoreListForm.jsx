@@ -268,7 +268,7 @@ const StoreListForm = () => {
 
                 <div className="card-actions" style={{ padding: "0 1.5rem 1.2rem 1.5rem" }}>
                     <button className="action-button primary" style={{ backgroundColor: MAIN_COLOR, color: '#fff' }}
-                        onClick={() => navigate(`/StoreList/StoreDetail/${store.storeIndex}${location.search}`, { state: { store } })}
+                        onClick={() => navigate(`/StoreList/StoreDetail/${store.storeIndex}${location.search}`)}
                     >
                         가맹점 상세정보
                     </button>

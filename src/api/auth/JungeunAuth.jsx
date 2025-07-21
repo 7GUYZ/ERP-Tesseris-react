@@ -128,3 +128,14 @@ export const storeList = (user_index, store_category_index) => {
   });
 }
 
+// 가맹점 상세보기
+export const storeDetail = (store_index) => {
+  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
+  return api.get("/user/storeList/detail", {
+    params: {store_index},
+    headers: {
+      Authorization: `${token}`
+    }
+  });
+}
+
