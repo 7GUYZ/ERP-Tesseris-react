@@ -1,8 +1,8 @@
 import React from "react";
-import UserProfileCard from "../../../layout/jihun/usermain/UserProfileCard";
-import UserServiceMenu from "../../../ui/jihun/usermain/UserServiceMenu"
-import UserPromotionCard from "../../../ui/jihun/usermain/UserPromotionCard"
-import "../../../../styles/jihun/usermain/usermain.css";
+import UserProfileCard from "../../../components/ui/jihun/common/UserProfileCard";
+import UserServiceMenu from "../../../components/ui/jihun/common/UserServiceMenu"
+import UserPromotionCard from "../../../components/ui/jihun/common/UserPromotionCard"
+import "../../../styles/jihun/common/common.css";
 
 const UserMainHome = () => {
   return (

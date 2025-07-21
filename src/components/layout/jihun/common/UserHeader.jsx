@@ -1,8 +1,8 @@
 import React from "react";
 import { Bell, Settings } from "lucide-react";
-import '../../../../styles/jihun/usermain/usermain.css';
+import '../../../../styles/jihun/common/common.css';
 
-export default function UserMainHeader() {
+export default function UserHeader() {
   return (
     <div className="usermain-header">
       <div className="usermain-header-inner">

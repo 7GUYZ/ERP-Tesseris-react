@@ -488,7 +488,7 @@ body {
 
 /* --- UserProfileCard --- */
 .usermain-profilecard {
-  padding: 24px 24px 0 24px;
+  padding: 12px;
 }
 
 .usermain-profilecard-header {
@@ -637,7 +637,7 @@ body {
 
 /* --- UserServiceMenu --- */
 .usermain-servicemenu {
-  padding: 0 24px 32px 24px;
+  padding: 12px;
 }
 
 .usermain-servicemenu-card {
@@ -751,7 +751,7 @@ body {
 
 /* --- UserPromotionCard --- */
 .usermain-promotioncard {
-  padding: 0 24px 32px 24px;
+  padding: 12px;
 }
 
 .usermain-promotioncard-inner {
