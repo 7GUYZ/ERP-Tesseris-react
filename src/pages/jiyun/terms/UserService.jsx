@@ -8,7 +8,7 @@ export default function UserServicePage() {
   return (
     <div className="terms-wrap">
       <header className="terms-header">
-        <button onClick={() => navigate(-1)} className="back-button">
+        <button onClick={() => navigate("/terms")} className="back-button">
           &lt;
         </button>
         <h2>이용약관</h2>

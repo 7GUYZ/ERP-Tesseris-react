@@ -22,15 +22,11 @@
 
 .back-button {
   position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 12px;
   font-size: 20px;
   background: none;
   border: none;
   cursor: pointer;
-  color: #000;
-  padding: 0 12px;
 }
 
 .terms-list {
