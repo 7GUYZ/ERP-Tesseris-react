@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import "../../../styles/jungeun/storeList.css";
 import { storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
 
@@ -14,6 +15,11 @@ export const Map = ({ stores = [] }) => {
 
     useEffect(() => {
         function createMapAndMarkers() {
+            if (!container.current) {
+                console.warn("지도 container가 아직 준비되지 않았습니다.");
+                return;
+            }
+
             window.kakao.maps.load(() => {
                 const position = new window.kakao.maps.LatLng(33.450701, 126.570667);
                 const options = {
@@ -45,7 +51,6 @@ export const Map = ({ stores = [] }) => {
                             markersRef.current.push(marker);
                             bounds.extend(coords);
 
-                            // InfoWindow 생성 (가맹점명/주소 각각 텍스트, 클릭 시 검색)
                             const nameSearchUrl = `https://map.kakao.com/?q=${encodeURIComponent(store.storeName)}`;
                             const addressSearchUrl = `https://map.kakao.com/?q=${encodeURIComponent(store.storeAddress)}`;
                             const infoWindow = new window.kakao.maps.InfoWindow({
@@ -78,6 +83,17 @@ export const Map = ({ stores = [] }) => {
                 document.getElementById("kakao-map-script").addEventListener("load", createMapAndMarkers);
             }
         }
+
+        // cleanup: 지도, 마커, 인포윈도우 등 리소스 해제
+        return () => {
+            markersRef.current.forEach(marker => marker.setMap(null));
+            markersRef.current = [];
+            infoWindowsRef.current.forEach(info => info.close());
+            infoWindowsRef.current = [];
+            if (mapRef.current) {
+                mapRef.current = null;
+            }
+        };
     }, [stores]);
 
     return (
@@ -95,10 +111,31 @@ export const Map = ({ stores = [] }) => {
 };
 
 const StoreListForm = () => {
-    const [selectedCategory, setSelectedCategory] = useState(""); // 카테고리 id(categoryIndex)로 저장
+    const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
+    // category 쿼리 없으면 "0"(전체)로
+    const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "0");
     const [stores, setStores] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [activeTab, setActiveTab] = useState("list"); // "list" 또는 "map"
+    const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "list"); // "list" 또는 "map"
+    const navigate = useNavigate();
+
+    // 쿼리스트링이 바뀔 때마다 state 동기화
+    useEffect(() => {
+        let category = searchParams.get("category");
+        if (!category) category = "0";
+        const tab = searchParams.get("tab") || "list";
+        setSelectedCategory(category);
+        setActiveTab(tab);
+    }, [searchParams]);
+
+    // 카테고리/탭 변경 시 쿼리스트링 동기화
+    useEffect(() => {
+        const params = {};
+        if (selectedCategory) params.category = selectedCategory;
+        if (activeTab) params.tab = activeTab;
+        setSearchParams(params, { replace: true });
+    }, [selectedCategory, activeTab, setSearchParams]);
 
     // 카테고리 목록 받아오기 (컴포넌트 마운트 시 1회)
     useEffect(() => {
@@ -124,7 +161,7 @@ const StoreListForm = () => {
     useEffect(() => {
         const user_index = Number(JSON.parse(localStorage.getItem("user-info"))?.user_index);
         const fetchStores = async () => {
-            if (selectedCategory === "" || selectedCategory === null || selectedCategory === undefined) {
+            if (selectedCategory === null || selectedCategory === undefined) {
                 setStores([]);
                 return;
             }
@@ -230,7 +267,9 @@ const StoreListForm = () => {
                 </div>
 
                 <div className="card-actions" style={{ padding: "0 1.5rem 1.2rem 1.5rem" }}>
-                    <button className="action-button primary" style={{ backgroundColor: MAIN_COLOR, color: '#fff' }}>
+                    <button className="action-button primary" style={{ backgroundColor: MAIN_COLOR, color: '#fff' }}
+                        onClick={() => navigate(`/StoreList/StoreDetail/${store.storeIndex}${location.search}`, { state: { store } })}
+                    >
                         가맹점 상세정보
                     </button>
                 </div>
@@ -268,21 +307,24 @@ const StoreListForm = () => {
     }
 
     const StoreList = ({ stores, category }) => {
+        const displayCategoryName = category?.categoryName || "전체";
         return (
             <div className="business-partner-list">
                 <div className="list-header">
                     <div className="list-title-section">
                         <h2 className="list-title" style={{ color: MAIN_COLOR }}>
                             <span style={{ fontWeight: "bold", fontSize: "1.2em", color: MAIN_COLOR }}>
-                                {category?.categoryName}
+                                {displayCategoryName}
                             </span>
                             <span style={{ marginLeft: 14, color: "#888", fontSize: "1em" }}>
-                                {category?.categoryName === "전체" ? "가맹점" : "업종 가맹점"}
+                                {displayCategoryName === "전체"
+                                    ? "가맹점"
+                                    : `${displayCategoryName} 가맹점`}
                             </span>
                         </h2>
                     </div>
                     <div className="total-count" style={{ background: MAIN_COLOR, color: '#fff' }}>
-                        총 가맹점 : {stores.length}개
+                        가맹점 수 : {stores.length}개
                     </div>
                 </div>
 
@@ -309,7 +351,9 @@ const StoreListForm = () => {
                         </div>
                     ) : (
                         <div className="map-container">
-                            <Map stores={stores} />
+                            {activeTab === "map" && stores.length > 0 && (
+                                <Map stores={stores} />
+                            )}
                         </div>
                     )
                 )}
@@ -325,12 +369,12 @@ const StoreListForm = () => {
                     {categories.map((category) => (
                         <button
                             key={category.categoryIndex}
-                            className={`grade-button ${selectedCategory === category.categoryIndex ? "active" : ""}`}
-                            onClick={() => onCategorySelect(category.categoryIndex)}
+                            className={`grade-button ${selectedCategory === String(category.categoryIndex) ? "active" : ""}`}
+                            onClick={() => onCategorySelect(String(category.categoryIndex))}
                             style={{
                                 borderColor: MAIN_COLOR,
-                                background: selectedCategory === category.categoryIndex ? MAIN_COLOR : "transparent",
-                                color: selectedCategory === category.categoryIndex ? "#fff" : MAIN_COLOR,
+                                background: selectedCategory === String(category.categoryIndex) ? MAIN_COLOR : "transparent",
+                                color: selectedCategory === String(category.categoryIndex) ? "#fff" : MAIN_COLOR,
                             }}
                         >
                             <span className="grade-name">{category.categoryName}</span>

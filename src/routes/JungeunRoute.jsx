@@ -3,6 +3,7 @@ import TestMain from "../pages/jungeun/TestMain";
 import ProtectedRoute from "./ProtectedRoute";
 import BusinessListPage from "../pages/jungeun/BusinessListPage";
 import StoreListPage from '../pages/jungeun/StoreListPage';
+import StoreDetailPage from "../pages/jungeun/StoreDetailPage";
 
 function JungeunRoute() {
     return (
@@ -12,6 +13,7 @@ function JungeunRoute() {
                 <Route path='/TestMain' element={<TestMain />} />
                 <Route path='/BusinessList' element={<BusinessListPage />} />
                 <Route path='/StoreList' element={<StoreListPage />} />
+                <Route path="/StoreList/StoreDetail/:storeIndex" element={<StoreDetailPage />} />
             </Route>
         </>
     );
