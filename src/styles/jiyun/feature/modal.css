@@ -1,0 +1,113 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(34, 46, 60, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-box {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(34, 46, 60, 0.15);
+  width: 400px;
+  max-width: 90vw;
+  margin: 20px;
+  overflow: hidden;
+  animation: modalSlideIn 0.2s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid #e8ecf0;
+  background: #fafbfc;
+  font-size: 18px;
+  font-weight: 600;
+  color: #222e3c;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.modal-body {
+  padding: 32px 24px;
+  font-size: 16px;
+  color: #222e3c;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.modal-footer {
+  padding: 16px 24px 24px 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-button {
+  height: 44px;
+  padding: 0 32px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  letter-spacing: -0.01em;
+  background: #170f58;
+  color: #ffffff;
+  border: 1px solid #170f58;
+}
+
+.modal-button:hover {
+  background: #170f58;
+  border-color: #170f58;
+  box-shadow: 0 2px 4px rgba(59, 125, 221, 0.2);
+}
+
+.modal-button:active {
+  background: #170f58;
+  transform: translateY(1px);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .modal-box {
+    margin: 16px;
+    max-width: none;
+  }
+
+  .modal-header {
+    padding: 20px 20px 14px 20px;
+    font-size: 17px;
+  }
+
+  .modal-body {
+    padding: 24px 20px;
+    font-size: 15px;
+  }
+
+  .modal-footer {
+    padding: 14px 20px 20px 20px;
+  }
+
+  .modal-button {
+    width: 100%;
+  }
+} 
