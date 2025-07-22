@@ -67,7 +67,7 @@ const StoreDetailForm = () => {
         if (images.length > 1) {
             autoSlideRef.current = setInterval(() => {
                 setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-            }, 4000); // 4초마다 전환
+            }, 3000); // 3초마다 전환
         }
     };
 
