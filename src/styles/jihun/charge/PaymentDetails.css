@@ -1,0 +1,40 @@
+.payment-details {
+  margin-bottom: 32px;
+  padding: 20px;
+  background: #F5F5F9;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+.payment-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.payment-detail-item:last-of-type {
+  margin-bottom: 12px;
+}
+
+.payment-detail-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #170F58;
+}
+
+.payment-detail-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #170F58;
+}
+
+.payment-detail-rate {
+  font-size: 14px;
+  color: #ff4757;
+  font-weight: 400;
+  text-align: center;
+  padding-top: 8px;
+  border-top: 1px solid #dee2e6;
+} 
