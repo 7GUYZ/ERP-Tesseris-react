@@ -1,39 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../../../styles/jungeun/storeDetail.css";
-import { ChevronLeft, Phone, MapPin, Clock, ChevronRight, MoveLeftIcon as SlideLeft, Coffee, Globe, Info, Coins } from "lucide-react"
+import { ChevronLeft, Phone, MapPin, Clock, ChevronRight, MoveLeftIcon as SlideLeft, Coffee, Globe, Info, Coins, Image } from "lucide-react"
 import { useParams } from "react-router-dom";
 import { storeDetail } from "../../../api/auth/JungeunAuth";
 
-// 샘플 이미지만 남기고, 나머지는 props로 받음
-const sampleImages = [
-    "https://i.pinimg.com/1200x/b8/96/77/b896771e2e995a3f4aed1833a4c62862.jpg",
-    "https://i.pinimg.com/736x/c1/f9/10/c1f910f028d6c2124c630dfc08d39ae7.jpg",
-    "https://i.pinimg.com/1200x/7d/98/42/7d98422df803e4a60e8e5e4baf950054.jpg",
-    "https://i.pinimg.com/1200x/6e/41/3c/6e413c6536c3bd6bc99c68e05fd639fe.jpg",
-];
-
-// const storeData = {
-//   name: "맛있는 김밥천국",
-//   rating: 4.5,
-//   reviewCount: 128,
-//   address: "서울시 강남구 테헤란로 123",
-//   phone: "02-1234-5678",
-//   hours: "09:00 - 22:00",
-//   description:
-//     "신선한 재료로 만든 다양한 김밥과 분식을 제공하는 맛집입니다. 깔끔한 매장과 친절한 서비스로 많은 고객들의 사랑을 받고 있습니다.",
-//   images: [...],
-//   menu: [ ... ],
-// }
+// 기본 이미지 (이미지가 없을 때 사용)
+const defaultImage = "https://via.placeholder.com/400x300?text=No+Image";
 
 const StoreDetailForm = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { storeIndex } = useParams();
     const [store, setStore] = useState({});
+    const autoSlideRef = useRef(null);
 
     // store가 없으면 빈 값 처리
-    const name = store?.name || "";
-    // 이미지는 샘플 사용
-    const images = sampleImages;
+    const name = store?.storeName || "";
+    
+    // 실제 이미지 배열 사용, 없으면 빈 배열
+    const images = store?.storeImages && store.storeImages.length > 0 
+        ? store.storeImages 
+        : [];
 
     // 영어 요일 나열 -> 한국어 요일로 변환
     const convertDaysToKorean = (daysString) => {
@@ -56,12 +42,42 @@ const StoreDetailForm = () => {
     const businessDays = convertDaysToKorean(store?.storeBusinessDate);
 
     const handlePrevImage = () => {
-        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+        // 수동 조작 시 자동 슬라이드 재시작
+        startAutoSlide();
     }
 
     const handleNextImage = () => {
-        setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+        setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+        // 수동 조작 시 자동 슬라이드 재시작
+        startAutoSlide();
     }
+
+    const handleDotClick = (index) => {
+        setCurrentImageIndex(index);
+        // 수동 조작 시 자동 슬라이드 재시작
+        startAutoSlide();
+    };
+
+    // 자동 슬라이드 시작
+    const startAutoSlide = () => {
+        if (autoSlideRef.current) {
+            clearInterval(autoSlideRef.current);
+        }
+        if (images.length > 1) {
+            autoSlideRef.current = setInterval(() => {
+                setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+            }, 4000); // 4초마다 전환
+        }
+    };
+
+    // 자동 슬라이드 정지
+    const stopAutoSlide = () => {
+        if (autoSlideRef.current) {
+            clearInterval(autoSlideRef.current);
+            autoSlideRef.current = null;
+        }
+    };
 
     const handlePhoneCall = () => {
         if (store.storePhone != null) {
@@ -99,6 +115,27 @@ const StoreDetailForm = () => {
         fetchStore();
     }, [storeIndex]);
 
+    // 이미지가 변경될 때 currentImageIndex 초기화 및 자동 슬라이드 시작
+    useEffect(() => {
+        setCurrentImageIndex(0);
+        if (images.length > 1) {
+            startAutoSlide();
+        }
+        
+        // 컴포넌트 언마운트 시 인터벌 정리
+        return () => {
+            stopAutoSlide();
+        };
+    }, [store.storeImages]);
+
+    // 이미지가 없을 때 표시할 컴포넌트
+    const NoImageComponent = ({ show = false }) => (
+        <div className={`store-detail-no-image-container ${show ? 'show' : ''}`}>
+            <Image size={48} color="#9CA3AF" />
+            <p className="store-detail-no-image-text">등록된 이미지가 없습니다</p>
+        </div>
+    );
+
     return (
         <div className="store-detail">
             {/* 헤더 */}
@@ -114,26 +151,58 @@ const StoreDetailForm = () => {
             {/* 이미지 슬라이드 */}
             <div className="image-slider">
                 <div className="slider-container">
-                    <img
-                        src={images[currentImageIndex] || "/placeholder.svg"}
-                        alt={`${name} 이미지 ${currentImageIndex + 1}`}
-                        className="slider-image"
-                    />
-                    <button className="slider-button prev" onClick={handlePrevImage}>
-                        <SlideLeft size={20} />
-                    </button>
-                    <button className="slider-button next" onClick={handleNextImage}>
-                        <ChevronRight size={20} />
-                    </button>
-                    <div className="slider-dots">
-                        {images.map((_, index) => (
-                            <button
-                                key={index}
-                                className={`dot ${index === currentImageIndex ? "active" : ""}`}
-                                onClick={() => setCurrentImageIndex(index)}
+                    {images.length > 0 ? (
+                        <>
+                            <img
+                                src={images[currentImageIndex]}
+                                alt={`${name} 이미지 ${currentImageIndex + 1}`}
+                                className="slider-image"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    const noImageContainer = e.target.nextSibling;
+                                    if (noImageContainer) {
+                                        noImageContainer.classList.add('show');
+                                    }
+                                }}
+                                onMouseEnter={stopAutoSlide} // 마우스 오버 시 자동 슬라이드 정지
+                                onMouseLeave={startAutoSlide} // 마우스 아웃 시 자동 슬라이드 재시작
                             />
-                        ))}
-                    </div>
+                            <NoImageComponent show={false} />
+                        </>
+                    ) : (
+                        <NoImageComponent show={true} />
+                    )}
+                    {images.length > 1 && (
+                        <>
+                            <button 
+                                className="slider-button prev" 
+                                onClick={handlePrevImage}
+                                onMouseEnter={stopAutoSlide}
+                                onMouseLeave={startAutoSlide}
+                            >
+                                <SlideLeft size={20} />
+                            </button>
+                            <button 
+                                className="slider-button next" 
+                                onClick={handleNextImage}
+                                onMouseEnter={stopAutoSlide}
+                                onMouseLeave={startAutoSlide}
+                            >
+                                <ChevronRight size={20} />
+                            </button>
+                            <div className="slider-dots">
+                                {images.map((_, index) => (
+                                    <button
+                                        key={index}
+                                        className={`dot ${index === currentImageIndex ? "active" : ""}`}
+                                        onClick={() => handleDotClick(index)}
+                                        onMouseEnter={stopAutoSlide}
+                                        onMouseLeave={startAutoSlide}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -182,10 +251,17 @@ const StoreDetailForm = () => {
                         <Phone className="detail-icon" size={16} />
                         <span>전화번호: &nbsp;{store.storePhone}</span>
                     </div>
-                    <div className="detail-item hours">
-                        <Clock className="detail-icon" size={16} />
-                        <span>운영시간: &nbsp;{store.storeBusinessHour} &nbsp;( {businessDays} )</span>
-                    </div>
+                    {/* 운영시간: store.storeBusinessHour 또는 businessDays가 있을 때만 노출 */}
+                    {(store?.storeBusinessHour || businessDays) && (
+                        <div className="detail-item hours">
+                            <Clock className="detail-icon" size={16} />
+                            <span>
+                                운영시간:&nbsp;
+                                {store.storeBusinessHour ? store.storeBusinessHour : ""}
+                                {businessDays ? ` (${businessDays})` : ""}
+                            </span>
+                        </div>
+                    )}
                     {store?.storeRestHour && (
                         <div className="detail-item rest-hour">
                             <Coffee className="detail-icon" size={16} />

@@ -4,6 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import BusinessListPage from "../pages/jungeun/BusinessListPage";
 import StoreListPage from '../pages/jungeun/StoreListPage';
 import StoreDetailPage from "../pages/jungeun/StoreDetailPage";
+import UserMainHome from '../pages/jihun/main/UserMainHome';
 
 function JungeunRoute() {
     return (
@@ -14,6 +15,7 @@ function JungeunRoute() {
                 <Route path='/BusinessList' element={<BusinessListPage />} />
                 <Route path='/StoreList' element={<StoreListPage />} />
                 <Route path="/StoreList/StoreDetail/:storeIndex" element={<StoreDetailPage />} />
+                <Route path="/main" element={<UserMainHome />} />
             </Route>
         </>
     );
