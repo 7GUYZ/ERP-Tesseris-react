@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import '../../../../styles/jihun/common/common.css';
+import { useNavigate } from "react-router-dom";
 
 export default function UserProfileCard() {
   // 여기에 권한 분기처리 로직을 넣으면 됩니다.
@@ -7,6 +8,7 @@ export default function UserProfileCard() {
   // const userType = 'franchise'; // 'franchise' | 'business'
   // let badgeText = userType === 'franchise' ? '가맹점' : '사업자';
   // let badgeClass = userType === 'franchise' ? 'usermain-profilecard-badge-franchise' : 'usermain-profilecard-badge-business';
+  const navigate = useNavigate();
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("user-info")) || {};
     setUserRole(data.user_role_index);
@@ -47,7 +49,7 @@ export default function UserProfileCard() {
             <span className="usermain-profilecard-balance-amount">71,100</span>
             <span className="usermain-profilecard-balance-unit">CM</span>
           </div>
-          <button className="usermain-profilecard-balance-chargebtn-main">CM 충전하기</button>
+          <button className="usermain-profilecard-balance-chargebtn-main" onClick={() => navigate('/charge')}>+ 충전</button>
         </div>
       </div>
     </div>
