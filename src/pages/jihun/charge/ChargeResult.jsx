@@ -10,7 +10,7 @@ const ChargeResult = () => {
     const orderId = params.get('orderId');
     const amount = params.get('amount');
     const failMessage = params.get('message');
-    if (failMessage.includes("취소하였습니다")) {
+    if (typeof failMessage === 'string' && failMessage.includes("취소하였습니다")) {
       return navigate('/charge');
     }
     const handleConfirm = async () => {

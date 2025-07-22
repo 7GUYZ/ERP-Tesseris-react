@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loadTossPayments } from '@tosspayments/payment-sdk';
-const ChargeCalculator = () => {
+const ChargeCalculator = (userCurrentPoint) => {
     const [paymentAmount, setPaymentAmount] = useState('');
-    const [currentBalance, setCurrentBalance] = useState(1300);
+    const [currentBalance, setCurrentBalance] = useState(userCurrentPoint);
     const [cmRate, setCmRate] = useState(1); // CM 적용율
     const [vatRate, setVatRate] = useState(0.1); // VAT 10%
     const navigate = useNavigate();
