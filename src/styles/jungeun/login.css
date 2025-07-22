@@ -186,9 +186,8 @@
     min-width: 250px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    text-align: center;
-
+    gap: 12px;
+    text-align: left;
 }
 .toast-success {
     background-color: #FDCD00;
@@ -211,11 +210,12 @@
     color: inherit;
     cursor: pointer;
     padding: 0;
-    margin-left: 10px;
+    margin-left: auto;
     font-size: 18px;
     line-height: 1;
     opacity: 0.8;
     transition: opacity 0.2s ease;
+    flex-shrink: 0;
 }
 .toast-close:hover {
     opacity: 1;
@@ -254,12 +254,23 @@
     }
 
     .toast {
-        max-width: 100vw;
-        min-width: 60vw;
-        padding: 10px 12px;
-        gap: 10px;
+        max-width: 90vw;
+        min-width: 280px;
+        padding: 14px 16px;
+        gap: 12px;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .toast span {
-        font-size: 13px;
+        font-size: 15px;
+        font-weight: 600;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
