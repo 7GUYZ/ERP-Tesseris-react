@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import "../../../styles/jungeun/storeList.css";
 import { storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
+import { Image } from "lucide-react";
 
 const MAIN_COLOR = "#170F58";
 const POINT_COLOR = "#FDCD00";
@@ -177,33 +178,39 @@ const StoreListForm = () => {
         fetchStores();
     }, [selectedCategory]);
 
+    // 이미지가 없을 때 표시할 컴포넌트
+    const NoImageComponent = ({ show = false }) => (
+        <div className={`store-list-no-image-container ${show ? 'show' : ''}`}>
+            <Image size={32} color="#9CA3AF" />
+            <p className="store-list-no-image-text">등록된 이미지가 없습니다</p>
+        </div>
+    );
+
     const StoreCard = ({ store }) => {
         return (
             <div className="business-partner-card" style={{ padding: 0 }}>
                 {/* 이미지 영역 */}
-                <div style={{
-                    width: "100%",
-                    height: "140px",
-                    background: "#f5f5f5",
-                    borderTopLeftRadius: "12px",
-                    borderTopRightRadius: "12px",
-                    overflow: "hidden",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)"
-                }}>
-                    {/* 이미지는 하드코딩 되어있음 일단 */}
-                    <img
-                        src={store.storeImage || "https://i.pinimg.com/736x/12/89/c7/1289c79f67d2d9b825a90d83360070ac.jpg"}
-                        alt="가맹점 이미지"
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            display: "block"
-                        }}
-                    />
+                <div className="store-list-image-container">
+                    {/* 이미지가 있을 때만 표시 */}
+                    {store.storeImage ? (
+                        <>
+                            <img
+                                src={store.storeImage}
+                                alt="가맹점 이미지"
+                                className="store-list-image"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    const noImageContainer = e.target.nextSibling;
+                                    if (noImageContainer) {
+                                        noImageContainer.classList.add('show');
+                                    }
+                                }}
+                            />
+                            <NoImageComponent show={false} />
+                        </>
+                    ) : (
+                        <NoImageComponent show={true} />
+                    )}
                 </div>
                 <div className="card-header" style={{ padding: "1.2rem 1.5rem 0.5rem 1.5rem" }}>
                     <div

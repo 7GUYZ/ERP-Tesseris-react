@@ -7,7 +7,7 @@ export default function UserHeader() {
     <div className="usermain-header">
       <div className="usermain-header-inner">
         <div className="usermain-header-logo">
-          <h1 className="usermain-header-title">Tesseris</h1>
+          <h1 className="usermain-header-title">TESSERIS</h1>
         </div>
         <div className="usermain-header-actions">
           <button className="usermain-header-actionbtn">

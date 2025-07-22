@@ -6,7 +6,7 @@ import "../../../styles/jihun/common/common.css";
 
 const UserMainHome = () => {
   return (
-    <div className="user-main-home" style={{ display: 'flex', flexDirection: 'column', gap: '1.0rem' }}>
+    <div className="user-main-home">
       {/* User Profile & Balance */}
       <UserProfileCard />
 
