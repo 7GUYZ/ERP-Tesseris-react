@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import '../../../../styles/jihun/usermain/usermain.css';
 import { useNavigate } from "react-router-dom";
 
@@ -13,11 +13,14 @@ export default function UserProfileCard() {
   const badgeText = '가맹점';
   const badgeClass = 'usermain-profilecard-badge-franchise';
   const navigate = useNavigate();
+  useEffect(()=>{
+    
+  })
   return (
     <div className="usermain-profilecard">
       <div className="usermain-profilecard-header-row">
         <div>
-          <h2 className="usermain-profilecard-name">JINJINGHAO님</h2>
+          <h2 className="usermain-profilecard-name">{JSON.parse(localStorage.getItem('user-info')).name}님</h2>
           <p className="usermain-profilecard-greeting">안녕하세요</p>
         </div>
         <span className={badgeClass}>{badgeText}</span>
