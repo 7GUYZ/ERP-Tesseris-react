@@ -437,7 +437,7 @@ body {
   justify-content: space-between;
 }
 
-@media (min-width: 481px) {
+@media (min-width: 500px) {
   .usermain-header-inner {
     justify-content: space-around;
   }
