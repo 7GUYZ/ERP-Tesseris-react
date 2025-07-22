@@ -8,11 +8,11 @@ localhost:3000
 axiox
 2.npm install axios
 
-<<<<<<< HEAD
-mui(라이브러리,에디터)
-=======
+
+
+
 mui(라이브러리 에디터)
->>>>>>> origin/dev
+
 https://mui.com/material-ui/
 3.npm install @mui/material @emotion/react @emotion/styled
 
