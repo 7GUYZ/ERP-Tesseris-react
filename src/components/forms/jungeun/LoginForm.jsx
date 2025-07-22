@@ -186,7 +186,7 @@ const LoginForm = () => {
           }}
           onClick={(e) => {
             e.preventDefault()
-            window.location.href = "/TestSignUp"
+            window.location.href = "/signup"
           }}
         >
           회원가입

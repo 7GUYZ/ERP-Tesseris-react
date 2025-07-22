@@ -1,0 +1,40 @@
+.charge-layout {
+  min-height: 100vh;
+  background: #F5F5F9;
+  padding: 20px;
+  font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+.charge-container {
+  max-width: 480px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(23, 15, 88, 0.1);
+  overflow: hidden;
+}
+
+.charge-header {
+  background: #170F58;
+  color: white;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.charge-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.charge-subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.charge-content {
+  padding: 32px 24px;
+} 
