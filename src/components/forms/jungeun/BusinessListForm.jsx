@@ -27,13 +27,14 @@ const BusinessListForm = () => {
 
   // 등급이 바뀔 때마다 백엔드에서 데이터 받아오기
   useEffect(() => {
+    const user_index = Number(JSON.parse(localStorage.getItem("user-info"))?.user_index);
     const fetchPartners = async () => {
       if (!selectedGrade) {
         setPartners([]);
         return;
       }
       try {
-        const res = await businessList(selectedGrade); // selectedGrade는 gradeIndex(숫자)
+        const res = await businessList(user_index, selectedGrade); // selectedGrade는 gradeIndex(숫자)
         setPartners(res.data.data);
       } catch (e) {
         setPartners([]);
