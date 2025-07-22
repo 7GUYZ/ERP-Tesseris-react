@@ -1,6 +1,6 @@
 .payment-details {
-  margin-bottom: 32px;
-  padding: 20px;
+  margin-bottom: 24px;
+  padding: 16px;
   background: #F5F5F9;
   border-radius: 12px;
   border: 1px solid #e9ecef;
@@ -11,30 +11,43 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-}
-
-.payment-detail-item:last-of-type {
   margin-bottom: 12px;
 }
 
+.payment-detail-item:last-of-type {
+  margin-bottom: 8px;
+}
+
 .payment-detail-label {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: #170F58;
 }
 
 .payment-detail-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #170F58;
 }
 
 .payment-detail-rate {
-  font-size: 14px;
+  font-size: 13px;
   color: #ff4757;
   font-weight: 400;
   text-align: center;
   padding-top: 8px;
   border-top: 1px solid #dee2e6;
+}
+
+@media (max-width: 600px) {
+  .payment-details {
+    padding: 10px;
+  }
+  .payment-detail-label,
+  .payment-detail-value {
+    font-size: 13px;
+  }
+  .payment-detail-rate {
+    font-size: 12px;
+  }
 } 

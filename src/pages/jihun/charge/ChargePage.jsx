@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ChargeLayout from '../../../components/layout/jihun/charge/ChargeLayout';
-import ChargeCalculator from '../../../components/features/jihun/charge/ChargeCalculator';
+import ChargeCalculator from '../../../components/feature/jihun/charge/ChargeCalculator';
 import PaymentAmountForm from '../../../components/forms/jihun/charge/PaymentAmountForm';
 import BalanceDisplay from '../../../components/ui/jihun/charge/BalanceDisplay';
 import PaymentDetails from '../../../components/ui/jihun/charge/PaymentDetails';
