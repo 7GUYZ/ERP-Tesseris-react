@@ -34,7 +34,7 @@ export default function TestMain() {
           { id: "cm-history", title: "CM 내역", icon: FileText, action: () => navigate("/TestMain"), color: "#22c55e" },
           { id: "commission-history", title: "수당 내역", icon: BarChart3, action: () => navigate("/TestMain"), color: "#eab308" },
           { id: "homepage", title: "씨엠바더 홈페이지", icon: Store, action: () => window.open("/TestMain", "_blank"), color: "#a21caf" },
-          { id: "franchise-apply", title: "가맹점 신청", icon: ShoppingCart, action: () => navigate("/TestMain"), color: "#ef4444" },
+          { id: "franchise-apply", title: "가맹점 신청", icon: ShoppingCart, action: () => navigate("/registerstore0"), color: "#ef4444" },
           { id: "coupon-box", title: "쿠폰 보관함", icon: FileText, action: () => navigate("/TestMain"), color: "#6366f1" },
           { id: "kakao-consult", title: "카톡 상담", icon: HelpCircle, action: () => window.open("/TestMain", "_blank"), color: "#3b82f6" },
           { id: "game-reward", title: "씨엠 게임 보상", icon: Users, action: () => navigate("/TestMain"), color: "#22c55e" },
