@@ -77,8 +77,8 @@ export default function UserServiceMenu() {
       { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/main" },
       { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", path: "/main" },
       { icon: FileSearch, label: "중개수수료 현황", color: "usermain-icon-orange", path: "/main" },
-      { icon: Users, label: "산하 사업자", color: "usermain-icon-cyan", path: "/BusinessList" },
-      { icon: Store, label: "산하 가맹점", color: "usermain-icon-violet", path: "/StoreList" },
+      { icon: Users, label: "산하 사업자", color: "usermain-icon-cyan", path: "/main" },
+      { icon: Store, label: "산하 가맹점", color: "usermain-icon-violet", path: "/main" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", path: "/main" },
       { icon: ShoppingCart, label: "쇼핑몰", color: "usermain-icon-green", path: "/main" },
     ];
