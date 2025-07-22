@@ -107,7 +107,7 @@ const BusinessListForm = () => {
                 {grade?.gradeName}
               </span>
               <span style={{ marginLeft: 14, color: "#888", fontSize: "1em" }}>
-                산하 사업자
+                사업자 리스트
               </span>
             </h2>
           </div>
