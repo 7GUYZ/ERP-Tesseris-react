@@ -139,3 +139,24 @@ export const storeDetail = (store_index) => {
   });
 }
 
+export const getCurrentCM = (user_index) => {
+  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
+  return api.get("/user/giftCM/currenCM", {
+    params: {user_index},
+    headers: {
+      Authorization: `${token}`
+    }
+  });
+}
+
+// 회원 검색 API
+export const searchUser = (recipientEmail) => {
+  const token = localStorage.getItem("access-token");
+  return api.get("/user/giftCM/searchUser", {
+    params: {recipientEmail},
+    headers: {
+      Authorization: `${token}`
+    }
+  });
+}
+

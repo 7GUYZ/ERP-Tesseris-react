@@ -992,7 +992,7 @@ body {
   gap: 1.0rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0px 20px;
 }
 
 @media (max-width: 480px) {
