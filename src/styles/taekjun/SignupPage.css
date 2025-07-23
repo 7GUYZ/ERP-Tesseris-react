@@ -12,7 +12,7 @@
 
 /* 회원가입 페이지 전체 스타일 */
 .signup-page {
-  background: var(--sub-color);
+  background: #170F58;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -81,8 +81,8 @@
 }
 
 .progress-step.active .step-number {
-  background: #3b7ddd;
-  color: white;
+  background: var(--point-color);
+  color: var(--main-color);
 }
 
 .step-label {
@@ -93,7 +93,7 @@
 }
 
 .progress-step.active .step-label {
-  color: #3b7ddd;
+  color: var(--point-color);
   font-weight: 600;
 }
 
@@ -193,6 +193,46 @@
   color: #6b7280;
 }
 
+/* 드롭다운 스타일 */
+.input-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  background: white;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.input-group select:focus {
+  outline: none;
+  border-color: var(--point-color);
+  box-shadow: 0 0 0 3px rgba(253, 205, 0, 0.1);
+}
+
+.input-group select:hover {
+  border-color: #d1d5db;
+}
+
+.input-group select option {
+  padding: 8px 12px;
+  background: white;
+  color: #374151;
+}
+
+.input-group select option:hover {
+  background: var(--point-color);
+  color: var(--main-color);
+}
+
 /* 이메일 입력 그룹 */
 .email-input-group {
   display: flex;
@@ -200,16 +240,45 @@
 }
 
 .email-input-group input {
-  flex: 1;
+  flex: 3;
+}
+
+.email-domain-select {
+  min-width: 80px;
+  max-width: 100px;
+  padding: 8px 8px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 12px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  background: white;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 6px center;
+  background-repeat: no-repeat;
+  background-size: 12px;
+  padding-right: 20px;
+}
+
+.email-domain-select:focus {
+  outline: none;
+  border-color: var(--point-color);
+  box-shadow: 0 0 0 3px rgba(253, 205, 0, 0.1);
+}
+
+.email-domain-select:hover {
+  border-color: #d1d5db;
 }
 
 .auth-button {
-  padding: 12px 20px;
+  padding: 8px 16px;
   background: #3b7ddd;
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease;
