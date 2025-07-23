@@ -160,3 +160,10 @@ export const searchUser = (recipientEmail) => {
   });
 }
 
+// Pin 번호 확인 API
+export const pinCheck = ({userIndex, userCmPincode}) => 
+  api.post("/user/giftCM/pinCheck", {userIndex, userCmPincode});
+
+export const giftTransfer = ({sendUserIndex, receiveUserIndex, giftAmount}) =>
+  api.post("/user/giftCM/giftTransfer", {sendUserIndex, receiveUserIndex, giftAmount});
+

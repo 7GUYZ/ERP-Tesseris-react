@@ -4,287 +4,365 @@
     padding: 0;
   }
   
+/* Pin Form Styles - StoreDetailForm.jsx 구조 참고 */
+
+.gift-pin-container {
+  max-width: 650px;
+  margin: 0 auto;
+  background: #fff;
+  min-height: 100vh;
+  box-shadow: 0 4px 24px rgba(23,15,88,0.10);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  outline: none;
+  position: relative;
+}
+
+/* Header Section */
+.gift-pin-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 32px 16px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.gift-pin-back-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  margin-right: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  color: #170f58;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gift-pin-back-button:hover {
+  background-color: #f3f4f6;
+  transform: translateX(-2px);
+}
+
+.gift-pin-header-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #170F58;
+  text-align: center;
+  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+}
+
+/* Content Section */
+.gift-pin-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 32px;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.gift-pin-title-section {
+  text-align: center;
+  margin-bottom: 48px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.gift-pin-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #170F58;
+  margin-bottom: 12px;
+}
+
+.gift-pin-subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  line-height: 1.5;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* 선물 정보 표시 스타일 */
+.gift-pin-info {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 400px;
+}
+
+.gift-pin-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.gift-pin-info-item:last-child {
+  margin-bottom: 0;
+}
+
+.gift-pin-info-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.gift-pin-info-value {
+  color: #170F58;
+  font-weight: 600;
+}
+
+/* PIN Dots Section */
+.gift-pin-dots-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 64px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 400px;
+  justify-content: center;
+}
+
+.gift-pin-dots-container.gift-pin-shake {
+  animation: gift-pin-shake 0.5s ease-in-out;
+}
+
+@keyframes gift-pin-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  75% {
+    transform: translateX(8px);
+  }
+}
+
+.gift-pin-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: #fff;
+}
+
+.gift-pin-dot.gift-pin-active {
+  border-color: #fdcd00;
+  box-shadow: 0 0 0 4px rgba(253, 205, 0, 0.2);
+  transform: scale(1.1);
+}
+
+.gift-pin-dot.gift-pin-filled {
+  border-color: #170f58;
+  background: #170f58;
+  transform: scale(1.05);
+}
+
+.gift-pin-dot-inner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fdcd00;
+  animation: gift-pin-popIn 0.2s ease-out;
+}
+
+@keyframes gift-pin-popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Keypad Section */
+.gift-pin-keypad {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.gift-pin-keypad-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.gift-pin-keypad-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  color: #170f58;
+  font-size: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.gift-pin-keypad-button:hover {
+  background: #fdcd00;
+  border-color: #fdcd00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(253, 205, 0, 0.3);
+}
+
+.gift-pin-keypad-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(23, 15, 88, 0.2);
+  background: #fdcd00;
+  color: #170f58;
+}
+
+.gift-pin-keypad-button.gift-pin-action-button {
+  background: rgba(23, 15, 88, 0.1);
+  color: #170f58;
+}
+
+.gift-pin-keypad-button.gift-pin-action-button:hover {
+  background: rgba(23, 15, 88, 0.2);
+  color: #170f58;
+}
+
+.gift-pin-keypad-button.gift-pin-action-button:active {
+  background: #170f58;
+  color: #fdcd00;
+}
+
+/* Footer Section */
+.gift-pin-footer {
+  text-align: center;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.gift-pin-keyboard-hint {
+  font-size: 14px;
+  color: #6b7280;
+  background: #f9fafb;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  display: inline-block;
+  font-weight: 500;
+}
+
+/* Focus styles for accessibility */
+.gift-pin-keypad-button:focus {
+  outline: 2px solid #fdcd00;
+  outline-offset: 2px;
+}
+
+.gift-pin-back-button:focus {
+  outline: 2px solid #fdcd00;
+  outline-offset: 2px;
+}
+
+/* Loading animation for when PIN is complete */
+.gift-pin-dots-container.gift-pin-complete {
+  animation: gift-pin-pulse 0.6s ease-in-out;
+}
+
+@keyframes gift-pin-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 700px) {
   .gift-pin-container {
+    max-width: 100vw;
     min-height: 100vh;
-    background: #f5f5f9;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    outline: none;
-    position: relative;
-    overflow: hidden;
+    border-radius: 0;
+    box-shadow: none;
   }
   
   .gift-pin-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 24px;
-    background: #fff;
-    border-bottom: 1px solid #e5e5e5;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  
-  .gift-pin-back-button {
-    background: none;
-    border: none;
-    color: #170f58;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .gift-pin-back-button:hover {
-    background: rgba(23, 15, 88, 0.1);
-    transform: translateX(-2px);
-  }
-  
-  .gift-pin-header-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #170f58;
-    text-align: center;
+    padding: 12px 12px 12px 8px;
   }
   
   .gift-pin-content {
-    padding: 40px 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 400px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-  }
-  
-  .gift-pin-title-section {
-    text-align: center;
-    margin-bottom: 48px;
+    padding: 32px 20px;
   }
   
   .gift-pin-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #170f58;
-    margin-bottom: 12px;
+    font-size: 24px;
   }
   
   .gift-pin-subtitle {
-    font-size: 16px;
-    color: #666;
-    line-height: 1.5;
-    max-width: 300px;
-    margin: 0 auto;
-  }
-  
-  .gift-pin-dots-container {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 64px;
-    padding: 20px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .gift-pin-dots-container.gift-pin-shake {
-    animation: gift-pin-shake 0.5s ease-in-out;
-  }
-  
-  @keyframes gift-pin-shake {
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-    25% {
-      transform: translateX(-8px);
-    }
-    75% {
-      transform: translateX(8px);
-    }
-  }
-  
-  .gift-pin-dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #e0e0e0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    background: #fff;
-  }
-  
-  .gift-pin-dot.gift-pin-active {
-    border-color: #fdcd00;
-    box-shadow: 0 0 0 4px rgba(253, 205, 0, 0.2);
-    transform: scale(1.1);
-  }
-  
-  .gift-pin-dot.gift-pin-filled {
-    border-color: #170f58;
-    background: #170f58;
-    transform: scale(1.05);
-  }
-  
-  .gift-pin-dot-inner {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #fdcd00;
-    animation: gift-pin-popIn 0.2s ease-out;
-  }
-  
-  @keyframes gift-pin-popIn {
-    0% {
-      transform: scale(0);
-      opacity: 0;
-    }
-    50% {
-      transform: scale(1.3);
-      opacity: 0.8;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  
-  .gift-pin-keypad {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-  
-  .gift-pin-keypad-row {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
+    font-size: 14px;
   }
   
   .gift-pin-keypad-button {
-    width: 72px;
-    height: 72px;
-    border-radius: 16px;
-    border: 1px solid #e5e5e5;
-    background: #fff;
-    color: #170f58;
-    font-size: 24px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 64px;
+    height: 64px;
+    font-size: 20px;
   }
   
-  .gift-pin-keypad-button:hover {
-    background: #fdcd00;
-    border-color: #fdcd00;
-    transform: none;
+  .gift-pin-dots-container {
+    gap: 12px;
+    padding: 16px;
   }
   
-  .gift-pin-keypad-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(23, 15, 88, 0.2);
-    background: #fdcd00;
-    color: #170f58;
-  }
-  
-  .gift-pin-keypad-button.gift-pin-action-button {
-    background: rgba(23, 15, 88, 0.1);
-    color: #170f58;
-  }
-  
-  .gift-pin-keypad-button.gift-pin-action-button:hover {
-    background: rgba(23, 15, 88, 0.2);
-    color: #170f58;
-  }
-  
-  .gift-pin-keypad-button.gift-pin-action-button:active {
-    background: #170f58;
-    color: #fdcd00;
-  }
-  
-  .gift-pin-footer {
-    text-align: center;
-    margin-top: 24px;
+  .gift-pin-dot {
+    width: 16px;
+    height: 16px;
   }
   
   .gift-pin-keyboard-hint {
-    font-size: 14px;
-    color: #666;
-    background: #fff;
+    font-size: 12px;
     padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid #e5e5e5;
-    display: inline-block;
   }
-  
-  /* Responsive Design */
-  @media (max-width: 480px) {
-    .gift-pin-content {
-      padding: 32px 20px;
-    }
-  
-    .gift-pin-title {
-      font-size: 24px;
-    }
-  
-    .gift-pin-subtitle {
-      font-size: 14px;
-    }
-  
-    .gift-pin-keypad-button {
-      width: 64px;
-      height: 64px;
-      font-size: 20px;
-    }
-  
-    .gift-pin-dots-container {
-      gap: 12px;
-      padding: 16px;
-    }
-  
-    .gift-pin-dot {
-      width: 16px;
-      height: 16px;
-    }
-  }
-  
-  /* Focus styles for accessibility */
-  .gift-pin-keypad-button:focus {
-    outline: 2px solid #fdcd00;
-    outline-offset: 2px;
-  }
-  
-  .gift-pin-back-button:focus {
-    outline: 2px solid #fdcd00;
-    outline-offset: 2px;
-  }
-  
-  /* Loading animation for when PIN is complete */
-  .gift-pin-dots-container.gift-pin-complete {
-    animation: gift-pin-pulse 0.6s ease-in-out;
-  }
-  
-  @keyframes gift-pin-pulse {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.05);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
+}
   
