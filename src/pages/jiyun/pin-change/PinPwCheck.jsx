@@ -44,7 +44,7 @@ export default function PinPwCheck() {
   return (
     <div className="pin-container">
       <div className="pin-header">
-        <span className="back-icon" onClick={() => navigate(-1)}>
+        <span className="back-icon" onClick={() => navigate("/general/mypage")}>
           &lt;
         </span>
         <div className="header-title-wrapper">

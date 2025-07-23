@@ -44,7 +44,7 @@ export default function NoticeDetail() {
     <div className="notice-detail-page">
       <div className="notice-header">
         <h1 className="notice-title">공지사항</h1>
-        <span className="close-icon" onClick={() => navigate("/my-page")}>
+        <span className="close-icon" onClick={() => navigate("/general/mypage")}>
           ✕
         </span>
       </div>
