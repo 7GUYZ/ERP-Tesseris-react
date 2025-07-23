@@ -1,13 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { getSuggestion } from "../../../api/auth/JiyoonAuth";
+import { getSuggestion, getNickname } from "../../../api/auth/JiyoonAuth";
 import Toast from "../../../components/ui/jungeun/Toast";
 import { useNavigate, Link } from "react-router-dom";
 import "../../../styles/jiyun/mypage/mypage.css";
 import {
   ArrowLeft,
   ChevronRight,
-  Download,
-  Share2,
   User,
   Lock,
   Bell,
@@ -19,6 +17,7 @@ import {
 export default function MobileMyPage() {
   const [userInfo, setUserInfo] = useState(null);
   const [suggestionList, setSuggestionList] = useState([]);
+  const [nickname, setNickname] = useState("");
   const [suggestionLoading, setSuggestionLoading] = useState(true);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -33,6 +32,19 @@ export default function MobileMyPage() {
     if (userData) {
       setUserInfo(JSON.parse(userData));
     }
+  }, []);
+
+  // 닉네임 불러오기
+  useEffect(() => {
+    const fetchNickname = async () => {
+      try {
+        const response = await getNickname();
+        setNickname(response.data.nickname);
+      } catch (err) {
+        setNickname("");
+      }
+    };
+    fetchNickname();
   }, []);
 
   useEffect(() => {
@@ -108,7 +120,7 @@ export default function MobileMyPage() {
       )}
       <div className="general-mypagegeneral-header">
         <ArrowLeft className="general-back-icon" onClick={handleMainPage} />
-        <h1 className="general-header-title">내 정보</h1>
+        <h1 className="general-header-title">내정보</h1>
       </div>
 
       <div className="general-content">
@@ -119,7 +131,7 @@ export default function MobileMyPage() {
                 {userInfo?.name || "로딩 중..."}
               </h5>
               <h2 className="general-username">
-                {userInfo?.email ? userInfo.email.split('@')[0] : "로딩 중..."}
+                {nickname || "로딩 중..."}
               </h2>
             </div>
 
@@ -154,6 +166,9 @@ export default function MobileMyPage() {
           <div className="general-card-content">
             <div className="general-referral-header">
               <div className="general-section-title">추천 코드</div>
+            </div>
+            <div className="general-referral-row">
+              <span className="general-referral-email">{userInfo?.email}</span>
               <button
                 className="general-copy-button"
                 onClick={handleCopyUserId}

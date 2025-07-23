@@ -355,3 +355,16 @@
 .general-mypagegeneral-header .general-back-icon {
   cursor: pointer;
 }
+
+.general-referral-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.general-referral-email {
+  font-size: 14px;
+  color: #170f58;
+  font-weight: 500;
+}
