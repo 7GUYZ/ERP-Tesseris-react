@@ -1,0 +1,53 @@
+/* 공통 컨테이너 스타일 */
+.page-container {
+  min-height: 100vh;
+  background-color: white;
+  padding-bottom: 96px;
+}
+
+/* 공통 헤더 스타일 */
+.page-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.back-icon {
+  width: 28px;
+  height: 32px;
+  color: #6b7280;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #170f58;
+}
+
+.header-spacer {
+  width: 28px;
+  height: 32px;
+}
+
+/* 공통 하단 버튼 스타일 */
+.bottom-button-container {
+  position: fixed;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.custom-button:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.custom-button:disabled:hover {
+  background-color: #d1d5db;
+} 

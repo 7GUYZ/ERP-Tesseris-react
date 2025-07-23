@@ -109,7 +109,7 @@ const LoginForm = () => {
         showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
 
         if (["1", "2", "3"].includes(userInfo.user_role_index)) {
-          setTimeout(() => window.location.href = "/TestMain", 1500);
+          setTimeout(() => window.location.href = "/main", 1500);
         } else {
           showToast("error", "허용되지 않은 사용자입니다");
         }
@@ -186,7 +186,7 @@ const LoginForm = () => {
           }}
           onClick={(e) => {
             e.preventDefault()
-            window.location.href = "/TestSignUp"
+            window.location.href = "/signup"
           }}
         >
           회원가입
