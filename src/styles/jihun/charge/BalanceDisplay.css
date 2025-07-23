@@ -1,0 +1,41 @@
+.balance-display {
+  margin-bottom: 24px;
+  font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+.balance-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #170F58;
+  margin-bottom: 12px;
+}
+
+.balance-bar {
+  width: 100%;
+  height: 48px;
+  background: #170F58;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 4px 12px rgba(23, 15, 88, 0.2);
+}
+
+.balance-bar-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balance-status {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.balance-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+} 

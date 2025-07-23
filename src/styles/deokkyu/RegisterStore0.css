@@ -1,0 +1,61 @@
+/* 가맹점 신청 안내 페이지 스타일 */
+
+/* Content Layout */
+.register-content {
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Section Styles */
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.section-title.red {
+  color: #dc2626;
+}
+
+/* List Styles */
+.list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.list-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  color: #374151;
+  font-size: 14px;
+}
+
+.list-item.red {
+  color: #dc2626;
+}
+
+.list-number {
+  font-weight: 500;
+}
+
+/* Restricted Business Info */
+.restricted-business {
+  background-color: #f3f4f6;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.restricted-title {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+} 
