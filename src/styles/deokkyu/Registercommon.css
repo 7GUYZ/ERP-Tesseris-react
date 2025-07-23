@@ -34,7 +34,7 @@
 /* 공통 하단 버튼 스타일 */
 .bottom-button-container {
   position: fixed;
-  bottom: 40px;
+  bottom: 60px;
   left: 0;
   right: 0;
   padding: 16px 24px;

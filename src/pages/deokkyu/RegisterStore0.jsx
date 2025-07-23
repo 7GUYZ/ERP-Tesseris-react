@@ -13,7 +13,7 @@ export default function RegisterStore1() {
   }
 
   const handleCancelClick = () => {
-    navigate('/TestMain')
+    navigate('/main')
   }
 
   return (

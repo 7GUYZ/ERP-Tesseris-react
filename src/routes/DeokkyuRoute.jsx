@@ -3,6 +3,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import RegisterStore0 from '../pages/deokkyu/RegisterStore0';
 import RegisterStore1 from '../pages/deokkyu/RegisterStore1';
 import RegisterStore2 from '../pages/deokkyu/RegisterStore2';
+import RegisterStore3 from '../pages/deokkyu/RegisterStore3';
 
 function DeokkyuRoute() {
     return (
@@ -12,6 +13,7 @@ function DeokkyuRoute() {
                 <Route path='/registerstore0' element={<RegisterStore0/>} />
                 <Route path='/registerstore1' element={<RegisterStore1/>} />
                 <Route path='/registerstore2' element={<RegisterStore2/>} />
+                <Route path='/registerstore3' element={<RegisterStore3/>} />
             </Route>
         </>
     );

@@ -12,6 +12,13 @@ export default function RegisterStore1() {
   const navigate = useNavigate()
 
   const handleApplyClick = () => {
+    // 약관 동의 데이터를 localStorage에 저장
+    const agreementData = {
+      agreements,
+      timestamp: new Date().toISOString()
+    }
+    localStorage.setItem('register-store-agreements', JSON.stringify(agreementData))
+    
     navigate('/registerstore2')
   }
   const handleCancelClick = () => {
