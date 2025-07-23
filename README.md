@@ -30,3 +30,7 @@ https://mui.com/material-ui/
 8.npm install @tosspayments/payment-sdk
 한줄설치(쭉 복붙하셔서 바로 실행하시면 됩니다. mac은 다를수도)
 npm install; npm install axios; npm install @mui/material @emotion/react @emotion/styled; npm install react-router-dom; npm install zustand; npm install @stomp/stompjs; npm install sockjs-client; npm install lucide-react; npm install @tosspayments/payment-sdk
+
+
+9. 큐알코드
+설치 방법 : npm install qrcode.react
