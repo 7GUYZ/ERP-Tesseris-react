@@ -12,6 +12,7 @@ import PinPwCheck from "../pages/jiyun/pin-change/PinPwCheck";
 import PinStep1 from "../pages/jiyun/pin-change/PinStep1";
 import PinStep2 from "../pages/jiyun/pin-change/PinStep2";
 import PinComplete from "../pages/jiyun/pin-change/PinComplete";
+import Mypage from "../pages/jiyun/mypage/Mypage";
 
 function JiyoonRoute() {
   return (
@@ -30,6 +31,7 @@ function JiyoonRoute() {
         <Route path="/pinChange/pinInsert" element={<PinStep1 />} />
         <Route path="/pinChange/pinconfirm" element={<PinStep2 />} />
         <Route path="/pinChange/pinComplete" element={<PinComplete />} />
+        <Route path="/mypage" element={<Mypage />} />
       </Route>
     </>
   );

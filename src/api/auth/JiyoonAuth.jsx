@@ -9,5 +9,13 @@ export const noticeList = () => api.get("/notice/list");
 
 //핀번호 변경
 export const pinChange = (pin) => api.post(`/pinChange/update`, pin);
+
 //비밀번호 확인
-export const pwCheck = (password) => api.post(`/pinChange/pwCheck`, { password });
+export const pwCheck = (password) =>
+  api.post(`/pinChange/pwCheck`, { password });
+
+//마이페이지 닉네임 조회
+export const getNickname = () => api.get(`/general/mypage/getNickname`);
+
+//마이페이지 추천인 목록 조회
+export const getSuggestion = () => api.get(`/general/mypage/suggestions`);

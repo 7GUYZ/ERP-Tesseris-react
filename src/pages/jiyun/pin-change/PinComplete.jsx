@@ -5,7 +5,7 @@ export default function PinComplete() {
   const navigate = useNavigate();
 
   const handleConfirm = () => {
-    navigate("/TestMain");
+    navigate("/mypage");
   };
 
   return (
