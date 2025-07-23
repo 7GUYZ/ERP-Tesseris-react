@@ -39,7 +39,7 @@ export default function NoticeList() {
   return (
     <div className="notice-detail-page">
       <div className="notice-header">
-        <span className="back-icon" onClick={() => navigate("/general/mypage")}>
+        <span className="back-icon" onClick={() => navigate("/mypage")}>
           &lt;
         </span>
         <h1 className="notice-title">공지사항</h1>

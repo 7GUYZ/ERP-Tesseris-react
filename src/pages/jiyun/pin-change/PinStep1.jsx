@@ -12,7 +12,7 @@ export default function PinStep1() {
   return (
     <div className="pin-container">
       <div className="pin-header">
-        <span className="back-icon" onClick={() => navigate("/general/mypage")}>
+        <span className="back-icon" onClick={() => navigate(-1)}>
           &lt;
         </span>
         <div className="header-title-wrapper">

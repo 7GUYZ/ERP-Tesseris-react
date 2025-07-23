@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { noticeDetail } from "../../../api/auth/JiyoonAuth";
 import "../../../styles/jiyun/notice/noticeDetail.css";
 
-
 export default function NoticeDetail() {
   const { noticeIdx } = useParams();
   const [noticeData, setNoticeData] = useState(null);
@@ -44,7 +43,7 @@ export default function NoticeDetail() {
     <div className="notice-detail-page">
       <div className="notice-header">
         <h1 className="notice-title">공지사항</h1>
-        <span className="close-icon" onClick={() => navigate("/general/mypage")}>
+        <span className="close-icon" onClick={() => navigate("/mypage")}>
           ✕
         </span>
       </div>

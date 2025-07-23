@@ -12,11 +12,11 @@ export default function PinStep2() {
   const [error, setError] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [pinInputKey, setPinInputKey] = useState(0); 
+  const [pinInputKey, setPinInputKey] = useState(0);
 
   const handleConfirm = (inputPin) => {
     if (error) return;
-    
+
     if (inputPin === originalPin) {
       console.log("보내는 데이터:", { userCmPincode: inputPin });
       const updatePin = async () => {
@@ -37,7 +37,7 @@ export default function PinStep2() {
       setError(true);
       setModalMessage("입력한 PIN이 일치하지 않습니다.");
       setShowModal(true);
-      setPinInputKey(prev => prev + 1);
+      setPinInputKey((prev) => prev + 1);
       setTimeout(() => setError(false), 3000);
     }
   };
@@ -49,7 +49,7 @@ export default function PinStep2() {
   return (
     <div className="pin-container">
       <div className="pin-header">
-        <span className="back-icon" onClick={() => navigate("/general/mypage")}>
+        <span className="back-icon" onClick={() => navigate(-1)}>
           &lt;
         </span>
         <div className="header-title-wrapper">
@@ -62,10 +62,8 @@ export default function PinStep2() {
         <p>다시 한번 입력해주세요.</p>
         <PinInput key={pinInputKey} onComplete={handleConfirm} />
       </div>
-      
-      {showModal && (
-        <Modal message={modalMessage} onClose={handleModalClose} />
-      )}
+
+      {showModal && <Modal message={modalMessage} onClose={handleModalClose} />}
     </div>
   );
 }

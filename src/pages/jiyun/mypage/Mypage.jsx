@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from "react";
-import { getInfo, getSuggestion } from "../../../api/auth/JiyoonAuth";
+import { getSuggestion } from "../../../api/auth/JiyoonAuth";
 import Toast from "../../../components/ui/jungeun/Toast";
 import { useNavigate, Link } from "react-router-dom";
-import { QRCodeCanvas } from "qrcode.react";
-import "../../../styles/jiyun/mypage-general/mypageGeneral.css";
+import "../../../styles/jiyun/mypage/mypage.css";
 import {
   ArrowLeft,
   ChevronRight,
@@ -20,9 +19,7 @@ import {
 export default function MobileMyPage() {
   const [userInfo, setUserInfo] = useState(null);
   const [suggestionList, setSuggestionList] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [suggestionLoading, setSuggestionLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(true);
@@ -32,17 +29,10 @@ export default function MobileMyPage() {
   const qrRef = useRef(null);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await getInfo();
-        setUserInfo(response.data);
-      } catch (err) {
-        setError("사용자 정보를 불러오지 못했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserInfo();
+    const userData = localStorage.getItem("user-info");
+    if (userData) {
+      setUserInfo(JSON.parse(userData));
+    }
   }, []);
 
   useEffect(() => {
@@ -67,26 +57,10 @@ export default function MobileMyPage() {
 
   // userId 복사 함수
   const handleCopyUserId = () => {
-    if (userInfo?.userId) {
-      navigator.clipboard.writeText(userInfo.userId);
+    if (userInfo?.email) {
+      navigator.clipboard.writeText(userInfo.email);
       setToastMessage("코드가 복사되었습니다.");
       setToastVisible(true);
-    }
-  };
-
-  // userId 공유 함수
-  const handleShareUserId = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "추천 코드",
-        text: `내 추천 코드: ${userInfo?.userId}`,
-      });
-    } else {
-      if (userInfo?.userId) {
-        navigator.clipboard.writeText(userInfo.userId);
-        setToastMessage("코드가 복사되었습니다.");
-        setToastVisible(true);
-      }
     }
   };
 
@@ -123,11 +97,6 @@ export default function MobileMyPage() {
     }
   };
 
-  if (loading)
-    return <div className="general-mypagegeneral-container">로딩 중...</div>;
-  if (error)
-    return <div className="general-mypagegeneral-container">{error}</div>;
-
   return (
     <div className="general-mypagegeneral-container">
       {toastVisible && (
@@ -147,10 +116,10 @@ export default function MobileMyPage() {
           <div className="general-card-content">
             <div className="general-user-info">
               <h5 className="general-username">
-                {userInfo?.userName || "로딩 중..."}
+                {userInfo?.name || "로딩 중..."}
               </h5>
               <h2 className="general-username">
-                {userInfo?.userId || "로딩 중..."}
+                {userInfo?.email ? userInfo.email.split('@')[0] : "로딩 중..."}
               </h2>
             </div>
 
@@ -164,7 +133,7 @@ export default function MobileMyPage() {
                 </div>
                 <div className="general-menu-right">
                   <span className="general-phone-number">
-                    {maskPhoneNumber(userInfo?.userPhone) || "로딩 중..."}
+                    {maskPhoneNumber(userInfo?.phone) || "로딩 중..."}
                   </span>
                   <div className="general-chevron-icon" />
                 </div>
@@ -191,42 +160,6 @@ export default function MobileMyPage() {
               >
                 코드 복사
               </button>
-            </div>
-
-            {/* QR Code */}
-            <div className="general-qr-section">
-              <div className="general-qr-container">
-                <div className="general-qr-code">
-                  {userInfo?.userId && (
-                    <QRCodeCanvas
-                      ref={qrRef}
-                      value={userInfo.userId}
-                      size={128}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="general-qr-label">바코드</div>
-
-              {/* Action Buttons */}
-              <div className="general-action-buttons">
-                <button
-                  className="general-action-button"
-                  onClick={handleDownloadQRCode}
-                >
-                  <div className="general-action-icon">
-                    <Download className="general-icon" />
-                  </div>
-                </button>
-                <button
-                  className="general-action-button"
-                  onClick={handleShareUserId}
-                >
-                  <div className="general-action-icon">
-                    <Share2 className="general-icon" />
-                  </div>
-                </button>
-              </div>
             </div>
           </div>
         </div>
