@@ -95,16 +95,22 @@ export default function MobileMyPage() {
     navigate("/TestMain");
   };
 
-  if (loading) return <div className="general-mypagegeneral-container">로딩 중...</div>;
-  if (error) return <div className="general-mypagegeneral-container">{error}</div>;
+  if (loading)
+    return <div className="general-mypagegeneral-container">로딩 중...</div>;
+  if (error)
+    return <div className="general-mypagegeneral-container">{error}</div>;
 
   return (
     <div className="general-mypagegeneral-container">
       {toastVisible && (
-        <Toast type="success" message={toastMessage} onClose={handleToastClose} />
+        <Toast
+          type="success"
+          message={toastMessage}
+          onClose={handleToastClose}
+        />
       )}
       <div className="general-mypagegeneral-header">
-        <ArrowLeft className="general-back-icon" onClick={handleMainPage}/>
+        <ArrowLeft className="general-back-icon" onClick={handleMainPage} />
         <h1 className="general-header-title">내 정보</h1>
       </div>
 
@@ -112,11 +118,15 @@ export default function MobileMyPage() {
         <div className="general-card">
           <div className="general-card-content">
             <div className="general-user-info">
-              <h5 className="general-username">{userInfo?.userName || "로딩 중..."}</h5>
-              <h2 className="general-username">{userInfo?.userId || "로딩 중..."}</h2>
+              <h5 className="general-username">
+                {userInfo?.userName || "로딩 중..."}
+              </h5>
+              <h2 className="general-username">
+                {userInfo?.userId || "로딩 중..."}
+              </h2>
             </div>
 
-            <div className="general-account-section" onClick={handleMainPage}>
+            <div className="general-account-section">
               <div className="general-section-title">계정 정보</div>
 
               <div className="general-menu-item general-border-bottom">
@@ -125,8 +135,10 @@ export default function MobileMyPage() {
                   <span className="general-menu-text">휴대폰</span>
                 </div>
                 <div className="general-menu-right">
-                  <span className="general-phone-number">{maskPhoneNumber(userInfo?.userPhone) || "로딩 중..."}</span>
-                  <div className="general-chevron-icon"/>
+                  <span className="general-phone-number">
+                    {maskPhoneNumber(userInfo?.userPhone) || "로딩 중..."}
+                  </span>
+                  <div className="general-chevron-icon" />
                 </div>
               </div>
 
@@ -145,14 +157,21 @@ export default function MobileMyPage() {
           <div className="general-card-content">
             <div className="general-referral-header">
               <div className="general-section-title">추천 코드</div>
-              <button className="general-copy-button" onClick={handleCopyUserId}>코드 복사</button>
+              <button
+                className="general-copy-button"
+                onClick={handleCopyUserId}
+              >
+                코드 복사
+              </button>
             </div>
 
             {/* QR Code */}
             <div className="general-qr-section">
               <div className="general-qr-container">
                 <div className="general-qr-code">
-                  {userInfo?.userId && <QRCodeCanvas value={userInfo.userId} size={128} />}
+                  {userInfo?.userId && (
+                    <QRCodeCanvas value={userInfo.userId} size={128} />
+                  )}
                 </div>
               </div>
               <div className="general-qr-label">바코드</div>
@@ -179,8 +198,11 @@ export default function MobileMyPage() {
           <div className="general-card-content">
             <div className="general-referral-header">
               <div className="general-section-title">추천인 목록</div>
-              <button className="general-outline-button" onClick={toggleSuggestion}>
-                {isSuggestionOpen ? '닫기' : '열기'}
+              <button
+                className="general-outline-button"
+                onClick={toggleSuggestion}
+              >
+                {isSuggestionOpen ? "닫기" : "열기"}
               </button>
             </div>
 
@@ -204,24 +226,32 @@ export default function MobileMyPage() {
                   <>
                     <div className="general-table-content">
                       {currentItems.map((item, index) => (
-                        <div key={indexOfFirstItem + index} className="general-table-row">
+                        <div
+                          key={indexOfFirstItem + index}
+                          className="general-table-row"
+                        >
                           <div>{indexOfFirstItem + index + 1}</div>
-                          <div>{item.recommendationUserId || '-'}</div>
-                          <div>{item.recommendationUserName || '-'}</div>
-                          <div>{item.recommendationUserRole || '-'}</div>
-                          <div>{item.joinDate || '-'}</div>
+                          <div>{item.recommendationUserId || "-"}</div>
+                          <div>{item.recommendationUserName || "-"}</div>
+                          <div>{item.recommendationUserRole || "-"}</div>
+                          <div>{item.joinDate || "-"}</div>
                         </div>
                       ))}
                     </div>
-                    
+
                     {/* Pagination */}
                     {totalPages > 1 && (
                       <div className="general-pagination">
                         <div className="general-page-numbers">
-                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          {Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1
+                          ).map((page) => (
                             <button
                               key={page}
-                              className={`general-page-number ${currentPage === page ? 'active' : ''}`}
+                              className={`general-page-number ${
+                                currentPage === page ? "active" : ""
+                              }`}
                               onClick={() => handlePageChange(page)}
                             >
                               {page}
@@ -233,7 +263,9 @@ export default function MobileMyPage() {
                   </>
                 ) : (
                   <div className="general-empty-state">
-                    <div className="general-empty-message">검색 결과가 없습니다.</div>
+                    <div className="general-empty-message">
+                      검색 결과가 없습니다.
+                    </div>
                   </div>
                 )}
               </>
