@@ -21,7 +21,7 @@ function App() {
 
   return (
     <ToastProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.REACT_APP_BASENAME || undefined}>
         <Routes>
           <Route path='/' element={<LoginPage />} />
           <Route path='/TestSignUp' element={<TestSignUp />} /> {/* 임시 회원가입 페이지 */}
