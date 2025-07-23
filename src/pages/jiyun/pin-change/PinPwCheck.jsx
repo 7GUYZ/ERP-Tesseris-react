@@ -44,7 +44,7 @@ export default function PinPwCheck() {
   return (
     <div className="pin-container">
       <div className="pin-header">
-        <span className="back-icon" onClick={() => navigate(-1)}>
+        <span className="back-icon" onClick={() => navigate("/mypage")}>
           &lt;
         </span>
         <div className="header-title-wrapper">
@@ -66,10 +66,8 @@ export default function PinPwCheck() {
       <button className="pin-next-button" onClick={handleNext}>
         다음
       </button>
-      
-      {showModal && (
-        <Modal message={modalMessage} onClose={handleModalClose} />
-      )}
+
+      {showModal && <Modal message={modalMessage} onClose={handleModalClose} />}
     </div>
   );
 }
