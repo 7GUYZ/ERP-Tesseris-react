@@ -15,7 +15,8 @@ spec:
         app: react
     spec:
       containers:
-      - name: react
-        image: <DOCKER_USERNAME>/erp-tesseris-react:latest
-        ports:
-        - containerPort: 80 
+        - name: react
+          image: __DOCKER_IMAGE__:__TAG__
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Always 

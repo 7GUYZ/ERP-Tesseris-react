@@ -1,42 +1,57 @@
-name: CI/CD Pipeline
+name: Deploy React App to Kubernetes
 
 on:
   push:
-    branches: "main"
+    branches:
+      - sichan  # 또는 배포 브랜치명
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
         with:
-          node-version: '18'
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Install dependencies
-        run: npm install
+      - name: Set homepage and basename for production (hardcoded)
+        run: |
+          sed -i "s#__PUBLIC_URL__#/react#g" package.json
 
-      - name: Build
-        run: npm run build
-
-      - name: Docker build
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/erp-tesseris-react:${{ github.sha }} .
-
-      - name: Docker login
-        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
-      - name: Docker push
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/erp-tesseris-react:${{ github.sha }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }}
+          build-args: |
+            REACT_APP_BASENAME=/react
+            REACT_APP_API_BASE_URL=/springboot/api
 
       - name: Set up Kubeconfig
-        uses: azure/setup-kubectl@v3
+        uses: azure/setup-kubectl@v4
         with:
           version: 'latest'
-      - name: Deploy to Kubernetes
+
+      - name: Configure Kubeconfig
         run: |
-          kubectl apply -f my-k8s-app/final/react_deployment.yaml
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+
+      - name: Replace image tag and apply deployment
+        run: |
+          sed "s#__DOCKER_IMAGE__#${{ secrets.DOCKER_IMAGE }}#g" my-k8s-app/final/react_deployment.yaml | \
+          sed "s#__TAG__#${{ github.sha }}#g" > my-k8s-app/final/react_deployment.generated.yaml
+
+          kubectl apply -f my-k8s-app/final/react_deployment.generated.yaml
+
+      - name: Apply service
+        run: |
           kubectl apply -f my-k8s-app/final/react_service.yaml 
