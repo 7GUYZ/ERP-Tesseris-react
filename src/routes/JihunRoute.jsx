@@ -2,6 +2,7 @@ import { Route } from 'react-router-dom';
 import ProtectedRoute from "./ProtectedRoute";
 import ChargePage from '../pages/jihun/charge/ChargePage';
 import ChargeResult from '../pages/jihun/charge/ChargeResult';
+import ChangePassword from '../pages/jihun/changepassword/ChangePassword';
 
 function JihunRoute() {
     return (
@@ -10,6 +11,7 @@ function JihunRoute() {
             <Route element={<ProtectedRoute />}>
                 <Route path='/charge' element={<ChargePage />} />
                 <Route path='/charge/result' element={<ChargeResult />} />
+                <Route path='/changepassword' element={<ChangePassword />} />
             </Route>
         </>
     );
