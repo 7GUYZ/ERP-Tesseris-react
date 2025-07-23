@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 import InputField from "./LoginInputField.jsx"
 import LoginButton from "./LoginButton.jsx"
 import ErrorMessage from "../../ui/jungeun/ErrorMessage.jsx"
@@ -14,6 +15,7 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const { showToast } = useToast()
+  const navigate = useNavigate();
 
   // 이메일 유효성 검사
   const validateEmail = (email) => {
@@ -109,7 +111,7 @@ const LoginForm = () => {
         showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
 
         if (["1", "2", "3"].includes(userInfo.user_role_index)) {
-          setTimeout(() => window.location.href = "/main", 1500);
+          setTimeout(() => navigate("/main"), 1500);
         } else {
           showToast("error", "허용되지 않은 사용자입니다");
         }
