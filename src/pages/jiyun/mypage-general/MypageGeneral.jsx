@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getInfo, getSuggestion } from "../../../api/auth/JiyoonAuth";
 import Toast from "../../../components/ui/jungeun/Toast";
 import { useNavigate, Link } from "react-router-dom";
@@ -29,6 +29,7 @@ export default function MobileMyPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const navigate = useNavigate();
+  const qrRef = useRef(null);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -73,6 +74,22 @@ export default function MobileMyPage() {
     }
   };
 
+  // userId 공유 함수
+  const handleShareUserId = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: "추천 코드",
+        text: `내 추천 코드: ${userInfo?.userId}`,
+      });
+    } else {
+      if (userInfo?.userId) {
+        navigator.clipboard.writeText(userInfo.userId);
+        setToastMessage("코드가 복사되었습니다.");
+        setToastVisible(true);
+      }
+    }
+  };
+
   const handleToastClose = () => {
     setToastVisible(false);
   };
@@ -93,6 +110,17 @@ export default function MobileMyPage() {
 
   const handleMainPage = () => {
     navigate("/TestMain");
+  };
+
+  const handleDownloadQRCode = () => {
+    const canvas = qrRef.current?.querySelector?.("canvas") || qrRef.current;
+    if (canvas) {
+      const url = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "tesseris_qrcode.png";
+      link.click();
+    }
   };
 
   if (loading)
@@ -170,7 +198,11 @@ export default function MobileMyPage() {
               <div className="general-qr-container">
                 <div className="general-qr-code">
                   {userInfo?.userId && (
-                    <QRCodeCanvas value={userInfo.userId} size={128} />
+                    <QRCodeCanvas
+                      ref={qrRef}
+                      value={userInfo.userId}
+                      size={128}
+                    />
                   )}
                 </div>
               </div>
@@ -178,12 +210,18 @@ export default function MobileMyPage() {
 
               {/* Action Buttons */}
               <div className="general-action-buttons">
-                <button className="general-action-button">
+                <button
+                  className="general-action-button"
+                  onClick={handleDownloadQRCode}
+                >
                   <div className="general-action-icon">
                     <Download className="general-icon" />
                   </div>
                 </button>
-                <button className="general-action-button">
+                <button
+                  className="general-action-button"
+                  onClick={handleShareUserId}
+                >
                   <div className="general-action-icon">
                     <Share2 className="general-icon" />
                   </div>
@@ -352,7 +390,7 @@ export default function MobileMyPage() {
 
         {/* Footer */}
         <div className="general-footer">
-          <div className="general-kakao-link">카카오톡 상담하기</div>
+          <Link className="general-kakao-link">카카오톡 상담하기</Link>
           <div className="general-company-info">
             <div>씨엠바더코리아㈜ | 사업자 등록번호 364-86-03002</div>
             <div>
