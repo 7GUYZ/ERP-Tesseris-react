@@ -18,24 +18,38 @@ export default function TermsList() {
 
   return (
     <div className="terms-container">
-      <header className="terms-header">
-        <button className="back-button" onClick={() => navigate(-1)}>
+      <div className="terms-header">
+        <button className="back-button" onClick={() => navigate("/mypage")}>
           &lt;
         </button>
         <h2>약관 및 이용 동의</h2>
-      </header>
-      <ul className="terms-list">
-        {termsList.map((item) => (
-          <li
-            key={item.id}
-            onClick={() => handleClick(item.id)}
-            className="terms-item"
-          >
-            <span>{item.title}</span>
-            <span className="arrow">〉</span>
-          </li>
-        ))}
-      </ul>
+      </div>
+      <div className="terms-section">
+        <div className="terms-card">
+          <div className="terms-menu-list">
+            {termsList.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleClick(item.id)}
+                className="terms-menu-item"
+              >
+                <span className="terms-menu-title">{item.title}</span>
+                <span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

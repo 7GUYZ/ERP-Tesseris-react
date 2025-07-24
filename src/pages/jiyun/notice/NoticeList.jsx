@@ -37,26 +37,30 @@ export default function NoticeList() {
   };
 
   return (
-    <div className="notice-detail-page">
+    <div className="notice-container">
       <div className="notice-header">
-        <span className="back-icon" onClick={() => navigate(-1)}>
+        <button className="back-button" onClick={() => navigate("/mypage")}>
           &lt;
-        </span>
-        <h1 className="notice-title">공지사항</h1>
+        </button>
+        <h2>공지사항</h2>
       </div>
-      <div className="notice-list">
-        {sortedList.map((item) => (
-          <div
-            key={item.noticeIndex}
-            className="notice-item"
-            onClick={() => navigate(`/notice-view/${item.noticeIndex}`)}
-          >
-            <span className="notice-item-title">{item.noticeTitle}</span>
-            <span className="notice-item-date">
-              {formatDate(item.noticeCreateTime)}
-            </span>
+      <div className="notice-section">
+        <div className="notice-card">
+          <div className="notice-list">
+            {sortedList.map((item) => (
+              <div
+                key={item.noticeIndex}
+                className="notice-item"
+                onClick={() => navigate(`/notice-view/${item.noticeIndex}`)}
+              >
+                <span className="notice-item-title">{item.noticeTitle}</span>
+                <span className="notice-item-date">
+                  {formatDate(item.noticeCreateTime)}
+                </span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

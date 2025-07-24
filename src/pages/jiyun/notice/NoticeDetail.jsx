@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { noticeDetail } from "../../../api/auth/JiyoonAuth";
 import "../../../styles/jiyun/notice/noticeDetail.css";
 
-
 export default function NoticeDetail() {
   const { noticeIdx } = useParams();
   const [noticeData, setNoticeData] = useState(null);
@@ -41,27 +40,26 @@ export default function NoticeDetail() {
   if (error) return <div className="notice-detail-page">{error}</div>;
 
   return (
-    <div className="notice-detail-page">
+    <div className="notice-container">
       <div className="notice-header">
-        <h1 className="notice-title">공지사항</h1>
-        <span className="close-icon" onClick={() => navigate("/my-page")}>
-          ✕
-        </span>
+        <button className="back-button" onClick={() => navigate("/notice-list")}>
+          &lt;
+        </button>
+        <h2>공지사항</h2>
       </div>
-
-      <div className="notice-content">
-        <div className="notice-meta">
-          <p className="notice-subject">{noticeData.noticeTitle}</p>
-          <p className="notice-date">
-            {formatDate(noticeData.noticeCreateTime)}
-          </p>
+      <div className="notice-section">
+        <div className="notice-card">
+          <div className="notice-content">
+            <div className="notice-meta">
+              <p className="notice-subject">{noticeData.noticeTitle}</p>
+              <p className="notice-date">
+                {formatDate(noticeData.noticeCreateTime)}
+              </p>
+            </div>
+            <div className="notice-body">{noticeData.noticeDesc}</div>
+          </div>
         </div>
-        <div className="notice-body">{noticeData.noticeDesc}</div>
       </div>
-
-      <button className="btn-full" onClick={() => navigate("/notice-list")}>
-        목록으로
-      </button>
     </div>
   );
 }

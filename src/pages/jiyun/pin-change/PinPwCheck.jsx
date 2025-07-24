@@ -17,23 +17,18 @@ export default function PinPwCheck() {
       return;
     }
     try {
-      // 서버에 비밀번호 확인 요청
       const response = await pwCheck(password);
-      // 응답에서 success 필드 확인
       if (response.data.success) {
-        // 성공 시 다음 단계로 이동
         navigate("/pinChange/pinInsert");
       } else {
-        // 비밀번호 불일치
         setModalMessage("비밀번호가 일치하지 않습니다.");
         setShowModal(true);
-        setPassword(""); // 비밀번호 입력 필드 초기화
+        setPassword("");
       }
     } catch (error) {
-      // 네트워크 에러 등 기타 에러
       setModalMessage("비밀번호 확인 중 오류가 발생했습니다.");
       setShowModal(true);
-      setPassword(""); // 에러 발생 시에도 비밀번호 입력 필드 초기화
+      setPassword("");
     }
   };
 
@@ -42,34 +37,29 @@ export default function PinPwCheck() {
   };
 
   return (
-    <div className="pin-container">
-      <div className="pin-header">
-        <span className="back-icon" onClick={() => navigate(-1)}>
-          &lt;
-        </span>
-        <div className="header-title-wrapper">
-          <h1 className="pin-title">PIN 번호 변경</h1>
+    <div className="pinchange-container">
+      <div className="pinchange-header">
+        <button className="back-button" onClick={() => navigate("/mypage")}> &lt; </button>
+        <h2>PIN 번호 변경</h2>
+      </div>
+      <div className="pinchange-section">
+        <div className="pinchange-card">
+          <div className="pinchange-content">
+            <label className="pinchange-label">로그인 비밀번호</label>
+            <input
+              type="password"
+              className="pinchange-input"
+              placeholder="PIN 번호 변경을 위해 비밀번호를 입력해주세요."
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button className="pinchange-button" onClick={handleNext}>
+              다음
+            </button>
+          </div>
         </div>
       </div>
-
-      <div className="pin-password-content">
-        <label className="pin-password-label">로그인 비밀번호</label>
-        <input
-          type="password"
-          className="pin-password-input"
-          placeholder="PIN 번호 변경을 위해 비밀번호를 입력해주세요."
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
-
-      <button className="pin-next-button" onClick={handleNext}>
-        다음
-      </button>
-      
-      {showModal && (
-        <Modal message={modalMessage} onClose={handleModalClose} />
-      )}
+      {showModal && <Modal message={modalMessage} onClose={handleModalClose} />}
     </div>
   );
 }

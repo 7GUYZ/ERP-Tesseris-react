@@ -1,0 +1,443 @@
+.mypage-container {
+  min-height: 100vh;
+  background: #f6f7fb;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mypage-main {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+
+.mypage-section {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 32px auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mypage-card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(23, 15, 88, 0.10);
+  overflow: hidden;
+  padding: 32px 32px;
+  margin-bottom: 0;
+  width: 100%;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mypage-profileHeader {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f2f2f7;
+  margin-bottom: 32px;
+}
+
+.mypage-userName {
+  font-size: 28px;
+  font-weight: 700;
+  color: #170f58;
+  margin: 0 0 4px 0;
+}
+
+.mypage-userSubtitle {
+  font-size: 18px;
+  color: #a0a0b0;
+  margin: 0;
+}
+
+.mypage-profileInfo {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.mypage-sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #170f58;
+  margin-bottom: 20px;
+}
+
+.mypage-infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #f2f2f7;
+  font-size: 17px;
+}
+
+.mypage-infoRow:last-child {
+  border-bottom: none;
+}
+
+.mypage-infoLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #666;
+  font-size: 17px;
+}
+
+.mypage-infoValue {
+  color: #170f58;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.mypage-infoButton {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 14px;
+  font-size: 17px;
+  transition: background 0.2s;
+}
+
+.mypage-infoButton:hover {
+  background: #f6f7fb;
+}
+
+.mypage-referralContent {
+  padding: 24px 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mypage-referralCode {
+  font-size: 17px;
+  color: #170f58;
+  font-weight: 600;
+}
+
+.mypage-copyButton {
+  background: #fdcd00;
+  color: #170f58;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  box-shadow: 0 2px 8px rgba(253, 205, 0, 0.10);
+}
+.mypage-copyButton:hover {
+  background: #e6b800;
+  color: #170f58;
+  border: none;
+}
+
+.mypage-cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #f2f2f7;
+  margin-bottom: 0;
+}
+
+.mypage-cardTitle {
+  font-size: 19px;
+  font-weight: 700;
+  color: #170f58;
+  margin: 0;
+}
+
+.mypage-headerButtons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.mypage-toggleButton {
+  background: #fdcd00;
+  color: #170f58;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  box-shadow: 0 2px 8px rgba(253, 205, 0, 0.10);
+}
+.mypage-toggleButton:hover {
+  background: #e6b800;
+  color: #170f58;
+  border: none;
+}
+
+.mypage-tableContainer {
+  overflow-x: auto;
+  margin-top: 0;
+}
+
+.mypage-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 0 0 24px 24px;
+  overflow: hidden;
+}
+
+.mypage-headerRow {
+  background: #f6f7fb;
+}
+
+.mypage-headerRow th {
+  padding: 20px 16px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 700;
+  color: #170f58;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.mypage-dataRow {
+  transition: background-color 0.2s ease;
+}
+
+.mypage-dataRow:hover {
+  background: #f6f7fb;
+}
+
+.mypage-dataRow td {
+  padding: 20px 16px;
+  font-size: 16px;
+  color: #222;
+  border-bottom: 1px solid #f2f2f7;
+}
+
+.mypage-idCell {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.mypage-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 0 0 0;
+}
+
+.mypage-pageNumber, .mypage-pageButton {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #e5e5e5;
+  background: #fff;
+  color: #170f58;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.mypage-pageNumber.active, .mypage-pageButton.active {
+  background: #170f58;
+  color: #fff;
+  border-color: #170f58;
+}
+
+.mypage-pageNumber:hover, .mypage-pageButton:hover {
+  background: #f6f7fb;
+  color: #170f58;
+  border-color: #170f58;
+}
+
+.mypage-menuContent {
+  padding: 16px 0 0 0;
+}
+
+.mypage-menuItem {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.mypage-menuItem:hover {
+  background: #f6f7fb;
+}
+
+.mypage-menuLabel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #444;
+  text-decoration: none;
+}
+
+.mypage-menuLabel span {
+  font-size: 17px;
+  text-decoration: none;
+}
+
+.mypage-separator {
+  height: 1px;
+  background: #f2f2f7;
+  margin: 0;
+}
+
+.mypage-footer {
+  background: #f6f7fb;
+  padding: 48px 0 0 0;
+  margin-top: 48px;
+  width: 100%;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mypage-footerContent {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.mypage-companyInfo {
+  font-size: 15px;
+  color: #888;
+  line-height: 1.8;
+  margin: 0 0 18px 0;
+}
+
+.mypage-copyright {
+  font-size: 13px;
+  color: #bbb;
+  margin: 0;
+}
+
+.mypage-kakaoLink {
+  font-size: 15px;
+  text-decoration: none;
+  color: rgb(255, 72, 0);
+  margin-bottom: 16px;
+  display: inline-block;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .mypage-main, .mypage-section, .mypage-footer, .mypage-footerContent {
+    max-width: 98vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+  .mypage-card {
+    padding: 20px 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mypage-main, .mypage-section, .mypage-footer, .mypage-footerContent {
+    max-width: 100vw;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .mypage-card {
+    border-radius: 14px;
+    padding: 16px 16px;
+  }
+  .mypage-profileHeader {
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+  }
+  .mypage-userName {
+    font-size: 18px;
+  }
+  .mypage-userSubtitle {
+    font-size: 13px;
+  }
+  .mypage-sectionTitle, .mypage-cardTitle {
+    font-size: 15px;
+  }
+  .mypage-infoRow, .mypage-infoLabel, .mypage-infoValue, .mypage-infoButton, .mypage-menuItem, .mypage-menuLabel span {
+    font-size: 13px;
+  }
+  .mypage-infoButton, .mypage-menuItem {
+    border-radius: 8px;
+    padding: 12px 0;
+  }
+  .mypage-copyButton, .mypage-toggleButton {
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+  .mypage-referralContent {
+    padding: 10px 0 0 0;
+  }
+  .mypage-tableContainer {
+    font-size: 12px;
+  }
+  .mypage-headerRow th, .mypage-dataRow td {
+    padding: 10px 4px;
+    font-size: 12px;
+  }
+  .mypage-idCell {
+    font-size: 11px;
+    max-width: 80px;
+  }
+  .mypage-pagination {
+    gap: 6px;
+    padding: 10px 0 0 0;
+  }
+  .mypage-pageNumber, .mypage-pageButton {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    border-radius: 6px;
+    padding: 0;
+  }
+  .mypage-footer {
+    padding: 24px 0 0 0;
+    margin-top: 24px;
+  }
+  .mypage-companyInfo {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  .mypage-copyright {
+    font-size: 10px;
+  }
+  .mypage-kakaoLink {
+    font-size: 12px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: rgb(255, 72, 0)
+  }
+}

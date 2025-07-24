@@ -5,29 +5,28 @@ export default function PinComplete() {
   const navigate = useNavigate();
 
   const handleConfirm = () => {
-    navigate("/TestMain");
+    navigate("/mypage");
   };
 
   return (
-    <div className="pin-container">
-      <div className="pin-header">
-        <div></div>
-        <div className="header-title-wrapper">
-          <h1 className="pin-title">PIN 번호 변경</h1>
+    <div className="pinchange-container">
+      <div className="pinchange-header">
+        <button className="back-button" onClick={handleConfirm}>
+          &lt;
+        </button>
+        <h2>PIN 번호 변경</h2>
+      </div>
+      <div className="pinchange-section">
+        <div className="pinchange-card">
+          <div className="pinchange-content">
+            <h3 style={{ fontWeight: "bold" }}>PIN 번호 변경 완료</h3>
+            <p>PIN 번호 변경이 완료되었습니다.</p>
+            <button className="pinchange-button" onClick={handleConfirm}>
+              확인
+            </button>
+          </div>
         </div>
-        <span className="back-icon" onClick={handleConfirm}>
-          ✕
-        </span>
       </div>
-
-      <div className="pin-content">
-        <h2 style={{ fontWeight: "bold" }}>PIN 번호 변경 완료</h2>
-        <p>PIN 번호 변경이 완료되었습니다.</p>
-      </div>
-
-      <button className="pin-next-button" onClick={handleConfirm}>
-        확인
-      </button>
     </div>
   );
 }

@@ -35,6 +35,9 @@ export const signupApi = {
     // 검색 타입에 따른 사용자 검색
     searchUserByType: (data) => api.post('referral/search', data),
     
+    // 추천 보상 지급
+    giveReferralReward: (data) => api.post('referral/reward', data),
+    
     // 이메일/닉네임 중복확인
     checkDuplicate: ({ email, nickname }) => api.get('signin/check-duplicate', { params: { email, nickname } }),
 };
