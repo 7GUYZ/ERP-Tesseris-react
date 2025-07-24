@@ -4,7 +4,6 @@ import Toast from "../../../components/ui/jungeun/Toast";
 import { useNavigate, Link } from "react-router-dom";
 import "../../../styles/jiyun/mypage/mypage.css";
 import {
-  ArrowLeft,
   ChevronRight,
   User,
   Lock,
@@ -94,23 +93,8 @@ export default function MobileMyPage() {
     setCurrentPage(pageNumber);
   };
 
-  const handleMainPage = () => {
-    navigate("/TestMain");
-  };
-
-  const handleDownloadQRCode = () => {
-    const canvas = qrRef.current?.querySelector?.("canvas") || qrRef.current;
-    if (canvas) {
-      const url = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "tesseris_qrcode.png";
-      link.click();
-    }
-  };
-
   return (
-    <div className="general-mypagegeneral-container">
+    <div className="mypage-container">
       {toastVisible && (
         <Toast
           type="success"
@@ -118,240 +102,204 @@ export default function MobileMyPage() {
           onClose={handleToastClose}
         />
       )}
-      <div className="general-mypagegeneral-header">
-        <ArrowLeft className="general-back-icon" onClick={handleMainPage} />
-        <h1 className="general-header-title">내정보</h1>
-      </div>
-
-      <div className="general-content">
-        <div className="general-card">
-          <div className="general-card-content">
-            <div className="general-user-info">
-              <h5 className="general-username">
+      <main className="mypage-main">
+        <div className="mypage-section">
+          <div className="mypage-card">
+            <div className="mypage-profileHeader">
+              <h5 className="mypage-userName">
                 {userInfo?.name || "로딩 중..."}
               </h5>
-              <h2 className="general-username">
+              <h2 className="mypage-userSubtitle">
                 {nickname || "로딩 중..."}
               </h2>
             </div>
-
-            <div className="general-account-section">
-              <div className="general-section-title">계정 정보</div>
-
-              <div className="general-menu-item general-border-bottom">
-                <div className="general-menu-left">
-                  <User className="general-menu-icon" />
-                  <span className="general-menu-text">휴대폰</span>
+            <div className="mypage-profileInfo">
+              <div className="mypage-sectionTitle">계정 정보</div>
+              <div className="mypage-infoRow">
+                <div className="mypage-infoLabel">
+                  <User className="menuIcon" />
+                  <span>휴대폰</span>
                 </div>
-                <div className="general-menu-right">
-                  <span className="general-phone-number">
-                    {maskPhoneNumber(userInfo?.phone) || "로딩 중..."}
-                  </span>
-                  <div className="general-chevron-icon" />
-                </div>
+                <span className="mypage-infoValue">
+                  {maskPhoneNumber(userInfo?.phone) || "로딩 중..."}
+                </span>
               </div>
-
-              <Link className="general-menu-item">
-                <div className="general-menu-left">
-                  <User className="general-menu-icon" />
-                  <span className="general-menu-text">계좌정보 변경</span>
+              <button className="mypage-infoButton">
+                <div className="mypage-infoLabel">
+                  <User className="menuIcon" />
+                  <span>계좌정보 변경</span>
                 </div>
-                <ChevronRight className="general-chevron-icon" />
-              </Link>
+                <ChevronRight className="menuIcon" />
+              </button>
             </div>
           </div>
         </div>
-
-        <div className="general-card">
-          <div className="general-card-content">
-            <div className="general-referral-header">
-              <div className="general-section-title">추천 코드</div>
+        <div className="mypage-section">
+          <div className="mypage-card">
+            <div className="mypage-cardHeader">
+              <h3 className="mypage-cardTitle">추천 코드</h3>
             </div>
-            <div className="general-referral-row">
-              <span className="general-referral-email">{userInfo?.email}</span>
-              <button
-                className="general-copy-button"
-                onClick={handleCopyUserId}
-              >
+            <div className="mypage-referralContent">
+              <span className="mypage-referralCode">{userInfo?.email}</span>
+              <button className="mypage-copyButton" onClick={handleCopyUserId}>
                 코드 복사
               </button>
             </div>
           </div>
         </div>
-
-        {/* Referral List Section */}
-        <div className="general-card">
-          <div className="general-card-content">
-            <div className="general-referral-header">
-              <div className="general-section-title">추천인 목록</div>
-              <button
-                className="general-outline-button"
-                onClick={toggleSuggestion}
-              >
-                {isSuggestionOpen ? "닫기" : "열기"}
-              </button>
+        <div className="mypage-section">
+          <div className="mypage-card">
+            <div className="mypage-cardHeader">
+              <h3 className="mypage-cardTitle">추천인 목록</h3>
+              <div className="mypage-headerButtons">
+                <button
+                  className="mypage-toggleButton"
+                  onClick={toggleSuggestion}
+                >
+                  {isSuggestionOpen ? "닫기" : "열기"}
+                </button>
+              </div>
             </div>
-
             {isSuggestionOpen && (
               <>
-                {/* Table Header */}
-                <div className="general-table-header">
-                  <div>No</div>
-                  <div>아이디</div>
-                  <div>이름</div>
-                  <div>등급</div>
-                  <div>가입일</div>
-                </div>
-
-                {/* Table Content */}
-                {suggestionLoading ? (
-                  <div className="general-empty-state">
-                    <div className="general-empty-message">로딩 중...</div>
-                  </div>
-                ) : suggestionList.length > 0 ? (
-                  <>
-                    <div className="general-table-content">
+                <div className="mypage-tableContainer">
+                  <table className="mypage-table">
+                    <thead>
+                      <tr className="mypage-headerRow">
+                        <th>No</th>
+                        <th>아이디</th>
+                        <th>이름</th>
+                        <th>등급</th>
+                        <th>가입일</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {currentItems.map((item, index) => (
-                        <div
+                        <tr
                           key={indexOfFirstItem + index}
-                          className="general-table-row"
+                          className="mypage-dataRow"
                         >
-                          <div>{indexOfFirstItem + index + 1}</div>
-                          <div>{item.recommendationUserId || "-"}</div>
-                          <div>{item.recommendationUserName || "-"}</div>
-                          <div>{item.recommendationUserRole || "-"}</div>
-                          <div>{item.joinDate || "-"}</div>
-                        </div>
+                          <td>{indexOfFirstItem + index + 1}</td>
+                          <td className="mypage-idCell">
+                            {item.suggestionUserEmail || "-"}
+                          </td>
+                          <td>{item.suggestionUserName || "-"}</td>
+                          <td>{item.suggestionUserRole || "-"}</td>
+                          <td>{item.joinDate || "-"}</td>
+                        </tr>
                       ))}
-                    </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                      <div className="general-pagination">
-                        <div className="general-page-numbers">
-                          {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1
-                          ).map((page) => (
-                            <button
-                              key={page}
-                              className={`general-page-number ${
-                                currentPage === page ? "active" : ""
-                              }`}
-                              onClick={() => handlePageChange(page)}
-                            >
-                              {page}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                    </tbody>
+                  </table>
+                </div>
+                {totalPages > 1 && (
+                  <div className="mypage-pagination">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <button
+                          key={page}
+                          className={`mypage-pageNumber${
+                            currentPage === page ? " active" : ""
+                          }`}
+                          onClick={() => handlePageChange(page)}
+                        >
+                          {page}
+                        </button>
+                      )
                     )}
-                  </>
-                ) : (
-                  <div className="general-empty-state">
-                    <div className="general-empty-message">
-                      검색 결과가 없습니다.
-                    </div>
                   </div>
                 )}
               </>
             )}
           </div>
         </div>
-
-        <div className="general-card">
-          <div className="general-card-no-padding">
-            <div className="general-card-header">보안 / 설정</div>
-
-            <div className="general-menu-list">
-              <Link className="general-menu-button">
-                <div className="general-menu-left">
-                  <Lock className="general-menu-icon" />
-                  <span className="general-menu-text">비밀번호 변경</span>
+        <div className="mypage-section">
+          <div className="mypage-card">
+            <div className="mypage-cardHeader">
+              <h3 className="mypage-cardTitle">보안 / 설정</h3>
+            </div>
+            <div className="mypage-menuContent">
+              <Link className="mypage-menuItem">
+                <div className="mypage-menuLabel">
+                  <Lock className="menuIcon" />
+                  <span>비밀번호 변경</span>
                 </div>
-                <ChevronRight className="general-chevron-icon" />
+                <ChevronRight className="menuIcon" />
               </Link>
-
-              <div className="general-separator"></div>
-
-              <Link to="/pinChange/pwCheck" className="general-menu-button">
-                <div className="general-menu-left">
-                  <Lock className="general-menu-icon" />
-                  <span className="general-menu-text">PIN 번호 변경</span>
+              <div className="mypage-separator"></div>
+              <Link to="/pinChange/pwCheck" className="mypage-menuItem">
+                <div className="mypage-menuLabel">
+                  <Lock className="menuIcon" />
+                  <span>PIN 번호 변경</span>
                 </div>
-                <ChevronRight className="general-chevron-icon" />
+                <ChevronRight className="menuIcon" />
               </Link>
             </div>
           </div>
         </div>
-
-        <div className="general-card">
-          <div className="general-card-no-padding">
-            <div className="general-card-header">고객센터</div>
-
-            <div className="general-menu-list">
-              <Link to="/notice-list" className="general-menu-button">
-                <div className="general-menu-left">
-                  <Bell className="general-menu-icon" />
-                  <span className="general-menu-text">공지사항</span>
+        <div className="mypage-section">
+          <div className="mypage-card">
+            <div className="mypage-cardHeader">
+              <h3 className="mypage-cardTitle">고객센터</h3>
+            </div>
+            <div className="mypage-menuContent">
+              <Link to="/notice-list" className="mypage-menuItem">
+                <div className="mypage-menuLabel">
+                  <Bell className="menuIcon" />
+                  <span>공지사항</span>
                 </div>
-                <ChevronRight className="general-chevron-icon" />
+                <ChevronRight className="menuIcon" />
               </Link>
-
-              <div className="general-separator"></div>
-
-              <Link className="general-menu-button">
-                <div className="general-menu-left">
-                  <HelpCircle className="general-menu-icon" />
-                  <span className="general-menu-text">Q&A</span>
+              <div className="mypage-separator"></div>
+              <Link className="mypage-menuItem">
+                <div className="mypage-menuLabel">
+                  <HelpCircle className="menuIcon" />
+                  <span>Q&A</span>
                 </div>
-                <ChevronRight className="general-chevron-icon" />
+                <ChevronRight className="menuIcon" />
               </Link>
             </div>
           </div>
         </div>
-
-        <div className="general-card">
-          <div className="general-card-no-padding">
-            <div className="general-card-header">약관</div>
-
-            <div className="general-menu-list">
-              <Link to="/terms" className="general-menu-button">
-                <div className="general-menu-left">
-                  <FileText className="general-menu-icon" />
-                  <span className="general-menu-text">약관 및 이용 동의</span>
+        <div className="mypage-section">
+          <div className="mypage-card">
+            <div className="mypage-cardHeader">
+              <h3 className="mypage-cardTitle">약관</h3>
+            </div>
+            <div className="mypage-menuContent">
+              <Link to="/terms" className="mypage-menuItem">
+                <div className="mypage-menuLabel">
+                  <FileText className="menuIcon" />
+                  <span>약관 및 이용 동의</span>
                 </div>
-                <ChevronRight className="general-chevron-icon" />
+                <ChevronRight className="menuIcon" />
               </Link>
-
-              <div className="general-separator"></div>
-
-              <button className="general-menu-button">
-                <div className="general-menu-left">
-                  <LogOut className="general-menu-icon" />
-                  <span className="general-menu-text">로그아웃</span>
+              <div className="mypage-separator"></div>
+              <button className="mypage-menuItem">
+                <div className="mypage-menuLabel">
+                  <LogOut className="menuIcon" />
+                  <span>로그아웃</span>
                 </div>
               </button>
             </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="general-footer">
-          <Link className="general-kakao-link">카카오톡 상담하기</Link>
-          <div className="general-company-info">
-            <div>씨엠바더코리아㈜ | 사업자 등록번호 364-86-03002</div>
-            <div>
+        <footer className="mypage-footer">
+          <div className="mypage-footerContent">
+            <Link className="mypage-kakaoLink">카카오톡 상담하기</Link>
+            <div className="mypage-companyInfo">
+              씨엠바더코리아㈜ | 사업자 등록번호 364-86-03002
+              <br />
               주소: 서울 금천구 가산디지털1로 171, 601~606호(가산동,SKV1센터) |
               대표자 김애경
+              <br />
+              연락처: 1566-1691
             </div>
-            <div>연락처: 1566-1691</div>
-            <div className="general-copyright">
+            <div className="mypage-copyright">
               Copyright © CMBARTER KOREA All Rights Reserved.
             </div>
           </div>
-        </div>
-      </div>
+        </footer>
+      </main>
     </div>
   );
 }

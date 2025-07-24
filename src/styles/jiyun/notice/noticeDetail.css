@@ -1,78 +1,147 @@
-.notice-detail-page {
-  background-color: #fff;
-  padding: 20px;
-  min-height: 75vh;
+.notice-container {
+  min-height: 100vh;
+  background-color: #f5f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .notice-header {
-  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  height: 56px;
   border-bottom: 1px solid #eee;
-  padding: 10px 0;
-  margin-bottom: 20px;
-}
-
-.notice-title {
+  position: relative;
+  background: #fff;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   color: #170f58;
+  z-index: 10;
 }
 
-.close-icon {
+.back-button {
   position: absolute;
-  right: 0;
+  left: 12px;
   font-size: 20px;
+  background: none;
+  border: none;
   cursor: pointer;
-  color: #000;
+  color: #170f58;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.back-button:hover {
+  background: #f5f5f9;
+}
+
+.notice-header h2 {
+  font-size: 18px;
+  color: #170f58;
+  font-weight: 700;
+  margin: 0;
+}
+
+.notice-section {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px 20px 0 20px;
+}
+
+.notice-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(23, 15, 88, 0.1);
+  overflow: hidden;
+  margin-bottom: 24px;
 }
 
 .notice-content {
-  flex: 1;
+  padding: 20px;
 }
 
 .notice-meta {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #eee;
+  align-items: flex-start;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 16px;
 }
 
 .notice-subject {
   font-weight: 600;
-  font-size: 15px;
-  color: #111827;
+  font-size: 18px;
+  color: #170f58;
+  line-height: 1.4;
+  flex: 1;
+  margin-right: 16px;
 }
 
 .notice-date {
-  font-size: 12px;
-  color: #9ca3af;
+  font-size: 14px;
+  color: #999;
+  flex-shrink: 0;
 }
 
 .notice-body {
-  padding: 16px 0;
+  padding: 0;
   font-size: 14px;
   color: #333;
   white-space: pre-line;
+  line-height: 1.6;
+  min-height: 500px;
 }
 
-.btn-full {
-  margin-top: auto;
-  width: 100%;
-  background-color: #170f58;
-  color: white;
-  padding: 12px 0;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
+@media (max-width: 900px) {
+  .notice-section, .notice-header {
+    max-width: 98vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
 }
 
-.btn-full:hover {
-  background-color: #150d50;
+@media (max-width: 768px) {
+  .notice-section {
+    padding: 12px 6px 0 6px;
+  }
+  .notice-card {
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  .notice-content {
+    padding: 16px;
+  }
+  .notice-subject {
+    font-size: 16px;
+  }
+  .notice-header {
+    font-size: 16px;
+    height: 48px;
+  }
+  .notice-header h2 {
+    font-size: 16px;
+  }
+  .back-button {
+    font-size: 18px;
+    left: 6px;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .notice-section, .notice-header {
+    max-width: 100vw;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
