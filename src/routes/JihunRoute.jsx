@@ -11,7 +11,7 @@ function JihunRoute() {
             <Route element={<ProtectedRoute />}>
                 <Route path='/charge' element={<ChargePage />} />
                 <Route path='/charge/result' element={<ChargeResult />} />
-                <Route path='/changepassword' element={<ChangePassword />} />
+                <Route path='/mypage/changepassword' element={<ChangePassword />} />
             </Route>
         </>
     );
