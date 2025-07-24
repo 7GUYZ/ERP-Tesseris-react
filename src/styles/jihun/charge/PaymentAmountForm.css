@@ -18,11 +18,11 @@
 
 .payment-amount-input {
   width: 100%;
-  height: 56px;
-  padding: 0 16px;
+  height: 36px;
+  padding: 0 12px;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   background: #fff;
   transition: all 0.2s ease;
@@ -41,15 +41,30 @@
 
 .payment-amount-unit {
   position: absolute;
-  right: 16px;
-  font-size: 16px;
+  right: 12px;
+  font-size: 15px;
   color: #666;
   font-weight: 500;
 }
 
 .payment-amount-validation {
-  font-size: 14px;
+  font-size: 13px;
   color: #ff4757;
   margin-top: 8px;
   font-weight: 400;
+}
+
+@media (max-width: 600px) {
+  .payment-amount-input {
+    height: 32px;
+    font-size: 15px;
+    padding: 0 8px;
+  }
+  .payment-amount-label {
+    font-size: 15px;
+  }
+  .payment-amount-unit {
+    font-size: 14px;
+    right: 8px;
+  }
 } 

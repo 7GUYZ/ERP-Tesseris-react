@@ -1,6 +1,11 @@
 import { api } from "../Http";
+// 사용자 현재 포인트
+export const CurrentPoint = (userid) => api.get(`/usercurrentpoint/${userid}`);
 // CM 충전
 export const confirmPayment = (paymentKey, orderId, amount) => api.post("/charge/confirm", {paymentKey, orderId, amount});
+
+// 비밀번호 변경
+export const changePassword = (passwordData, userIndex) => api.post("/admin/mypage/changepassword", passwordData, { params: { userIndex } });
 // =======================================================================================
 // Interceptor 등록 함수로 분리
 export function setupInterceptors() {

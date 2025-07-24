@@ -1,17 +1,23 @@
 .charge-layout {
   min-height: 100vh;
   background: #F5F5F9;
-  padding: 20px;
-  font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .charge-container {
-  max-width: 480px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(23, 15, 88, 0.1);
   overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .charge-header {
@@ -36,5 +42,23 @@
 }
 
 .charge-content {
-  padding: 32px 24px;
+  padding: 32px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .charge-layout {
+    padding: 0;
+  }
+  .charge-container {
+    border-radius: 0;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+  .charge-content {
+    padding: 24px 8px;
+  }
 } 

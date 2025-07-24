@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import '../../../../styles/jihun/common/common.css';
 import { useNavigate } from "react-router-dom";
+import { CurrentPoint } from "../../../../api/auth/JihunAuth";
 
 export default function UserProfileCard() {
   // 여기에 권한 분기처리 로직을 넣으면 됩니다.
@@ -14,10 +15,15 @@ export default function UserProfileCard() {
     setUserRole(data.user_role_index);
     setUserInfo(data);
     console.log(data);
+    const UserCurrentPoint = async () => {
+      const userCurrentPoint = await CurrentPoint(data.id);
+      setUserCurrentPoint(userCurrentPoint.data);
+    }
+    UserCurrentPoint();
   }, []);
   const [userRole, setUserRole] = useState(null);
   const [userInfo, setUserInfo] = useState({});
-
+  const [userCurrentPoint, setUserCurrentPoint] = useState(0);
   // userRole에 따라 뱃지 텍스트/클래스 결정
   let badgeText = "";
   let badgeClass = "";
@@ -46,10 +52,10 @@ export default function UserProfileCard() {
         <div className="usermain-profilecard-balancecard">
           <p className="usermain-profilecard-balance-label">사용 가능한 CM</p>
           <div className="usermain-profilecard-balance-amountwrap">
-            <span className="usermain-profilecard-balance-amount">71,100</span>
+            <span className="usermain-profilecard-balance-amount">{userCurrentPoint.toLocaleString()}</span>
             <span className="usermain-profilecard-balance-unit">CM</span>
           </div>
-          <button className="usermain-profilecard-balance-chargebtn-main" onClick={() => navigate('/charge')}>+ 충전</button>
+          <button className="usermain-profilecard-balance-chargebtn-main" onClick={() => navigate('/charge', { state: { userCurrentPoint: userCurrentPoint} })}>+ 충전</button>
         </div>
       </div>
     </div>

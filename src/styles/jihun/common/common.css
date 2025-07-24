@@ -960,8 +960,8 @@ body {
 }
 
 .usermain-profilecard-badge-franchise {
-  background: #170F58;
-  color: #fff;
+  background: #FDCD00;
+  color: #170F58;
   border-radius: 9999px;
   padding: 10px 28px;
   font-weight: 600;
@@ -973,6 +973,18 @@ body {
 }
 
 .usermain-profilecard-badge-business {
+  background: #FDCD00;
+  color: #170F58;
+  border-radius: 9999px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 16px rgba(253, 205, 0, 0.13);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.usermain-profilecard-badge-normal {
   background: #FDCD00;
   color: #170F58;
   border-radius: 9999px;
