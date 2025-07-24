@@ -1,77 +1,54 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loadTossPayments } from '@tosspayments/payment-sdk';
-const ChargeCalculator = (userCurrentPoint) => {
-    const [paymentAmount, setPaymentAmount] = useState('');
-    const [currentBalance, setCurrentBalance] = useState(userCurrentPoint);
-    const [cmRate, setCmRate] = useState(1); // CM 적용율
-    const [vatRate, setVatRate] = useState(0.1); // VAT 10%
-    const navigate = useNavigate();
+import React, { useState } from 'react';
+import { useToast } from '../../../context/jungeun/ToastContext';
 
-    // 결제 금액 계산
-    const calculatePaymentDetails = () => {
-        const amount = parseFloat(paymentAmount) || 0;
-        const vatAmount = amount * vatRate;
-        const totalPayment = amount + vatAmount;
-        const cmToCharge = amount * cmRate;
-        const newBalance = currentBalance + cmToCharge;
+const ChargeCalculator = ({ onCalculate }) => {
+  const { toast } = useToast();
+  const [amount, setAmount] = useState('');
 
-        return {
-            vatAmount,
-            totalPayment,
-            cmToCharge,
-            newBalance
-        };
-    };
-    // 카드결제 처리
-    const handleCardPayment = async () => {
-        if (!paymentAmount || parseFloat(paymentAmount) < 1000) {
-            alert('최소 결제 금액은 1,000원입니다.');
-            return;
-        }
-        try {
-            // 토스페이먼츠 SDK 초기화
-            const clientKey = 'test_ck_d46qopOB89J0nJKlpZxE3ZmM75y0';
-            const tossPayments = await loadTossPayments(clientKey);
-            // 결제 위젯 렌더링
-            await tossPayments.requestPayment('카드',{
-                amount: Number(parseFloat(totalPayment)),
-                orderId: `order_${Date.now()}_${crypto.randomUUID()}`,
-                orderName: '택준이 팝니다.',
-                customerName: JSON.parse(localStorage.getItem('user-info')).name,
-                customerEmail: JSON.parse(localStorage.getItem('user-info')).email,
-                successUrl: `${window.location.origin}/charge/result`,
-                failUrl: `${window.location.origin}/charge/result`,
-                card: {
-                    useEscrow: false,
-                    flowMode: "DEFAULT",
-                    useCardPoint: false,
-                    useAppCardOnly: false,
-                },
-            });
-        } catch (error) {
-           if (error.code === 'USER_CANCEL') {
+  const handleCalculate = () => {
+    const numAmount = parseInt(amount);
+    
+    if (numAmount < 1000) {
+      toast.error('최소 결제 금액은 1,000원입니다.');
+      return;
+    }
 
-           }else{
-            console.error('Payment 결제 실패:', error);
-            alert('결제창을 열 수 없습니다. 다시 시도해주세요.');
-           }
-        }
-    };
+    onCalculate(numAmount);
+  };
 
-    const { vatAmount, totalPayment, cmToCharge, newBalance } = calculatePaymentDetails();
+  const handlePayment = () => {
+    const numAmount = parseInt(amount);
+    
+    if (numAmount < 1000) {
+      toast.error('최소 결제 금액은 1,000원입니다.');
+      return;
+    }
 
-    return {
-        paymentAmount,
-        setPaymentAmount,
-        currentBalance,
-        vatAmount,
-        totalPayment,
-        cmToCharge,
-        newBalance,
-        cmRate,
-        handleCardPayment
-    };
+    // 결제창 열기
+    try {
+      // 결제 로직 구현
+      window.open(`/payment?amount=${numAmount}`, '_blank', 'width=500,height=600');
+    } catch (error) {
+      toast.error('결제창을 열 수 없습니다. 다시 시도해주세요.');
+    }
+  };
+
+  return (
+    <div className="charge-calculator">
+      <h3>충전 금액 계산기</h3>
+      <div className="input-group">
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="충전할 금액을 입력하세요"
+          min="1000"
+        />
+        <button onClick={handleCalculate}>계산</button>
+        <button onClick={handlePayment}>결제</button>
+      </div>
+    </div>
+  );
 };
 
 export default ChargeCalculator; 
