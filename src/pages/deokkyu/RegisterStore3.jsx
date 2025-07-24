@@ -1,24 +1,30 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect } from "react"
 import { ChevronLeft } from "lucide-react"
-import CustomButton from "../../components/ui/deokkyu/Deoktton"
 import Circle from "../../components/forms/deokkyu/registerstore/Circle"
 import { useNavigate, useLocation } from "react-router-dom"
+import PaymentCalculator from "../../components/features/deokkyu/payment/PaymentCalculator"
+import PaymentLayout from "../../components/layout/deokkyu/payment/PaymentLayout"
+import PaymentInfoForm from "../../components/forms/deokkyu/payment/PaymentInfoForm"
+import PaymentMethodForm from "../../components/forms/deokkyu/payment/PaymentMethodForm"
+import PaymentNotice from "../../components/ui/deokkyu/payment/PaymentNotice"
+import PaymentButton from "../../components/ui/deokkyu/payment/PaymentButton"
 import "../../styles/deokkyu/Registercommon.css"
-import "../../styles/deokkyu/RegisterStore3.css"
 
 export default function RegisterStore3() {
   const navigate = useNavigate()
   const location = useLocation()
   
-  // 결제 관련 상태
-  const [isLoading, setIsLoading] = useState(false)
-  const [paymentStatus, setPaymentStatus] = useState('pending') // pending, success, failed
-  
-  // 가맹비 정보
-  const franchiseFee = 10000
-  
   // 이전 페이지에서 전달받은 데이터
   const [storeData, setStoreData] = useState(null)
+  
+  // PaymentCalculator 사용
+  const {
+    franchiseFee,
+    isLoading,
+    paymentStatus,
+    handleCardPayment,
+    handlePaymentSuccess
+  } = PaymentCalculator(storeData)
   
   // 페이지 로드 시 이전 데이터 확인
   useEffect(() => {
@@ -32,6 +38,14 @@ export default function RegisterStore3() {
     try {
       const parsedData = JSON.parse(tempData)
       setStoreData(parsedData)
+      
+      // FormData 유효성 확인
+      if (!window.tempFormData) {
+        console.error('FormData가 없습니다. 이전 페이지로 돌아갑니다.')
+        alert('폼 데이터가 유실되었습니다. 이전 단계부터 다시 진행해주세요.')
+        navigate('/registerstore2')
+        return
+      }
     } catch (error) {
       console.error('데이터 파싱 오류:', error)
       alert('데이터 처리 중 오류가 발생했습니다.')
@@ -39,207 +53,181 @@ export default function RegisterStore3() {
     }
   }, [navigate])
 
-  // 뒤로가기 방지
+  // URL 파라미터 확인 (결제 성공/실패 처리)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search)
+    const paymentKey = urlParams.get('paymentKey')
+    const orderId = urlParams.get('orderId')
+    const amount = urlParams.get('amount')
+    const failed = urlParams.get('failed')
+    
+    // 결제 성공 처리
+    if (paymentKey && orderId && amount) {
+      handlePaymentSuccess(paymentKey, orderId, parseInt(amount))
+    }
+    
+    // 결제 실패/취소 처리 - 메인으로 이동
+    if (failed === 'true') {
+      alert('결제가 취소되었거나 실패했습니다.')
+      
+      // localStorage 정리
+      localStorage.removeItem('register-store-temp')
+      localStorage.removeItem('register-store-agreements')
+      
+      // FormData 정리
+      if (window.tempFormData) {
+        delete window.tempFormData
+      }
+      
+      // 메인 페이지로 이동
+      navigate('/main')
+      return
+    }
+  }, [location.search, handlePaymentSuccess, navigate])
+
+  // 뒤로가기 방지 (결제 중이 아닐 때만)
   useEffect(() => {
     const handleBeforeUnload = (e) => {
+      // 결제 중이거나 결제 성공 상태일 때는 경고하지 않음
+      if (isLoading || paymentStatus === 'success') {
+        return
+      }
+      
       e.preventDefault()
       e.returnValue = ''
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [])
-
-  // 토스페이먼츠 결제 처리
-  const handlePayment = async () => {
-    if (!storeData) {
-      alert('결제 정보를 불러올 수 없습니다.')
-      return
-    }
-
-    setIsLoading(true)
-    
-    try {
-      // 1. 결제 요청 생성 (서버에 결제 요청)
-      const paymentRequest = await createPaymentRequest()
-      
-      // 2. 토스페이먼츠 결제창 열기
-      const tossPayments = window.TossPayments(process.env.REACT_APP_TOSS_CLIENT_KEY)
-      
-      await tossPayments.requestPayment('카드', {
-        amount: franchiseFee,
-        orderId: paymentRequest.orderId,
-        orderName: '가맹점 신청비',
-        customerName: storeData.userInfo.name,
-        customerEmail: storeData.userInfo.email || 'customer@example.com',
-        successUrl: `${window.location.origin}/registerstore3/success`,
-        failUrl: `${window.location.origin}/registerstore3/fail`,
-      })
-      
-    } catch (error) {
-      console.error('결제 오류:', error)
-      setPaymentStatus('failed')
-      alert('결제 중 오류가 발생했습니다.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // 서버에 결제 요청 생성
-  const createPaymentRequest = async () => {
-    try {
-      const response = await fetch('/api/payment/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access-token')}`
-        },
-        body: JSON.stringify({
-          amount: franchiseFee,
-          orderName: '가맹점 신청비',
-          customerName: storeData.userInfo.name,
-          customerEmail: storeData.userInfo.email || 'customer@example.com'
-        })
-      })
-      
-      if (!response.ok) {
-        throw new Error('결제 요청 생성 실패')
-      }
-      
-      return await response.json()
-    } catch (error) {
-      console.error('결제 요청 오류:', error)
-      throw error
-    }
-  }
-
-  // 가맹점 정보 서버 저장
-  const saveStoreData = useCallback(async () => {
-    try {
-      const formData = new FormData()
-      
-      // 신청자 정보
-      formData.append('userName', storeData.userInfo.name)
-      formData.append('userPhone', storeData.userInfo.phone)
-      
-      // 사업자 등록 정보
-      formData.append('storeRegistrationNum', storeData.businessInfo.storeRegistrationNum)
-      formData.append('storeCorporateName', storeData.businessInfo.storeCorporateName)
-      formData.append('storeBossName', storeData.businessInfo.storeBossName)
-      formData.append('storeTypeTaxation', storeData.businessInfo.storeTypeTaxation)
-      
-      if (storeData.businessInfo.storeBusinessLicensePhoto) {
-        formData.append('storeBusinessLicensePhoto', storeData.businessInfo.storeBusinessLicensePhoto)
-      }
-      
-      // 가맹점 등록 정보
-      formData.append('store_name', storeData.storeInfo.store_name)
-      formData.append('store_phone', storeData.storeInfo.store_phone)
-      formData.append('store_postcode', storeData.storeInfo.store_postcode)
-      formData.append('store_address', storeData.storeInfo.store_address)
-      formData.append('store_detail_address', storeData.storeInfo.store_detail_address)
-      formData.append('storeSite', storeData.storeInfo.storeSite)
-      formData.append('hasManager', storeData.storeInfo.hasManager)
-      formData.append('managerId', storeData.storeInfo.managerId)
-      
-      if (storeData.storeInfo.storeSignPhoto) {
-        formData.append('storeSignPhoto', storeData.storeInfo.storeSignPhoto)
-      }
-      
-      if (storeData.storeInfo.storeFrontPhoto) {
-        formData.append('storeFrontPhoto', storeData.storeInfo.storeFrontPhoto)
-      }
-      
-      const response = await fetch('/api/store/register', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access-token')}`
-        },
-        body: formData
-      })
-      
-      if (!response.ok) {
-        throw new Error('가맹점 정보 저장 실패')
-      }
-      
-    } catch (error) {
-      console.error('가맹점 정보 저장 오류:', error)
-      throw error
-    }
-  }, [storeData])
-
-  // 결제 성공 처리
-  const handlePaymentSuccess = useCallback(async (paymentKey, orderId, amount) => {
-    try {
-      // 1. 결제 승인 요청
-      const confirmResponse = await fetch('/api/payment/confirm', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access-token')}`
-        },
-        body: JSON.stringify({
-          paymentKey,
-          orderId,
-          amount
-        })
-      })
-      
-      if (!confirmResponse.ok) {
-        throw new Error('결제 승인 실패')
-      }
-      
-      // 2. 가맹점 정보 서버에 저장
-      await saveStoreData()
-      
-      // 3. 성공 처리
-      setPaymentStatus('success')
-      localStorage.removeItem('register-store-temp') // 임시 데이터 삭제
-      
-      alert('가맹점 신청이 완료되었습니다!')
-      navigate('/main')
-      
-    } catch (error) {
-      console.error('결제 승인 오류:', error)
-      setPaymentStatus('failed')
-      alert('결제 승인 중 오류가 발생했습니다.')
-    }
-  }, [navigate, saveStoreData])
+  }, [isLoading, paymentStatus])
 
   // 뒤로가기 처리
   const handleCancelClick = () => {
+    // 결제 중일 때는 뒤로가기 버튼도 비활성화
+    if (isLoading) {
+      alert('결제 처리 중입니다. 잠시만 기다려주세요.')
+      return
+    }
+    
     if (window.confirm('가맹점 신청을 취소하시겠습니까? 입력한 정보가 모두 사라집니다.')) {
       localStorage.removeItem('register-store-temp')
+      localStorage.removeItem('register-store-agreements')
+      
+      // FormData 정리
+      if (window.tempFormData) {
+        delete window.tempFormData
+      }
+      
       navigate('/registerstore0')
     }
   }
 
-  // URL 파라미터로 결제 결과 확인
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search)
-    const paymentKey = urlParams.get('paymentKey')
-    const orderId = urlParams.get('orderId')
-    const amount = urlParams.get('amount')
-    
-    if (paymentKey && orderId && amount) {
-      handlePaymentSuccess(paymentKey, orderId, parseInt(amount))
-    }
-  }, [location.search, handlePaymentSuccess])
-
   // 토스페이먼츠 스크립트 로드
   useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://js.tosspayments.com/v1'
-    script.async = true
-    document.head.appendChild(script)
+    const loadTossPaymentsScript = () => {
+      return new Promise((resolve, reject) => {
+        // 스크립트가 이미 로드되어 있는지 확인
+        if (window.TossPayments) {
+          console.log('토스페이먼츠 스크립트가 이미 로드되어 있습니다.')
+          resolve()
+          return
+        }
 
+        // 기존 스크립트 태그가 있는지 확인
+        let existingScript = document.querySelector('script[src="https://js.tosspayments.com/v1"]')
+        
+        if (existingScript) {
+          existingScript.onload = () => {
+            console.log('기존 토스페이먼츠 스크립트 로드 완료')
+            resolve()
+          }
+          existingScript.onerror = () => {
+            console.error('기존 토스페이먼츠 스크립트 로드 실패')
+            reject(new Error('토스페이먼츠 스크립트 로드 실패'))
+          }
+          return
+        }
+
+        // 새 스크립트 태그 생성
+        const script = document.createElement('script')
+        script.src = 'https://js.tosspayments.com/v1'
+        script.async = true
+        
+        script.onload = () => {
+          console.log('토스페이먼츠 스크립트 로드 완료')
+          // 스크립트가 로드되었지만 TossPayments가 아직 사용 가능하지 않을 수 있음
+          const checkTossPayments = () => {
+            if (window.TossPayments) {
+              resolve()
+            } else {
+              setTimeout(checkTossPayments, 100)
+            }
+          }
+          checkTossPayments()
+        }
+        
+        script.onerror = () => {
+          console.error('토스페이먼츠 스크립트 로드 실패')
+          reject(new Error('토스페이먼츠 스크립트 로드 실패'))
+        }
+        
+        document.head.appendChild(script)
+      })
+    }
+
+    loadTossPaymentsScript().catch(error => {
+      console.error('토스페이먼츠 초기화 오류:', error)
+      // 사용자에게 오류 상황을 알릴 수 있음
+    })
+
+    // 클린업 함수는 컴포넌트가 언마운트될 때만 실행
     return () => {
-      const existingScript = document.querySelector('script[src="https://js.tosspayments.com/v1"]')
-      if (existingScript) {
-        document.head.removeChild(existingScript)
-      }
+      // 스크립트 제거는 하지 않음 (다른 컴포넌트에서 사용할 수 있음)
     }
   }, [])
+
+  // 비정상 종료 시 localStorage 정리
+  useEffect(() => {
+    const cleanupLocalStorage = () => {
+      // 결제 중이거나 성공 상태일 때는 정리하지 않음 (정상적인 플로우)
+      if (isLoading || paymentStatus === 'success') {
+        return
+      }
+      
+      console.log('🧹 RegisterStore3: 비정상 종료 감지 - localStorage 정리')
+      localStorage.removeItem('register-store-temp')
+      localStorage.removeItem('register-store-agreements')
+      if (window.tempFormData) {
+        delete window.tempFormData
+      }
+    }
+
+    const handleBeforeUnload = (event) => {
+      cleanupLocalStorage()
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        cleanupLocalStorage()
+      }
+    }
+
+    const handlePageHide = () => {
+      cleanupLocalStorage()
+    }
+
+    // 이벤트 리스너 등록
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('pagehide', handlePageHide)
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pagehide', handlePageHide)
+    }
+  }, [isLoading, paymentStatus])
 
   if (!storeData) {
     return (
@@ -270,74 +258,25 @@ export default function RegisterStore3() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="payment-content">
-        {/* 결제 정보 섹션 */}
-        <div className="payment-section">
-          <h2 className="section-title">결제 정보</h2>
-          
-          <div className="payment-info">
-            <div className="info-row">
-              <span className="info-label">신청자</span>
-              <span className="info-value">{storeData.userInfo.name}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">가게명</span>
-              <span className="info-value">{storeData.storeInfo.store_name}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">결제 금액</span>
-              <span className="info-value amount">{franchiseFee.toLocaleString()}원</span>
-            </div>
-          </div>
-        </div>
+      {/* Payment Content */}
+      <PaymentLayout>
+        <PaymentInfoForm 
+          storeData={storeData}
+          franchiseFee={franchiseFee}
+        />
+        
+        <PaymentMethodForm />
+        
+        <PaymentNotice />
+      </PaymentLayout>
 
-        {/* 결제 방법 섹션 */}
-        <div className="payment-section">
-          <h2 className="section-title">결제 방법</h2>
-          
-          <div className="payment-method">
-            <div className="method-item selected">
-              <div className="method-icon">💳</div>
-              <div className="method-info">
-                <div className="method-name">신용카드</div>
-                <div className="method-description">토스페이먼츠를 통한 안전한 결제</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 주의사항 */}
-        <div className="payment-section">
-          <h2 className="section-title">주의사항</h2>
-          
-          <div className="notice-list">
-            <div className="notice-item">
-              <span className="notice-number">1.</span>
-              <span>가맹비는 환불되지 않습니다.</span>
-            </div>
-            <div className="notice-item">
-              <span className="notice-number">2.</span>
-              <span>결제 완료 후 가맹점 심사가 진행됩니다.</span>
-            </div>
-            <div className="notice-item">
-              <span className="notice-number">3.</span>
-              <span>심사 결과는 3-5일 내에 연락드립니다.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 결제 버튼 */}
-      <div className="bottom-button-container">
-        <CustomButton 
-          onClick={handlePayment} 
-          disabled={isLoading || paymentStatus === 'success'}
-          className={isLoading ? 'loading' : ''}
-        >
-          {isLoading ? '결제 처리 중...' : `${franchiseFee.toLocaleString()}원 결제하기`}
-        </CustomButton>
-      </div>
+      {/* Payment Button */}
+      <PaymentButton 
+        onClick={handleCardPayment}
+        disabled={isLoading || paymentStatus === 'success'}
+        loading={isLoading}
+        franchiseFee={franchiseFee}
+      />
     </div>
   )
 } 

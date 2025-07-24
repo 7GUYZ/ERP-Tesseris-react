@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react"
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { ChevronLeft } from "lucide-react"
 import CustomButton from "../../components/ui/deokkyu/Deoktton"
 import Circle from "../../components/forms/deokkyu/registerstore/Circle"
@@ -52,6 +52,64 @@ export default function RegisterStore2() {
     storeFrontPhoto: false
   })
 
+  // URL 추적을 위한 ref
+  const imageUrlsRef = useRef({
+    storeBusinessLicensePhoto: null,
+    storeSignPhoto: null,
+    storeFrontPhoto: null
+  })
+
+  // imageUrls가 변경될 때마다 ref 업데이트
+  useEffect(() => {
+    imageUrlsRef.current = imageUrls
+  }, [imageUrls])
+
+  // FormData 생성 함수
+  const createFormData = useCallback(() => {
+    const formData = new FormData()
+    
+    // 신청자 정보
+    formData.append('userName', userInfo.name || '')
+    formData.append('userPhone', userInfo.phone || '')
+    
+    // 사업자 등록 정보
+    formData.append('storeRegistrationNum', businessInfo.storeRegistrationNum || '')
+    formData.append('storeCorporateName', businessInfo.storeCorporateName || '')
+    formData.append('storeBossName', businessInfo.storeBossName || '')
+    formData.append('storeTypeTaxation', businessInfo.storeTypeTaxation || '')
+    formData.append('storeBusinessLicensePhoto', businessInfo.storeBusinessLicensePhoto || '')
+    
+    // 가맹점 등록 정보
+    formData.append('storeName', storeInfo.store_name || '')
+    formData.append('storePhone', storeInfo.store_phone || '')
+    formData.append('storePostcode', storeInfo.store_postcode || '')
+    formData.append('storeAddress', storeInfo.store_address || '')
+    formData.append('storeDetailAddress', storeInfo.store_detail_address || '')
+    formData.append('storeSite', storeInfo.storeSite || '')
+    formData.append('storeSignPhoto', storeInfo.storeSignPhoto || '')
+    formData.append('storeFrontPhoto', storeInfo.storeFrontPhoto || '')
+    formData.append('hasManager', storeInfo.hasManager || '')
+    formData.append('managerId', storeInfo.managerId || '')
+    
+    // 약관 동의 정보 추가
+    const agreementData = localStorage.getItem('register-store-agreements')
+    if (agreementData) {
+      try {
+        const agreements = JSON.parse(agreementData)
+        formData.append('agreementRequired1', agreements.agreements.required1 || false)
+        formData.append('agreementRequired2', agreements.agreements.required2 || false)
+        formData.append('agreementOptional1', agreements.agreements.optional1 || false)
+        formData.append('agreementOptional2', agreements.agreements.optional2 || false)
+        formData.append('agreementOptional3', agreements.agreements.optional3 || false)
+        formData.append('agreementTimestamp', agreements.timestamp || '')
+      } catch (error) {
+        console.error('약관 동의 데이터 파싱 오류:', error)
+      }
+    }
+    
+    return formData
+  }, [userInfo, businessInfo, storeInfo])
+
   // 다음 주소 API 스크립트 로드
   useEffect(() => {
     const script = document.createElement('script')
@@ -88,16 +146,43 @@ export default function RegisterStore2() {
     }
   }, [])
 
-  // 이미지 URL 정리 (컴포넌트 언마운트 시)
+  // 비정상 종료 시 localStorage 정리
   useEffect(() => {
-    return () => {
-      Object.values(imageUrls).forEach(url => {
-        if (url) {
-          URL.revokeObjectURL(url)
-        }
-      })
+    const cleanupLocalStorage = () => {
+      console.log('🧹 RegisterStore2: 비정상 종료 감지 - localStorage 정리')
+      localStorage.removeItem('register-store-temp')
+      localStorage.removeItem('register-store-agreements')
+      if (window.tempFormData) {
+        delete window.tempFormData
+      }
     }
-  }, [imageUrls])
+
+    const handleBeforeUnload = (event) => {
+      cleanupLocalStorage()
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        cleanupLocalStorage()
+      }
+    }
+
+    const handlePageHide = () => {
+      cleanupLocalStorage()
+    }
+
+    // 이벤트 리스너 등록
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('pagehide', handlePageHide)
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pagehide', handlePageHide)
+    }
+  }, [])
 
   // 파일 검증 함수
   const validateFile = useCallback((file) => {
@@ -130,7 +215,29 @@ export default function RegisterStore2() {
     return true
   }, [])
 
-  // 파일 업로드 처리
+  // 파일명 생성 함수
+  const generateFileName = useCallback((field, originalName) => {
+    const timestamp = new Date().getTime()
+    const extension = originalName.split('.').pop()
+    
+    const prefixMap = {
+      storeBusinessLicensePhoto: 'business_license',
+      storeSignPhoto: 'store_sign',
+      storeFrontPhoto: 'store_front'
+    }
+    
+    return `${prefixMap[field]}_${timestamp}.${extension}`
+  }, [])
+
+  // 파일을 로컬에 저장하는 함수 (시뮬레이션)
+  const saveFileLocally = useCallback((file, fileName) => {
+    // 실제 로컬 저장은 브라우저 제한으로 불가능하므로
+    // 여기서는 파일명만 생성하여 반환
+    console.log(`파일 저장 시뮬레이션: ${fileName}`)
+    return fileName
+  }, [])
+
+  // 파일 업로드 처리 - 더 간단한 방식
   const handleFileUpload = useCallback((field, event) => {
     const file = event.target.files[0]
     if (!file) return
@@ -143,45 +250,77 @@ export default function RegisterStore2() {
 
     setImageLoading(prev => ({ ...prev, [field]: true }))
 
-    // 이미지 미리보기 URL 생성
-    const imageUrl = URL.createObjectURL(file)
-    
-    // 이전 URL 정리
-    setImageUrls(prev => {
-      if (prev[field]) {
-        URL.revokeObjectURL(prev[field])
-      }
-      return { ...prev, [field]: imageUrl }
-    })
+    // 파일명 생성 및 로컬 저장 시뮬레이션
+    const fileName = generateFileName(field, file.name)
+    const savedFileName = saveFileLocally(file, fileName)
 
-    // 파일 정보 저장
+    // 즉시 URL 생성하고 설정
+    try {
+      const newImageUrl = URL.createObjectURL(file)
+      
+      // 이전 URL이 있다면 비동기로 정리
+      const prevUrl = imageUrlsRef.current[field]
+      if (prevUrl && typeof prevUrl === 'string') {
+        setTimeout(() => {
+          try {
+            URL.revokeObjectURL(prevUrl)
+          } catch (error) {
+            console.warn('이전 URL revoke 실패:', error)
+          }
+        }, 1000) // 1초 후에 정리
+      }
+      
+      // 새 URL 설정
+      setImageUrls(prev => ({
+        ...prev,
+        [field]: newImageUrl
+      }))
+      
+    } catch (error) {
+      console.error('URL 생성 실패:', error)
+      setImageLoading(prev => ({ ...prev, [field]: false }))
+      return
+    }
+
+    // 실제 File 객체 저장 (FormData에서 사용)
     if (field === 'storeBusinessLicensePhoto') {
       setBusinessInfo(prev => ({
         ...prev,
-        [field]: file
+        [field]: file // File 객체 저장
       }))
     } else {
       setStoreInfo(prev => ({
         ...prev,
-        [field]: file
+        [field]: file // File 객체 저장
       }))
     }
 
-    // 로딩 완료
+    // 로딩 완료 - 이미지가 성공적으로 생성되면 바로 완료 처리
     setTimeout(() => {
       setImageLoading(prev => ({ ...prev, [field]: false }))
-    }, 100)
-  }, [validateFile])
+    }, 300) // 짧게 조정
+  }, [validateFile, generateFileName, saveFileLocally])
 
   // 이미지 제거
   const removeImage = useCallback((field) => {
+    // 로딩 상태 초기화
+    setImageLoading(prev => ({ ...prev, [field]: false }))
+    
     // URL 정리
-    setImageUrls(prev => {
-      if (prev[field]) {
-        URL.revokeObjectURL(prev[field])
+    const currentUrl = imageUrlsRef.current[field]
+    if (currentUrl && typeof currentUrl === 'string') {
+      try {
+        URL.revokeObjectURL(currentUrl)
+      } catch (error) {
+        console.warn('URL revoke 실패:', error)
       }
-      return { ...prev, [field]: null }
-    })
+    }
+    
+    // 상태 업데이트
+    setImageUrls(prev => ({
+      ...prev,
+      [field]: null
+    }))
 
     // 파일 정보 제거
     if (field === 'storeBusinessLicensePhoto') {
@@ -209,63 +348,53 @@ export default function RegisterStore2() {
       const imageUrl = imageUrls[field]
       const isLoading = imageLoading[field]
 
-      if (!imageUrl) return null
+      // 로딩 중이거나 이미지가 있을 때만 렌더링
+      if (!isLoading && !imageUrl) return null
 
       return (
         <div className="image-preview">
           {isLoading ? (
-            <div className="image-loading">로딩 중...</div>
-          ) : (
+            <div className="image-loading">
+              <div className="loading-spinner-small"></div>
+              <span>업로드 중...</span>
+            </div>
+          ) : imageUrl ? (
             <>
-              <img src={imageUrl} alt="미리보기" className="preview-image" />
-              <button type="button" onClick={onRemove} className="image-remove">
+              <img 
+                src={imageUrl} 
+                alt="미리보기" 
+                className="preview-image"
+                onError={(e) => {
+                  console.error(`이미지 로드 오류 (${field}):`, imageUrl)
+                  // 오류 발생시 해당 필드만 정리
+                  removeImage(field)
+                }}
+              />
+              <button type="button" onClick={onRemove} className="image-remove" title="이미지 제거">
                 ×
               </button>
             </>
-          )}
+          ) : null}
         </div>
       )
     }
-  }, [imageUrls, imageLoading])
+  }, [imageUrls, imageLoading, removeImage])
 
-  // FormData 생성 (서버 전송용)
-  const createFormData = useCallback(() => {
-    const formData = new FormData()
-    
-    // 신청자 정보
-    formData.append('userName', userInfo.name)
-    formData.append('userPhone', userInfo.phone)
-    
-    // 사업자 등록 정보
-    formData.append('storeRegistrationNum', businessInfo.storeRegistrationNum)
-    formData.append('storeCorporateName', businessInfo.storeCorporateName)
-    formData.append('storeBossName', businessInfo.storeBossName)
-    formData.append('storeTypeTaxation', businessInfo.storeTypeTaxation)
-    
-    if (businessInfo.storeBusinessLicensePhoto) {
-      formData.append('storeBusinessLicensePhoto', businessInfo.storeBusinessLicensePhoto)
+  // 컴포넌트 언마운트 시 모든 URL 정리 (메모리 누수 방지)
+  useEffect(() => {
+    return () => {
+      const currentUrls = imageUrlsRef.current
+      Object.entries(currentUrls).forEach(([field, url]) => {
+        if (url && typeof url === 'string') {
+          try {
+            URL.revokeObjectURL(url)
+          } catch (error) {
+            console.warn(`URL revoke 실패 (${field}):`, error)
+          }
+        }
+      })
     }
-    
-    // 가맹점 등록 정보
-    formData.append('store_name', storeInfo.store_name)
-    formData.append('store_phone', storeInfo.store_phone)
-    formData.append('store_postcode', storeInfo.store_postcode)
-    formData.append('store_address', storeInfo.store_address)
-    formData.append('store_detail_address', storeInfo.store_detail_address)
-    formData.append('storeSite', storeInfo.storeSite)
-    formData.append('hasManager', storeInfo.hasManager)
-    formData.append('managerId', storeInfo.managerId)
-    
-    if (storeInfo.storeSignPhoto) {
-      formData.append('storeSignPhoto', storeInfo.storeSignPhoto)
-    }
-    
-    if (storeInfo.storeFrontPhoto) {
-      formData.append('storeFrontPhoto', storeInfo.storeFrontPhoto)
-    }
-    
-    return formData
-  }, [userInfo, businessInfo, storeInfo])
+  }, [])
 
   const handleApplyClick = () => {
     // 필수 항목 검증
@@ -282,9 +411,6 @@ export default function RegisterStore2() {
       alert('담당자 아이디를 입력해주세요.')
       return
     }
-
-    // FormData 생성 (나중에 서버로 전송할 때 사용)
-    const formData = createFormData()
     
     // 이전 페이지의 약관 동의 데이터 가져오기
     const agreementData = localStorage.getItem('register-store-agreements')
@@ -303,9 +429,15 @@ export default function RegisterStore2() {
       businessInfo,
       storeInfo,
       agreements,
-      formData: Object.fromEntries(formData.entries()) // FormData를 일반 객체로 변환
+      // FormData 생성 함수를 위한 참조
+      createFormData: 'available'
     }
     localStorage.setItem('register-store-temp', JSON.stringify(tempData))
+    
+    // FormData도 별도로 생성해서 전역에서 접근 가능하도록 저장
+    const formData = createFormData()
+    // FormData를 window 객체에 임시 저장 (페이지 이동 간 유지)
+    window.tempFormData = formData
     
     // 다음 페이지로 이동
     navigate('/registerstore3')

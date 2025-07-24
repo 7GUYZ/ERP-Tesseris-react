@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { ChevronLeft } from "lucide-react"
 import CustomButton from "../../components/ui/deokkyu/Deoktton"
 import Circle from "../../components/forms/deokkyu/registerstore/Circle"
@@ -10,6 +10,44 @@ import "../../styles/deokkyu/RegisterStore1.css"
 export default function RegisterStore1() {
 
   const navigate = useNavigate()
+
+  // 비정상 종료 시 localStorage 정리
+  useEffect(() => {
+    const cleanupLocalStorage = () => {
+      console.log('🧹 RegisterStore1: 비정상 종료 감지 - localStorage 정리')
+      localStorage.removeItem('register-store-temp')
+      localStorage.removeItem('register-store-agreements')
+      if (window.tempFormData) {
+        delete window.tempFormData
+      }
+    }
+
+    const handleBeforeUnload = (event) => {
+      cleanupLocalStorage()
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        cleanupLocalStorage()
+      }
+    }
+
+    const handlePageHide = () => {
+      cleanupLocalStorage()
+    }
+
+    // 이벤트 리스너 등록
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('pagehide', handlePageHide)
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pagehide', handlePageHide)
+    }
+  }, [])
 
   const handleApplyClick = () => {
     // 약관 동의 데이터를 localStorage에 저장
