@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useToast } from '../../../context/jungeun/ToastContext';
+import { useToast } from '../../../../context/jungeun/ToastContext';
 
 const ChangePasswordFeature = () => {
   const { toast } = useToast();
