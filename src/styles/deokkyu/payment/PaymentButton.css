@@ -1,0 +1,63 @@
+/* PaymentButton.css */
+
+.payment-button-container {
+  position: fixed;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.payment-button-container .custom-button {
+  width: 100%;
+  height: 56px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #170F58 0%, #2a1f8a 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.payment-button-container .custom-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(23, 15, 88, 0.3);
+}
+
+.payment-button-container .custom-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.payment-button-container .custom-button.loading {
+  background: #170F58;
+  cursor: wait;
+}
+
+.payment-button-container .custom-button.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} 

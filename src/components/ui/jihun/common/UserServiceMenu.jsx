@@ -63,7 +63,7 @@ export default function UserServiceMenu() {
       { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/main" },
       { icon: BanknoteArrowUp, label: "수당 내역", color: "usermain-icon-red", path: "/main" },
       { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", path: "/main" },
-      { icon: Building2, label: "가맹점 신청", color: "usermain-icon-cyan", path: "/main" },
+      { icon: Building2, label: "가맹점 신청", color: "usermain-icon-cyan", path: "/registerstore0" },
       { icon: Tickets, label: "쿠폰 보관함", color: "usermain-icon-violet", path: "/main" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", path: "/main" },
       { icon: Dices, label: "씨엠 게임 보상", color: "usermain-icon-teal", path: "/main" },
