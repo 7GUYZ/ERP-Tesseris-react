@@ -18,10 +18,9 @@ export default function PinStep2() {
     if (error) return;
 
     if (inputPin === originalPin) {
-      console.log("보내는 데이터:", { userCmPincode: inputPin });
       const updatePin = async () => {
         try {
-          const response = await pinChange({ userCmPincode: inputPin });
+          await pinChange({ userCmPincode: inputPin });
           setModalMessage("PIN 변경 완료");
           setShowModal(true);
           setTimeout(() => {
@@ -47,22 +46,22 @@ export default function PinStep2() {
   };
 
   return (
-    <div className="pin-container">
-      <div className="pin-header">
-        <span className="back-icon" onClick={() => navigate(-1)}>
+    <div className="pinchange-container">
+      <div className="pinchange-header">
+        <button className="back-button" onClick={() => navigate(-1)}>
           &lt;
-        </span>
-        <div className="header-title-wrapper">
-          <h1 className="pin-title">PIN 번호 확인</h1>
+        </button>
+        <h2>PIN 번호 확인</h2>
+      </div>
+      <div className="pinchange-section">
+        <div className="pinchange-card">
+          <div className="pinchange-content">
+            <h3>PIN 번호 재입력</h3>
+            <p>다시 한번 입력해주세요.</p>
+            <PinInput key={pinInputKey} onComplete={handleConfirm} />
+          </div>
         </div>
       </div>
-
-      <div className="pin-content">
-        <h2>PIN 번호 재입력</h2>
-        <p>다시 한번 입력해주세요.</p>
-        <PinInput key={pinInputKey} onComplete={handleConfirm} />
-      </div>
-
       {showModal && <Modal message={modalMessage} onClose={handleModalClose} />}
     </div>
   );

@@ -181,10 +181,10 @@ export default function MobileMyPage() {
                         >
                           <td>{indexOfFirstItem + index + 1}</td>
                           <td className="mypage-idCell">
-                            {item.recommendationUserId || "-"}
+                            {item.suggestionUserEmail || "-"}
                           </td>
-                          <td>{item.recommendationUserName || "-"}</td>
-                          <td>{item.recommendationUserRole || "-"}</td>
+                          <td>{item.suggestionUserName || "-"}</td>
+                          <td>{item.suggestionUserRole || "-"}</td>
                           <td>{item.joinDate || "-"}</td>
                         </tr>
                       ))}

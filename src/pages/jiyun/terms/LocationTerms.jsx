@@ -6,21 +6,22 @@ export default function LocationTermsPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="terms-wrap">
-      <header className="terms-header">
-        <button onClick={() => navigate("/terms")} className="back-button">
+    <div className="terms-container">
+      <div className="terms-header">
+        <button className="back-button" onClick={() => navigate("/terms")}>
           &lt;
         </button>
-        <h2>이용약관</h2>
-      </header>
-
-      <main className="terms-content">
+        <h2>위치기반서비스 이용약관 동의</h2>
+      </div>
+      <div className="terms-section">
+        <div className="terms-card">
+          <div className="terms-content">
         <ul className="terms-titlebox">
           <li className="terms-title">위치기반 서비스약관</li>
           <li className="terms-version">ver. 2022.11.30</li>
         </ul>
 
-        <section className="terms-text">
+            <div className="terms-text">
           <p>
             {`제1조. 목적
 본 약관은 회원(서비스 약관에 동의한 자를 말합니다. 이하 “회원”이라고 합니다.)이 씨엠바더코리아(이하 “회사”라고 합니다.)가 제공하는 사용자 위치 기반을 통한 홍보서비스(이하 “서비스”라고 합니다)를 이용함에 있어 회사와 회원의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.
@@ -126,9 +127,11 @@ export default function LocationTermsPage() {
 ① 개인위치정보의 수집과 관련하여 "회사"와 고객 사이에 분쟁이 발생한 경우, "회사"와 고객은 분쟁의 해결을 위해 성실히 협의합니다.
 ② 제1항의 협의에도 불구하고 "회사"와 고객간 분쟁이 해결되지 않을 경우 양 당사자는 개인정보보호법 제43조의 규정에 의한 개인정보분쟁조정위원회에 조정을 신청할 수 있습니다.
 `}
-          </p>
-        </section>
-      </main>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -10,20 +10,21 @@ export default function PinStep1() {
   };
 
   return (
-    <div className="pin-container">
-      <div className="pin-header">
-        <span className="back-icon" onClick={() => navigate(-1)}>
+    <div className="pinchange-container">
+      <div className="pinchange-header">
+        <button className="back-button" onClick={() => navigate(-1)}>
           &lt;
-        </span>
-        <div className="header-title-wrapper">
-          <h1 className="pin-title">PIN 번호 변경</h1>
-        </div>
+        </button>
+        <h2>PIN 번호 변경</h2>
       </div>
-
-      <div className="pin-content">
-        <h2>새 PIN 번호 입력</h2>
-        <p>변경하실 PIN 번호를 입력해주세요.</p>
-        <PinInput onComplete={handleComplete} />
+      <div className="pinchange-section">
+        <div className="pinchange-card">
+          <div className="pinchange-content">
+            <h3>새 PIN 번호 입력</h3>
+            <p>변경하실 PIN 번호를 입력해주세요.</p>
+            <PinInput onComplete={handleComplete} />
+          </div>
+        </div>
       </div>
     </div>
   );
