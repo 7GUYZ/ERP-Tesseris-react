@@ -3,7 +3,7 @@ name: Deploy React App to Kubernetes
 on:
   push:
     branches:
-      - main  # 또는 배포 브랜치명
+      [ main, SiChan ]  # 또는 배포 브랜치명
 
 jobs:
   build-and-deploy:
@@ -35,6 +35,7 @@ jobs:
           build-args: |
             REACT_APP_BASENAME=/react
             REACT_APP_API_BASE_URL=/springboot/api
+            REACT_APP_TOSS_CLIENT_KEY=${{ secrets.REACT_APP_TOSS_CLIENT_KEY }}
 
       - name: Set up Kubeconfig
         uses: azure/setup-kubectl@v4
