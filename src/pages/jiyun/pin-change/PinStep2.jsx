@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import PinInput from "../../../components/forms/jiyun/pin-change/PinInput";
 import Modal from "../../../components/feature/jiyun/Modal";
 import "../../../styles/jiyun/pin-change/pin-change.css";
@@ -13,9 +13,19 @@ export default function PinStep2() {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [pinInputKey, setPinInputKey] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const timeoutRef = useRef(null);
+  const navigatedRef = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const handleConfirm = (inputPin) => {
-    if (error) return;
+    if (error || isSubmitting) return;
+    setIsSubmitting(true);
 
     if (inputPin === originalPin) {
       const updatePin = async () => {
@@ -23,12 +33,16 @@ export default function PinStep2() {
           await pinChange({ userCmPincode: inputPin });
           setModalMessage("PIN 변경 완료");
           setShowModal(true);
-          setTimeout(() => {
-            navigate("/pinChange/pinComplete");
+          timeoutRef.current = setTimeout(() => {
+            if (!navigatedRef.current) {
+              navigatedRef.current = true;
+              navigate("/pinChange/pinComplete");
+            }
           }, 1500);
         } catch {
           setModalMessage("PIN 설정 실패");
           setShowModal(true);
+          setIsSubmitting(false);
         }
       };
       updatePin();
@@ -38,11 +52,20 @@ export default function PinStep2() {
       setShowModal(true);
       setPinInputKey((prev) => prev + 1);
       setTimeout(() => setError(false), 3000);
+      setIsSubmitting(false);
     }
   };
 
   const handleModalClose = () => {
     setShowModal(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+      if (!navigatedRef.current) {
+        navigatedRef.current = true;
+        navigate("/pinChange/pinComplete");
+      }
+    }
   };
 
   return (
@@ -55,7 +78,7 @@ export default function PinStep2() {
       </div>
       <div className="pinchange-section">
         <div className="pinchange-card">
-          <div className="pinchange-content">
+          <div className="pinchange-content-key">
             <h3>PIN 번호 재입력</h3>
             <p>다시 한번 입력해주세요.</p>
             <PinInput key={pinInputKey} onComplete={handleConfirm} />
