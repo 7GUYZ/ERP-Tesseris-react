@@ -23,7 +23,6 @@ function App() {
 
   return (
     <ToastProvider>
-      <BrowserRouter basename={process.env.REACT_APP_BASENAME || undefined}>
         <Routes>
           <Route path='/' element={<LoginPage />} />
           <Route path='/signup' element={<SignupPage />} /> {/* 회원가입 페이지 */}
@@ -32,7 +31,6 @@ function App() {
           {/* 공통 레이아웃과 Route들이 들어있는 AppRoutes(헤더, 내비 포함) */}
           <Route path="/*" element={<AppRoutes />} />
         </Routes>
-      </BrowserRouter>
     </ToastProvider>
   )
 }
