@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "../../../styles/jungeun/storeDetail.css";
 import { ChevronLeft, Phone, MapPin, Clock, ChevronRight, MoveLeftIcon as SlideLeft, Coffee, Globe, Info, Coins, Image } from "lucide-react"
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { storeDetail } from "../../../api/auth/JungeunAuth";
-
-// 기본 이미지 (이미지가 없을 때 사용)
-const defaultImage = "https://via.placeholder.com/400x300?text=No+Image";
 
 const StoreDetailForm = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { storeIndex } = useParams();
     const [store, setStore] = useState({});
     const autoSlideRef = useRef(null);
+    const navigate = useNavigate();
 
     // store가 없으면 빈 값 처리
     const name = store?.storeName || "";
@@ -60,7 +58,7 @@ const StoreDetailForm = () => {
     };
 
     // 자동 슬라이드 시작
-    const startAutoSlide = () => {
+    const startAutoSlide = useCallback(() => {
         if (autoSlideRef.current) {
             clearInterval(autoSlideRef.current);
         }
@@ -69,7 +67,7 @@ const StoreDetailForm = () => {
                 setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
             }, 3000); // 3초마다 전환
         }
-    };
+    }, [images.length]);
 
     // 자동 슬라이드 정지
     const stopAutoSlide = () => {
@@ -81,7 +79,7 @@ const StoreDetailForm = () => {
 
     const handlePhoneCall = () => {
         if (store.storePhone != null) {
-            window.location.href = `tel:${store.storePhone}`;
+            navigate(`tel:${store.storePhone}`);
         }
     };
 
@@ -126,7 +124,7 @@ const StoreDetailForm = () => {
         return () => {
             stopAutoSlide();
         };
-    }, [store.storeImages]);
+    }, [store.storeImages, images.length, startAutoSlide]);
 
     // 이미지가 없을 때 표시할 컴포넌트
     const NoImageComponent = ({ show = false }) => (

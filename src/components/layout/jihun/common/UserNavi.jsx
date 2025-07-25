@@ -1,6 +1,7 @@
 import React from "react";
 import { Home, Gift, CreditCard, MapPin } from "lucide-react";
 import '../../../../styles/jihun/common/common.css';
+import { useNavigate } from "react-router-dom";
 
 const navigationItems = [
   { icon: Home, label: "홈", id: "home", path: "/main" }, 
@@ -10,6 +11,8 @@ const navigationItems = [
 ];
 
 export default function UserNavi() {
+  const navigate = useNavigate();
+
   return (
     <div className="usermain-bottomnavi">
       <div className="usermain-bottomnavi-inner">
@@ -17,7 +20,7 @@ export default function UserNavi() {
           <button
             key={item.id}
             onClick={() => {
-              window.location.href = item.path;
+              navigate(item.path);
             }}
             className="usermain-bottomnavi-btn"
           >
