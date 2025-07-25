@@ -55,7 +55,7 @@ export default function UserProfileCard() {
             <span className="usermain-profilecard-balance-amount">{userCurrentPoint.toLocaleString()}</span>
             <span className="usermain-profilecard-balance-unit">CM</span>
           </div>
-          <button className="usermain-profilecard-balance-chargebtn-main" onClick={() => navigate('/charge', { state: { userCurrentPoint: userCurrentPoint} })}>+ 충전</button>
+          <button className="usermain-profilecard-balance-chargebtn-main" onClick={() => navigate('/store/charge', { state: { userCurrentPoint: userCurrentPoint} })}>+ 충전</button>
         </div>
       </div>
     </div>

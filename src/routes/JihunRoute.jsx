@@ -9,7 +9,7 @@ function JihunRoute() {
         <>
             {/* 무조건 ProtectedRoute 안에 Route 넣으세요 - 인증 및 보안 필요해서 */}
             <Route element={<ProtectedRoute />}>
-                <Route path='/charge' element={<ChargePage />} />
+                <Route path='/store/charge' element={<ChargePage />} />
                 <Route path='/charge/result' element={<ChargeResult />} />
                 <Route path='/mypage/changepassword' element={<ChangePassword />} />
             </Route>
