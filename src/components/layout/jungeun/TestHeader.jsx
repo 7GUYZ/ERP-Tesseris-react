@@ -1,10 +1,10 @@
 import React from "react";
 import { logout } from "../../../api/auth/JungeunAuth";
 import useAuthStore from "../../../store/jungeun/AuthStore";
-
+import { useNavigate } from "react-router-dom";
 
 const TestHeader = () => {
-
+    const navigate = useNavigate();
     const handleLogout = async (e) => {
         e.preventDefault()
 
@@ -15,7 +15,7 @@ const TestHeader = () => {
                 localStorage.removeItem("access-token");
                 localStorage.removeItem("user-info");
                 // 홈으로 이동
-                window.location.href = "/";
+                navigate("/");
 
             }
         } catch (error) {

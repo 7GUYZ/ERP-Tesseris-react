@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   Settings,
@@ -28,7 +29,7 @@ import {
   CalendarPlus,
 } from "lucide-react";
 import '../../../../styles/jihun/common/common.css';
-
+import { useNavigate } from "react-router-dom";
 
 // [커스텀 메뉴 구성 위치] 아래 배열을 개발자가 원하는 대로 추가/삭제/변경하면 됩니다.
 // path: 클릭 시 이동할 주소
@@ -45,6 +46,8 @@ const baseServiceItems = [
   { icon: Settings, label: "스마트", color: "usermain-icon-gray", path: "/smart" },
   { icon: Bell, label: "플레이어", color: "usermain-icon-cyan", path: "/player" },
   { icon: User, label: "정보", color: "usermain-icon-violet", path: "/info" },
+  { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
+  { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
 ];
 
 // [분기처리 예시] userType에 따라 다른 메뉴를 보여주고 싶으면 아래처럼 분기
@@ -54,6 +57,7 @@ let serviceItems = baseServiceItems;
 
 export default function UserServiceMenu() {
   const [userRole, setUserRole] = useState(null);
+  const navigate = useNavigate();
 
   if (userRole === "1") {
     // 일반회원 전용 메뉴 
@@ -62,10 +66,10 @@ export default function UserServiceMenu() {
       { icon: Coins, label: "CM 충전", color: "usermain-icon-pink", path: "/main" },
       { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/main" },
       { icon: BanknoteArrowUp, label: "수당 내역", color: "usermain-icon-red", path: "/main" },
-      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", path: "/main" },
+      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: Building2, label: "가맹점 신청", color: "usermain-icon-cyan", path: "/registerstore0" },
       { icon: Tickets, label: "쿠폰 보관함", color: "usermain-icon-violet", path: "/main" },
-      { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", path: "/main" },
+      { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
       { icon: Dices, label: "씨엠 게임 보상", color: "usermain-icon-teal", path: "/main" },
       { icon: PartyPopper, label: "쿠폰 이벤트", color: "usermain-icon-indigo", path: "/main" },
       { icon: ShoppingCart, label: "쇼핑몰", color: "usermain-icon-green", path: "/main" },
@@ -75,11 +79,11 @@ export default function UserServiceMenu() {
     // 사업자 전용 메뉴 
     serviceItems = [
       { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/main" },
-      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", path: "/main" },
+      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: FileSearch, label: "중개수수료 현황", color: "usermain-icon-orange", path: "/main" },
       { icon: Users, label: "산하 사업자", color: "usermain-icon-cyan", path: "/BusinessList" },
       { icon: Store, label: "산하 가맹점", color: "usermain-icon-violet", path: "/StoreList" },
-      { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", path: "/main" },
+      { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
       { icon: ShoppingCart, label: "쇼핑몰", color: "usermain-icon-green", path: "/main" },
     ];
   }
@@ -88,11 +92,11 @@ export default function UserServiceMenu() {
     serviceItems = [
       { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/main" },
       { icon: BanknoteArrowUp, label: "수당 내역", color: "usermain-icon-red", path: "/main" },
-      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", path: "/main" },
+      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: Coins, label: "CM 충전", color: "usermain-icon-pink", path: "/main" },
       { icon: Store, label: "매장 관리", color: "usermain-icon-cyan", path: "/" },
       { icon: FolderPlus, label: "쿠폰 발행함", color: "usermain-icon-green", path: "/main" },
-      { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", path: "/main" },
+      { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
       { icon: Users, label: "고객 관리", color: "usermain-icon-orange", path: "/main" },
       { icon: PartyPopper, label: "쿠폰 이벤트", color: "usermain-icon-indigo", path: "/main" },
       { icon: CalendarPlus, label: "쿠폰 이벤트 등록", color: "usermain-icon-red", path: "/main" },
@@ -116,7 +120,13 @@ export default function UserServiceMenu() {
               <div
                 key={index}
                 className="usermain-servicemenu-item"
-                onClick={() => window.location.href = item.path} // [주소 이동 기능]
+                onClick={() => {
+                  if (item.isExternal) {
+                    window.open(item.externalUrl, "_blank");
+                  } else {
+                    navigate(item.path);
+                  }
+                }}
                 style={{ cursor: 'pointer' }}
               >
                 <div className={`usermain-servicemenu-iconwrap ${item.color}`}>

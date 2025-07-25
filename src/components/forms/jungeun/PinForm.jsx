@@ -1,11 +1,25 @@
 import { useEffect, useRef, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 import "../../../styles/jungeun/pin.css";
+import { giftTransfer, pinCheck } from "../../../api/auth/JungeunAuth";
 
 export default function PinForm(){
+    const location = useLocation();
+    const navigate = useNavigate();
     const [pin, setPin] = useState(["", "", "", "", "", ""])
     const [currentIndex, setCurrentIndex] = useState(0)
     const [isShaking, setIsShaking] = useState(false)
     const containerRef = useRef(null)
+    
+    // GiftForm에서 전달받은 선물 정보
+    const giftInfo = location.state;
+    
+    // 선물 정보가 없으면 이전 페이지로 이동
+    useEffect(() => {
+        if (!giftInfo || !giftInfo.giftAmount || !giftInfo.recipientUser) {
+            navigate('/gift');
+        }
+    }, [giftInfo, navigate]);
   
     useEffect(() => {
       // Focus the container to capture keyboard events
@@ -17,15 +31,17 @@ export default function PinForm(){
     const handleKeyPress = (value) => {
       if (currentIndex < 6) {
         const newPin = [...pin]
-        newPin[currentIndex] = value
+        newPin[currentIndex] = value || ""
         setPin(newPin)
         setCurrentIndex(currentIndex + 1)
   
         // Check if PIN is complete
         if (currentIndex === 5) {
           setTimeout(() => {
-            console.log("PIN entered:", newPin.join(""))
-            // Here you can add your PIN validation logic
+            const completePin = newPin.join("");
+            console.log("PIN 입력 완료:", completePin);
+            // PIN 검증 및 선물 처리 로직
+            handlePinValidation(completePin)
           }, 100)
         }
       }
@@ -63,6 +79,85 @@ export default function PinForm(){
     const handleNumberClick = (number) => {
       handleKeyPress(number.toString())
     }
+    
+    // PIN 검증 및 선물 처리 함수
+    const handlePinValidation = async (enteredPin) => {
+        try {
+            console.log("PIN 검증 시작:", enteredPin);
+            const userInfo = JSON.parse(localStorage.getItem("user-info"));
+            const response = await pinCheck({
+                userIndex: userInfo.user_index,
+                userCmPincode: enteredPin
+            });
+            console.log(response);
+            
+            if (response.data.resultCode === 200) {
+                // PIN이 맞으면 선물 처리
+                console.log("PIN 검증 성공");
+                await handleGiftTransfer();
+            } else {
+                // PIN이 틀리면 에러 처리
+                console.log("PIN 검증 실패");
+                setIsShaking(true);
+                setTimeout(() => setIsShaking(false), 500);
+                setPin(["", "", "", "", "", ""]);
+                setCurrentIndex(0);
+                showToast("PIN 번호가 올바르지 않습니다.", "error");
+            }
+        } catch (error) {
+            console.error("PIN validation error:", error);
+            showToast("PIN 검증 중 오류가 발생했습니다.", "error");
+        }
+    }
+    
+    // 선물 처리 함수
+    const handleGiftTransfer = async () => {
+        try {
+            // 여기에 실제 선물 API 호출
+            // 예시: const response = await sendGift(giftInfo);
+            const userInfo = JSON.parse(localStorage.getItem("user-info"));
+            const response = await giftTransfer({
+              sendUserIndex: userInfo.user_index,
+              receiveUserIndex: giftInfo.recipientUser.userIndex,
+              giftAmount: giftInfo.giftAmount
+            })
+
+            console.log(response);
+
+            if (response.data.resultCode === 200) {
+              // 성공 시 완료 페이지로 이동
+              showToast(`${giftInfo.recipientUser.userEmail} 님에게 성공적으로 선물하였습니다.`, "success");
+              setTimeout(() => {
+                  navigate('/main');
+              }, 1500);
+            }else{
+              showToast("선물 전송에 실패하였습니다.", "error");
+              // PIN 입력 초기화
+              setPin(["", "", "", "", "", ""]);
+              setCurrentIndex(0);
+            }
+
+            
+        } catch (error) {
+            console.error("Gift transfer error:", error);
+            showToast("선물 전송 중 오류가 발생했습니다.", "error");
+            // PIN 입력 초기화
+            setPin(["", "", "", "", "", ""]);
+            setCurrentIndex(0);
+        }
+    }
+    
+    // 토스트 메시지 표시 함수
+    const showToast = (message, type = "info") => {
+        window.dispatchEvent(
+            new CustomEvent("show-toast", {
+                detail: {
+                    type: type,
+                    message: message,
+                },
+            })
+        );
+    }
   
     return (
         <div className="gift-pin-container" tabIndex={0} onKeyDown={handleKeyDown} ref={containerRef}>
@@ -85,16 +180,30 @@ export default function PinForm(){
         <div className="gift-pin-content">
           <div className="gift-pin-title-section">
             <h2 className="gift-pin-title">보안 PIN 입력</h2>
-            <p className="gift-pin-subtitle">안전한 인증을 위해 6자리 PIN 번호를 입력해주세요</p>
+            <p className="gift-pin-subtitle">안전한 인증을 위해 <br/>6자리 PIN 번호를 입력해주세요</p>
+            
+            {/* 선물 정보 표시 */}
+            {giftInfo && (
+              <div className="gift-pin-info">
+                <div className="gift-pin-info-item">
+                  <span className="gift-pin-info-label">선물할 CM:</span>
+                  <span className="gift-pin-info-value">{giftInfo.giftAmount?.toLocaleString()} CM</span>
+                </div>
+                <div className="gift-pin-info-item">
+                  <span className="gift-pin-info-label">받는 사람:</span>
+                  <span className="gift-pin-info-value">{giftInfo.recipientUser?.userEmail}</span>
+                </div>
+              </div>
+            )}
           </div>
   
           <div className={`gift-pin-dots-container ${isShaking ? "gift-pin-shake" : ""}`}>
             {pin.map((digit, index) => (
               <div
                 key={index}
-                className={`gift-pin-dot ${digit ? "gift-pin-filled" : ""} ${index === currentIndex ? "gift-pin-active" : ""}`}
+                className={`gift-pin-dot ${digit && digit !== "" ? "gift-pin-filled" : ""} ${index === currentIndex ? "gift-pin-active" : ""}`}
               >
-                {digit && <div className="gift-pin-dot-inner"></div>}
+                {digit && digit !== "" && <div className="gift-pin-dot-inner"></div>}
               </div>
             ))}
           </div>

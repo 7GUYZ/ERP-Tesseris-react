@@ -11,7 +11,7 @@ export const logout = () =>
   api.post("/auth/logout")
 
 // Interceptor 등록 함수로 분리
-export function setupInterceptors() {
+export function setupInterceptors(navigate) {
   // 요청 인터셉터
   api.interceptors.request.use(
     (config) => {
@@ -73,7 +73,11 @@ export function setupInterceptors() {
 
           // 홈으로 이동
           setTimeout(() => {
-            window.location.href = "/";
+            if (navigate) {
+              navigate("/");
+            } else {
+              window.location.href = "/";
+            }
           }, 4000);
 
           return Promise.reject(e);
@@ -159,4 +163,11 @@ export const searchUser = (recipientEmail) => {
     }
   });
 }
+
+// Pin 번호 확인 API
+export const pinCheck = ({userIndex, userCmPincode}) => 
+  api.post("/user/giftCM/pinCheck", {userIndex, userCmPincode});
+
+export const giftTransfer = ({sendUserIndex, receiveUserIndex, giftAmount}) =>
+  api.post("/user/giftCM/giftTransfer", {sendUserIndex, receiveUserIndex, giftAmount});
 

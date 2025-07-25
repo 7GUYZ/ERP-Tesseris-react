@@ -41,11 +41,11 @@ export default function GiftForm() {
             if (response.data.resultCode === 200) {
                 const userData = response.data.data;
                 if (userData) {
-                    // 관리자(userRoleIndex가 4)는 제외
-                    if (userData.userRoleIndex === 4) {
+                    // userRoleIndex가 1이 아닌 경우 선물 불가
+                    if (userData.userRoleIndex !== 1) {
                         setSearchResults([]);
                         setShowResults(false);
-                        showToast("회원을 찾을 수 없습니다");
+                        showToast("해당 회원에게는 선물할 수 없습니다");
                         return;
                     }
                     // 단일 사용자 데이터를 배열로 변환
@@ -85,7 +85,7 @@ export default function GiftForm() {
     }
 
     const handleInputChange = (e) => {
-        const value = e.target.value;
+        const value = e.target.value || "";
         setRecipientEmail(value);
         // 실시간 검색 제거
     }
@@ -96,6 +96,7 @@ export default function GiftForm() {
     }
 
     const formatNumber = (num) => {
+        if (!num || isNaN(num)) return "";
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     }
 
@@ -182,7 +183,14 @@ export default function GiftForm() {
     // 선물하기 버튼 클릭 핸들러
     const handleGiftSubmit = () => {
         if (isFormValid) {
-            navigate('/gift/pin');
+            // 선물할 정보를 state로 전달
+            navigate('/gift/pin', {
+                state: {
+                    giftAmount: Number.parseInt(giftAmount),
+                    recipientUser: selectedUser,
+                    currentCM: currentCM
+                }
+            });
         }
     }
 
@@ -232,7 +240,7 @@ export default function GiftForm() {
                                 type="email"
                                 className="gift-input"
                                 placeholder="이메일을 입력하세요."
-                                value={recipientEmail}
+                                value={recipientEmail || ""}
                                 onChange={handleInputChange}
                             />
                             <button
@@ -308,7 +316,7 @@ export default function GiftForm() {
                                 type="text"
                                 className="gift-input"
                                 placeholder="금액을 입력하세요."
-                                value={giftAmount ? formatNumber(Number.parseInt(giftAmount)) : ""}
+                                value={giftAmount && giftAmount !== "" ? formatNumber(Number.parseInt(giftAmount)) : ""}
                                 onChange={handleGiftAmountChange}
                             />
                             <span className="gift-currency">CM</span>

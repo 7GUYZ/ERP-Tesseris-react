@@ -132,9 +132,9 @@ const LoginForm = () => {
   }
 
   return (
-    <form className="login-form" onSubmit={handleLogin}>
-      <h1 className="login-title">TESSERIS<br/><span style={{fontSize:18}}>소상공인 물물교환 결제시스템</span></h1>
-      <p className="login-subtitle">서비스 이용을 위해 로그인해주세요.</p>
+    <form className="user-login-form" onSubmit={handleLogin}>
+      <h1 className="user-login-title">TESSERIS<br/><span style={{fontSize:18}}>소상공인 물물교환 결제시스템</span></h1>
+      <p className="user-login-subtitle">서비스 이용을 위해 로그인해주세요.</p>
       <InputField
         type="text"
         placeholder="이메일을 입력하세요"
@@ -156,10 +156,10 @@ const LoginForm = () => {
       <LoginButton type="submit" isLoading={isLoading}>
         {isLoading ? "로그인 중..." : "로그인"}
       </LoginButton>
-      <div className="login-link-container">
-        <a
+      <div className="user-login-link-container">
+        <button
           href="/"
-          className="login-link"
+          className="user-login-link"
           onMouseEnter={(e) => {
             e.target.style.color = "#FDCD00"
             e.target.style.opacity = "1"
@@ -170,14 +170,14 @@ const LoginForm = () => {
           }}
           onClick={(e) => {
             e.preventDefault()
-            window.location.href="/TestFindPw"
+            navigate("/TestFindPw")
           }}
         >
           비밀번호 찾기
-        </a>
-        <a
-          href="/"
-          className="login-link"
+        </button>
+        <button
+          type="button"
+          className="userlogin-link"
           onMouseEnter={(e) => {
             e.target.style.color = "#FDCD00"
             e.target.style.opacity = "1"
@@ -188,11 +188,11 @@ const LoginForm = () => {
           }}
           onClick={(e) => {
             e.preventDefault()
-            window.location.href = "/signup"
+            navigate("/signup")
           }}
         >
           회원가입
-        </a>
+        </button>
       </div>
     </form>
   )
