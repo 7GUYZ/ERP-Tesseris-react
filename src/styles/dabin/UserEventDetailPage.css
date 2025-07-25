@@ -1,0 +1,444 @@
+.user-event-detail-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Header */
+.user-event-detail-header-h {
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.user-event-detail-header-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.user-event-detail-header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+/* Store Section */
+.user-event-detail-fran-listw {
+  list-style: none;
+  padding: 16px;
+  margin: 0;
+}
+
+.user-event-detail-fran-list {
+  background-color: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-event-detail-franchise-imglist {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.user-event-detail-store-image-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #666;
+  background-color: #f0f0f0;
+}
+
+.user-event-detail-fran-infotxt {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-event-detail-fran-amountbox {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.user-event-detail-fran-infoone {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.user-event-detail-myamount-btn {
+  background-color: #1749C2;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.user-event-detail-myamount-ltxt {
+  margin: 0;
+  font-size: 12px;
+}
+
+.user-event-detail-fran-inftw {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.user-event-detail-flex-start {
+  display: flex;
+  align-items: center;
+}
+
+.user-event-detail-flex-wrap {
+  flex-wrap: wrap;
+}
+
+.user-event-detail-fran-man-type {
+  background-color: #f0f0f0;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.user-event-detail-fran-state {
+  font-size: 18px;
+  text-decoration: none;
+  color: #333;
+}
+
+.user-event-detail-m-L10 {
+  margin-left: 10px;
+}
+
+.user-event-detail-m-B10 {
+  margin-bottom: 10px;
+}
+
+.user-event-detail-m-T10 {
+  margin-top: 10px;
+}
+
+/* Business State */
+.user-event-detail-bg-wait {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #ff6b6b;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.user-event-detail-bg-open {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #51cf66;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* Coupon Section */
+.user-event-detail-coupon-section {
+  padding: 16px;
+}
+
+.user-event-detail-coupon-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+}
+
+.user-event-detail-coupon-background {
+  position: relative;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.user-event-detail-coupon-background-main {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.user-event-detail-coupon-background-bronze {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.user-event-detail-coupon-background-gray {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.user-event-detail-coupon-content {
+  flex: 1;
+  z-index: 2;
+  position: relative;
+}
+
+.user-event-detail-coupon-info {
+  color: white;
+}
+
+.user-event-detail-coupon-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.user-event-detail-coupon-status {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.user-event-detail-coupon-period {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.user-event-detail-coupon-badge {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+.user-event-detail-badge-circle {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #fbbf24;
+  border-radius: 50%;
+  background-color: #fbbf24;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  text-align: center;
+  padding: 8px;
+}
+
+.user-event-detail-badge-text {
+  font-size: 8px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.user-event-detail-badge-dots {
+  font-size: 6px;
+  margin: 2px 0;
+}
+
+.user-event-detail-badge-amount {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 4px 0;
+}
+
+.user-event-detail-coupon-brand {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 3;
+}
+
+.user-event-detail-brand-logo {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.user-event-detail-brand-decoration {
+  width: 20px;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+  margin-left: auto;
+}
+
+.user-event-detail-coupon-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.user-event-detail-decoration-lines {
+  height: 20px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    rgba(255, 255, 255, 0.1) 10px,
+    rgba(255, 255, 255, 0.1) 20px
+  );
+}
+
+.user-event-detail-decoration-elements {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+.user-event-detail-decoration-leaf {
+  width: 20px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  position: relative;
+}
+
+.user-event-detail-decoration-leaf::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+}
+
+/* Download Button */
+.user-event-detail-download-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.user-event-detail-download-button:hover {
+  background-color: #0056b3;
+}
+
+.user-event-detail-download-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Loading */
+.user-event-detail-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-size: 16px;
+  text-align: center;
+}
+
+.user-event-detail-loading-circle {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: user-event-detail-spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.user-event-detail-loading-text {
+  font-size: 14px;
+  color: #666;
+}
+
+@keyframes user-event-detail-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .user-event-detail-header-wrap {
+    padding: 12px 16px;
+  }
+  
+  .user-event-detail-header-title {
+    font-size: 16px;
+  }
+  
+  .user-event-detail-fran-listw {
+    padding: 12px;
+  }
+  
+  .user-event-detail-fran-list {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .user-event-detail-store-image-placeholder {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+  
+  .user-event-detail-fran-infoone {
+    font-size: 16px;
+  }
+  
+  .user-event-detail-coupon-background {
+    height: 160px;
+    padding: 16px;
+  }
+  
+  .user-event-detail-badge-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .user-event-detail-badge-amount {
+    font-size: 16px;
+  }
+} 
