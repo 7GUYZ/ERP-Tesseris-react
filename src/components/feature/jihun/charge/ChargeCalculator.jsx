@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate, useParams } from 'react-router-dom';
 import { loadTossPayments } from '@tosspayments/payment-sdk';
 import { useToast } from '../../../../context/jungeun/ToastContext';
 
@@ -10,7 +10,8 @@ const ChargeCalculator = (userCurrentPoint) => {
     const [vatRate, setVatRate] = useState(0.1); // VAT 10%
     const navigate = useNavigate();
     const { showToast } = useToast();
-
+    const { source } = useParams();
+    const safeSource = source || 'deault';
     // 결제 금액 계산
     const calculatePaymentDetails = () => {
         const amount = parseFloat(paymentAmount) || 0;
@@ -43,8 +44,8 @@ const ChargeCalculator = (userCurrentPoint) => {
                 orderName: '택준이 팝니다.',
                 customerName: JSON.parse(localStorage.getItem('user-info')).name,
                 customerEmail: JSON.parse(localStorage.getItem('user-info')).email,
-                successUrl: `${window.location.origin}/charge/result`,
-                failUrl: `${window.location.origin}/charge/result`,
+                successUrl: `${window.location.origin}/charge/result?source=${safeSource}`,
+                failUrl: `${window.location.origin}/charge/result?source=${safeSource}`,
                 card: {
                     useEscrow: false,
                     flowMode: "DEFAULT",

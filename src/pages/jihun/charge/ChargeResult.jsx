@@ -14,11 +14,11 @@ const ChargeResult = () => {
     const amount = params.get('amount');
     const failMessage = params.get('message');
     if (typeof failMessage === 'string' && failMessage.includes("취소하였습니다")) {
-      return navigate('store/charge');
+      return navigate(`/charge/${params.get('source')}`);
     }
     const handleConfirm = async () => {
       try {
-        const response = await confirmPayment(paymentKey, orderId, amount);
+        const response = await confirmPayment(paymentKey, orderId, amount, params.get('source'));
         if (response.data.success) {
           showToast('success', `✅ 결제 성공!\n주문번호: ${orderId}\n결제금액: ${amount}원`);
           navigate('/main'); // 홈으로 이동
