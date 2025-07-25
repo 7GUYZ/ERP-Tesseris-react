@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { ChevronLeft } from "lucide-react"
 import CustomButton from "../../components/ui/deokkyu/Deoktton"
 import Circle from "../../components/forms/deokkyu/registerstore/Circle"
@@ -38,6 +38,78 @@ export default function RegisterStore2() {
     managerId: ''
   })
 
+  // 이미지 미리보기 URL 상태 (메모리 누수 방지)
+  const [imageUrls, setImageUrls] = useState({
+    storeBusinessLicensePhoto: null,
+    storeSignPhoto: null,
+    storeFrontPhoto: null
+  })
+
+  // 로딩 상태
+  const [imageLoading, setImageLoading] = useState({
+    storeBusinessLicensePhoto: false,
+    storeSignPhoto: false,
+    storeFrontPhoto: false
+  })
+
+  // URL 추적을 위한 ref
+  const imageUrlsRef = useRef({
+    storeBusinessLicensePhoto: null,
+    storeSignPhoto: null,
+    storeFrontPhoto: null
+  })
+
+  // imageUrls가 변경될 때마다 ref 업데이트
+  useEffect(() => {
+    imageUrlsRef.current = imageUrls
+  }, [imageUrls])
+
+  // FormData 생성 함수
+  const createFormData = useCallback(() => {
+    const formData = new FormData()
+    
+    // 신청자 정보
+    formData.append('userName', userInfo.name || '')
+    formData.append('userPhone', userInfo.phone || '')
+    
+    // 사업자 등록 정보
+    formData.append('storeRegistrationNum', businessInfo.storeRegistrationNum || '')
+    formData.append('storeCorporateName', businessInfo.storeCorporateName || '')
+    formData.append('storeBossName', businessInfo.storeBossName || '')
+    formData.append('storeTypeTaxation', businessInfo.storeTypeTaxation || '')
+    formData.append('storeBusinessLicensePhoto', businessInfo.storeBusinessLicensePhoto || '')
+    
+    // 가맹점 등록 정보
+    formData.append('storeName', storeInfo.store_name || '')
+    formData.append('storePhone', storeInfo.store_phone || '')
+    formData.append('storePostcode', storeInfo.store_postcode || '')
+    formData.append('storeAddress', storeInfo.store_address || '')
+    formData.append('storeDetailAddress', storeInfo.store_detail_address || '')
+    formData.append('storeSite', storeInfo.storeSite || '')
+    formData.append('storeSignPhoto', storeInfo.storeSignPhoto || '')
+    formData.append('storeFrontPhoto', storeInfo.storeFrontPhoto || '')
+    formData.append('hasManager', storeInfo.hasManager || '')
+    formData.append('managerId', storeInfo.managerId || '')
+    
+    // 약관 동의 정보 추가
+    const agreementData = localStorage.getItem('register-store-agreements')
+    if (agreementData) {
+      try {
+        const agreements = JSON.parse(agreementData)
+        formData.append('agreementRequired1', agreements.agreements.required1 || false)
+        formData.append('agreementRequired2', agreements.agreements.required2 || false)
+        formData.append('agreementOptional1', agreements.agreements.optional1 || false)
+        formData.append('agreementOptional2', agreements.agreements.optional2 || false)
+        formData.append('agreementOptional3', agreements.agreements.optional3 || false)
+        formData.append('agreementTimestamp', agreements.timestamp || '')
+      } catch (error) {
+        console.error('약관 동의 데이터 파싱 오류:', error)
+      }
+    }
+    
+    return formData
+  }, [userInfo, businessInfo, storeInfo])
+
   // 다음 주소 API 스크립트 로드
   useEffect(() => {
     const script = document.createElement('script')
@@ -54,10 +126,272 @@ export default function RegisterStore2() {
   useEffect(() => {
     const savedUserInfo = localStorage.getItem('user-info')
     if (savedUserInfo) {
-      const parsed = JSON.parse(savedUserInfo)
-      setUserInfo({
-        name: parsed.name || '',
-        phone: parsed.phone || ''
+      try {
+        const parsed = JSON.parse(savedUserInfo)
+        
+        // name과 phone 필드로 직접 접근
+        const name = parsed.name || ''
+        const phone = parsed.phone || ''
+        
+        setUserInfo({
+          name,
+          phone
+        })
+        
+      } catch (error) {
+        console.error('user-info 파싱 오류:', error)
+      }
+    } else {
+      console.warn('⚠️ user-info가 localStorage에 없습니다.')
+    }
+  }, [])
+
+  // 비정상 종료 시 localStorage 정리
+  useEffect(() => {
+    const cleanupLocalStorage = () => {
+      console.log('🧹 RegisterStore2: 비정상 종료 감지 - localStorage 정리')
+      localStorage.removeItem('register-store-temp')
+      localStorage.removeItem('register-store-agreements')
+      if (window.tempFormData) {
+        delete window.tempFormData
+      }
+    }
+
+    const handleBeforeUnload = (event) => {
+      cleanupLocalStorage()
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        cleanupLocalStorage()
+      }
+    }
+
+    const handlePageHide = () => {
+      cleanupLocalStorage()
+    }
+
+    // 이벤트 리스너 등록
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('pagehide', handlePageHide)
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pagehide', handlePageHide)
+    }
+  }, [])
+
+  // 파일 검증 함수
+  const validateFile = useCallback((file) => {
+    // 파일 크기 검증 (10MB 제한)
+    const maxSize = 10 * 1024 * 1024 // 10MB
+    if (file.size > maxSize) {
+      alert('파일 크기는 10MB 이하여야 합니다.')
+      return false
+    }
+    
+    // 이미지 형식 검증 (iOS Photos 앱 대응)
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif']
+    
+    // MIME 타입 검증
+    const isValidMimeType = allowedTypes.includes(file.type)
+    
+    // 파일 확장자 검증 (iOS Photos 앱 대응)
+    const fileName = file.name.toLowerCase()
+    const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext))
+    
+    // iOS Photos 앱의 NSItemProvider 타입 허용
+    const isIOSPhotos = file.type === 'com.apple.Photos.NSItemProvider'
+    
+    if (!isValidMimeType && !isValidExtension && !isIOSPhotos) {
+      alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.')
+      return false
+    }
+
+    return true
+  }, [])
+
+  // 파일명 생성 함수
+  const generateFileName = useCallback((field, originalName) => {
+    const timestamp = new Date().getTime()
+    const extension = originalName.split('.').pop()
+    
+    const prefixMap = {
+      storeBusinessLicensePhoto: 'business_license',
+      storeSignPhoto: 'store_sign',
+      storeFrontPhoto: 'store_front'
+    }
+    
+    return `${prefixMap[field]}_${timestamp}.${extension}`
+  }, [])
+
+  // 파일을 로컬에 저장하는 함수 (시뮬레이션)
+  const saveFileLocally = useCallback((file, fileName) => {
+    // 실제 로컬 저장은 브라우저 제한으로 불가능하므로
+    // 여기서는 파일명만 생성하여 반환
+    console.log(`파일 저장 시뮬레이션: ${fileName}`)
+    return fileName
+  }, [])
+
+  // 파일 업로드 처리 - 더 간단한 방식
+  const handleFileUpload = useCallback((field, event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    // 파일 검증
+    if (!validateFile(file)) {
+      event.target.value = '' // input 초기화
+      return
+    }
+
+    setImageLoading(prev => ({ ...prev, [field]: true }))
+
+    // 파일명 생성 및 로컬 저장 시뮬레이션
+    const fileName = generateFileName(field, file.name)
+    const savedFileName = saveFileLocally(file, fileName)
+
+    // 즉시 URL 생성하고 설정
+    try {
+      const newImageUrl = URL.createObjectURL(file)
+      
+      // 이전 URL이 있다면 비동기로 정리
+      const prevUrl = imageUrlsRef.current[field]
+      if (prevUrl && typeof prevUrl === 'string') {
+        setTimeout(() => {
+          try {
+            URL.revokeObjectURL(prevUrl)
+          } catch (error) {
+            console.warn('이전 URL revoke 실패:', error)
+          }
+        }, 1000) // 1초 후에 정리
+      }
+      
+      // 새 URL 설정
+      setImageUrls(prev => ({
+        ...prev,
+        [field]: newImageUrl
+      }))
+      
+    } catch (error) {
+      console.error('URL 생성 실패:', error)
+      setImageLoading(prev => ({ ...prev, [field]: false }))
+      return
+    }
+
+    // 실제 File 객체 저장 (FormData에서 사용)
+    if (field === 'storeBusinessLicensePhoto') {
+      setBusinessInfo(prev => ({
+        ...prev,
+        [field]: file // File 객체 저장
+      }))
+    } else {
+      setStoreInfo(prev => ({
+        ...prev,
+        [field]: file // File 객체 저장
+      }))
+    }
+
+    // 로딩 완료 - 이미지가 성공적으로 생성되면 바로 완료 처리
+    setTimeout(() => {
+      setImageLoading(prev => ({ ...prev, [field]: false }))
+    }, 300) // 짧게 조정
+  }, [validateFile, generateFileName, saveFileLocally])
+
+  // 이미지 제거
+  const removeImage = useCallback((field) => {
+    // 로딩 상태 초기화
+    setImageLoading(prev => ({ ...prev, [field]: false }))
+    
+    // URL 정리
+    const currentUrl = imageUrlsRef.current[field]
+    if (currentUrl && typeof currentUrl === 'string') {
+      try {
+        URL.revokeObjectURL(currentUrl)
+      } catch (error) {
+        console.warn('URL revoke 실패:', error)
+      }
+    }
+    
+    // 상태 업데이트
+    setImageUrls(prev => ({
+      ...prev,
+      [field]: null
+    }))
+
+    // 파일 정보 제거
+    if (field === 'storeBusinessLicensePhoto') {
+      setBusinessInfo(prev => ({
+        ...prev,
+        [field]: null
+      }))
+    } else {
+      setStoreInfo(prev => ({
+        ...prev,
+        [field]: null
+      }))
+    }
+
+    // input 초기화
+    const input = document.getElementById(field)
+    if (input) {
+      input.value = ''
+    }
+  }, [])
+
+  // 이미지 미리보기 컴포넌트 (메모이제이션)
+  const ImagePreview = useMemo(() => {
+    return ({ field, onRemove }) => {
+      const imageUrl = imageUrls[field]
+      const isLoading = imageLoading[field]
+
+      // 로딩 중이거나 이미지가 있을 때만 렌더링
+      if (!isLoading && !imageUrl) return null
+
+      return (
+        <div className="image-preview">
+          {isLoading ? (
+            <div className="image-loading">
+              <div className="loading-spinner-small"></div>
+              <span>업로드 중...</span>
+            </div>
+          ) : imageUrl ? (
+            <>
+              <img 
+                src={imageUrl} 
+                alt="미리보기" 
+                className="preview-image"
+                onError={(e) => {
+                  console.error(`이미지 로드 오류 (${field}):`, imageUrl)
+                  // 오류 발생시 해당 필드만 정리
+                  removeImage(field)
+                }}
+              />
+              <button type="button" onClick={onRemove} className="image-remove" title="이미지 제거">
+                ×
+              </button>
+            </>
+          ) : null}
+        </div>
+      )
+    }
+  }, [imageUrls, imageLoading, removeImage])
+
+  // 컴포넌트 언마운트 시 모든 URL 정리 (메모리 누수 방지)
+  useEffect(() => {
+    return () => {
+      const currentUrls = imageUrlsRef.current
+      Object.entries(currentUrls).forEach(([field, url]) => {
+        if (url && typeof url === 'string') {
+          try {
+            URL.revokeObjectURL(url)
+          } catch (error) {
+            console.warn(`URL revoke 실패 (${field}):`, error)
+          }
+        }
       })
     }
   }, [])
@@ -78,7 +412,34 @@ export default function RegisterStore2() {
       return
     }
     
-    // 다음 페이지로 이동 (또는 제출 처리)
+    // 이전 페이지의 약관 동의 데이터 가져오기
+    const agreementData = localStorage.getItem('register-store-agreements')
+    let agreements = null
+    if (agreementData) {
+      try {
+        agreements = JSON.parse(agreementData)
+      } catch (error) {
+        console.error('약관 동의 데이터 파싱 오류:', error)
+      }
+    }
+    
+    // localStorage에 임시 저장 (다음 페이지로 데이터 전달)
+    const tempData = {
+      userInfo,
+      businessInfo,
+      storeInfo,
+      agreements,
+      // FormData 생성 함수를 위한 참조
+      createFormData: 'available'
+    }
+    localStorage.setItem('register-store-temp', JSON.stringify(tempData))
+    
+    // FormData도 별도로 생성해서 전역에서 접근 가능하도록 저장
+    const formData = createFormData()
+    // FormData를 window 객체에 임시 저장 (페이지 이동 간 유지)
+    window.tempFormData = formData
+    
+    // 다음 페이지로 이동
     navigate('/registerstore3')
   }
 
@@ -98,53 +459,6 @@ export default function RegisterStore2() {
       ...prev,
       [field]: value
     }))
-  }
-
-  const handleFileUpload = (field, event) => {
-    const file = event.target.files[0]
-    if (file) {
-      if (field === 'storeBusinessLicensePhoto') {
-        setBusinessInfo(prev => ({
-          ...prev,
-          [field]: file
-        }))
-      } else {
-        setStoreInfo(prev => ({
-          ...prev,
-          [field]: file
-        }))
-      }
-    }
-  }
-
-  const removeImage = (field) => {
-    if (field === 'storeBusinessLicensePhoto') {
-      setBusinessInfo(prev => ({
-        ...prev,
-        [field]: null
-      }))
-    } else {
-      setStoreInfo(prev => ({
-        ...prev,
-        [field]: null
-      }))
-    }
-  }
-
-  // 이미지 미리보기 컴포넌트
-  const ImagePreview = ({ file, onRemove }) => {
-    if (!file) return null
-
-    const imageUrl = URL.createObjectURL(file)
-    
-    return (
-      <div className="image-preview">
-        <img src={imageUrl} alt="미리보기" className="preview-image" />
-        <button type="button" onClick={onRemove} className="image-remove">
-          ×
-        </button>
-      </div>
-    )
   }
 
   // 다음 주소 검색
@@ -190,11 +504,11 @@ export default function RegisterStore2() {
           <div className="user-info-display">
             <div className="info-item">
               <span className="info-label">이름</span>
-              <span className="info-value">{userInfo.name || '정보 없음'}</span>
+              <span className="info-value" style={{color: '#000000', fontWeight: '600'}}>{userInfo.name || '정보 없음'}</span>
             </div>
             <div className="info-item">
               <span className="info-label">전화번호</span>
-              <span className="info-value">{userInfo.phone || '정보 없음'}</span>
+              <span className="info-value" style={{color: '#000000', fontWeight: '600'}}>{userInfo.phone || '정보 없음'}</span>
             </div>
           </div>
         </div>
@@ -271,13 +585,13 @@ export default function RegisterStore2() {
             <div className="file-upload-container">
               <input
                 type="file"
-                id="businessLicense"
+                id="storeBusinessLicensePhoto"
                 className="file-upload-input"
                 accept="image/*"
                 onChange={(e) => handleFileUpload('storeBusinessLicensePhoto', e)}
               />
               <label
-                htmlFor="businessLicense"
+                htmlFor="storeBusinessLicensePhoto"
                 className={`file-upload-button ${businessInfo.storeBusinessLicensePhoto ? 'has-file' : ''}`}
               >
                 {businessInfo.storeBusinessLicensePhoto 
@@ -286,7 +600,7 @@ export default function RegisterStore2() {
               </label>
               <div className="image-preview-container">
                 <ImagePreview 
-                  file={businessInfo.storeBusinessLicensePhoto} 
+                  field="storeBusinessLicensePhoto"
                   onRemove={() => removeImage('storeBusinessLicensePhoto')}
                 />
               </div>
@@ -374,13 +688,13 @@ export default function RegisterStore2() {
             <div className="file-upload-container">
               <input
                 type="file"
-                id="storeSign"
+                id="storeSignPhoto"
                 className="file-upload-input"
                 accept="image/*"
                 onChange={(e) => handleFileUpload('storeSignPhoto', e)}
               />
               <label
-                htmlFor="storeSign"
+                htmlFor="storeSignPhoto"
                 className={`file-upload-button ${storeInfo.storeSignPhoto ? 'has-file' : ''}`}
               >
                 {storeInfo.storeSignPhoto 
@@ -389,7 +703,7 @@ export default function RegisterStore2() {
               </label>
               <div className="image-preview-container">
                 <ImagePreview 
-                  file={storeInfo.storeSignPhoto} 
+                  field="storeSignPhoto"
                   onRemove={() => removeImage('storeSignPhoto')}
                 />
               </div>
@@ -401,13 +715,13 @@ export default function RegisterStore2() {
             <div className="file-upload-container">
               <input
                 type="file"
-                id="storeFront"
+                id="storeFrontPhoto"
                 className="file-upload-input"
                 accept="image/*"
                 onChange={(e) => handleFileUpload('storeFrontPhoto', e)}
               />
               <label
-                htmlFor="storeFront"
+                htmlFor="storeFrontPhoto"
                 className={`file-upload-button ${storeInfo.storeFrontPhoto ? 'has-file' : ''}`}
               >
                 {storeInfo.storeFrontPhoto 
@@ -416,7 +730,7 @@ export default function RegisterStore2() {
               </label>
               <div className="image-preview-container">
                 <ImagePreview 
-                  file={storeInfo.storeFrontPhoto} 
+                  field="storeFrontPhoto"
                   onRemove={() => removeImage('storeFrontPhoto')}
                 />
               </div>

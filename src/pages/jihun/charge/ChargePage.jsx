@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import ChargeLayout from '../../../components/layout/jihun/charge/ChargeLayout';
-import ChargeCalculator from '../../../components/features/jihun/charge/ChargeCalculator';
+import ChargeCalculator from '../../../components/feature/jihun/charge/ChargeCalculator';
 import PaymentAmountForm from '../../../components/forms/jihun/charge/PaymentAmountForm';
 import BalanceDisplay from '../../../components/ui/jihun/charge/BalanceDisplay';
 import PaymentDetails from '../../../components/ui/jihun/charge/PaymentDetails';
 import PaymentButton from '../../../components/ui/jihun/charge/PaymentButton';
+import { useLocation } from 'react-router-dom';
 
 const ChargePage = () => {
+  const  userCurrentPoint  = useLocation().state?.userCurrentPoint || 0;
   const [loading, setLoading] = useState(false);
   
   const {
@@ -18,7 +20,7 @@ const ChargePage = () => {
     newBalance,
     cmRate,
     handleCardPayment
-  } = ChargeCalculator();
+  } = ChargeCalculator(userCurrentPoint);
 
   const handlePayment = async () => {
     setLoading(true);

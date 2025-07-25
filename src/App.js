@@ -7,6 +7,7 @@ import AppRoutes from "./routes/AppRoutes";
 import LoginPage from "./pages/jungeun/LoginPage";
 import TestSignUp from "./pages/jungeun/TestSignUp";
 import TestFindPw from "./pages/jungeun/TestFindPw";
+import SignupPage from "./pages/taekjun/SignupPage";
 
 function App() {
   const navigate = useNavigate();
@@ -22,13 +23,16 @@ function App() {
 
   return (
     <ToastProvider>
-      <Routes>
-        <Route path='/' element={<LoginPage />} />
-        <Route path='/TestSignUp' element={<TestSignUp />} /> {/* 임시 회원가입 페이지 */}
-        <Route path='/TestFindPw' element={<TestFindPw />} /> {/* 임시 비번찾기 페이지 */}
-        {/* 공통 레이아웃과 Route들이 들어있는 AppRoutes(헤더, 내비 포함) */}
-        <Route path="/*" element={<AppRoutes />} />
-      </Routes>
+      <BrowserRouter basename={process.env.REACT_APP_BASENAME || undefined}>
+        <Routes>
+          <Route path='/' element={<LoginPage />} />
+          <Route path='/signup' element={<SignupPage />} /> {/* 회원가입 페이지 */}
+          <Route path='/TestSignUp' element={<TestSignUp />} /> {/* 임시 회원가입 페이지 */}
+          <Route path='/TestFindPw' element={<TestFindPw />} /> {/* 임시 비번찾기 페이지 */}
+          {/* 공통 레이아웃과 Route들이 들어있는 AppRoutes(헤더, 내비 포함) */}
+          <Route path="/*" element={<AppRoutes />} />
+        </Routes>
+      </BrowserRouter>
     </ToastProvider>
   )
 }

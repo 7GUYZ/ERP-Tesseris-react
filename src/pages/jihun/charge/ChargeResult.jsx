@@ -1,31 +1,34 @@
-import { useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { confirmPayment } from '../../../api/auth/JihunAuth';
+import React from 'react';
+import { useToast } from '../../../context/jungeun/ToastContext';
 
-const ChargeResult = () => {
-  const [params] = useSearchParams();
-  const navigate = useNavigate();
+const ChargeResult = ({ orderId, amount, success, failMessage }) => {
+  const { toast } = useToast();
 
-  useEffect(() => {
-    const paymentKey = params.get('paymentKey');
-    const orderId = params.get('orderId');
-    const amount = params.get('amount');
-    const failMessage = params.get('message');
-    const handleConfirm = async () => {
-      try {
-        const response = await confirmPayment(paymentKey, orderId, amount);
-        if (response.data.success) {
-          alert(`✅ 결제 성공!\n주문번호: ${orderId}\n결제금액: ${amount}원`);
-          navigate('/TestMain'); // 홈으로 이동
-        }
-      } catch (error) {
-        alert(`❌ 결제 실패!\n사유: ${failMessage || '결제 중단됨'}`);
-        navigate('/TestMain');
-      }
+  React.useEffect(() => {
+    if (success) {
+      toast.success(`✅ 결제 성공!\n주문번호: ${orderId}\n결제금액: ${amount}원`);
+    } else {
+      toast.error(`❌ 결제 실패!\n사유: ${failMessage || '결제 중단됨'}`);
     }
-    handleConfirm();
-  }, [])
-  return null; // 페이지 자체는 아무것도 안 보여줘도 됨
+  }, [success, orderId, amount, failMessage, toast]);
+
+  return (
+    <div className="charge-result">
+      <h2>결제 결과</h2>
+      {success ? (
+        <div className="success">
+          <p>✅ 결제가 성공적으로 완료되었습니다!</p>
+          <p>주문번호: {orderId}</p>
+          <p>결제금액: {amount}원</p>
+        </div>
+      ) : (
+        <div className="error">
+          <p>❌ 결제에 실패했습니다.</p>
+          <p>사유: {failMessage || '결제 중단됨'}</p>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default ChargeResult;

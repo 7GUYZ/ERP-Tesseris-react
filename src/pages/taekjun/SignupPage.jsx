@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { signupApi } from '../../api/auth/TaekjunAuth';
 import '../../styles/taekjun/SignupPage.css';
 
 const SignupPage = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -21,6 +23,7 @@ const SignupPage = () => {
   // Step 2: 이메일 인증 상태
   const [emailAuth, setEmailAuth] = useState({
     email: '',
+    emailDomain: '',
     name: '',
     authCode: '',
     authToken: '',
@@ -34,20 +37,16 @@ const SignupPage = () => {
     pin: '',
     referralId: '',
     email: '',
+    emailDomain: '',
     password: '',
     confirmPassword: '',
     nickname: '',
     zoneCode: '',
     address: '',
     detailAddress: '',
-    roadAddress: '',
-    jibunAddress: '',
-    latitude: '',
-    longitude: ''
+    birthday: '',
+    userGenderIndex: null
   });
-
-
-
 
 
   // 카카오 주소 API 스크립트 로드
@@ -112,19 +111,30 @@ const SignupPage = () => {
     setError('');
   };
 
+  // 이메일 도메인 목록
+  const emailDomains = [
+    '@naver.com',
+    '@gmail.com',
+    '@daum.net',
+    '@kakao.com'
+
+  ];
+
   // 이메일 인증 메일 발송
   const handleSendAuthEmail = async () => {
-    if (!emailAuth.email || !emailAuth.name) {
+    if (!emailAuth.email || !emailAuth.emailDomain || !emailAuth.name) {
       setError('이메일과 이름을 입력해주세요.');
       return;
     }
+
+    const fullEmail = emailAuth.email + emailAuth.emailDomain;
 
     setLoading(true);
     setError('');
 
     try {
       const response = await signupApi.sendAuthEmail({
-        email: emailAuth.email,
+        email: fullEmail,
         name: emailAuth.name
       });
 
@@ -138,7 +148,12 @@ const SignupPage = () => {
         setError(response.data.message || '인증 메일 발송에 실패했습니다.');
       }
     } catch (err) {
-      setError('인증 메일 발송 중 오류가 발생했습니다.');
+      console.error('인증 메일 발송 오류:', err);
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('인증 메일 발송 중 오류가 발생했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -166,13 +181,23 @@ const SignupPage = () => {
         setEmailAuth(prev => ({ ...prev, isVerified: true }));
         setSuccess('이메일 인증이 완료되었습니다.');
         // 인증된 이메일을 userInfo에 저장
-        setUserInfo(prev => ({ ...prev, email: emailAuth.email }));
+        const fullEmail = emailAuth.email + emailAuth.emailDomain;
+        setUserInfo(prev => ({ 
+          ...prev, 
+          email: fullEmail,
+          emailDomain: emailAuth.emailDomain 
+        }));
         setTimeout(() => setCurrentStep(3), 1000);
       } else {
         setError('인증 코드가 올바르지 않습니다.');
       }
     } catch (err) {
-      setError('인증 코드 검증 중 오류가 발생했습니다.');
+      console.error('인증 코드 검증 오류:', err);
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('인증 코드 검증 중 오류가 발생했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -226,8 +251,6 @@ const SignupPage = () => {
           ...prev,
           zoneCode: data.zonecode,
           address: addr,
-          roadAddress: data.roadAddress,
-          jibunAddress: data.jibunAddress,
           detailAddress: ''
         }));
         
@@ -277,43 +300,62 @@ const SignupPage = () => {
     setError('');
 
     try {
+      // 백엔드 Step3UserInfoDTO 구조에 맞게 데이터 구성
       const signupData = {
         name: userInfo.name,
         phone: userInfo.phone,
         pin: userInfo.pin,
-        referralId: userInfo.referralId,
+        referralId: userInfo.referralId || null,
         email: userInfo.email,
         password: userInfo.password,
         nickname: userInfo.nickname,
-        zoneCode: userInfo.zoneCode,
-        address: userInfo.address,
-        detailAddress: userInfo.detailAddress,
-        roadAddress: userInfo.roadAddress,
-        jibunAddress: userInfo.jibunAddress,
-        latitude: userInfo.latitude,
-        longitude: userInfo.longitude
+        zoneCode: userInfo.zoneCode || null,
+        address: userInfo.address || null,
+        detailAddress: userInfo.detailAddress || null,
+        birthday: userInfo.birthday || null,
+        userGenderIndex: userInfo.userGenderIndex || null
       };
 
       const response = await signupApi.finalSignup(signupData);
 
       if (response.data.success) {
-        setSuccess('회원가입이 완료되었습니다!');
-        // 추천인 관계 생성 (있는 경우)
+        // 추천인이 있는 경우 추천 보상 지급
         if (userInfo.referralId) {
           try {
-            await signupApi.createReferral({
-              referralCode: userInfo.referralId,
-              userIndex: response.data.userId
-            });
-          } catch (err) {
-            console.error('추천인 관계 생성 실패:', err);
+            const rewardData = {
+              newUserId: response.data.userIndex, // 새로 가입한 사용자 ID
+              referralId: userInfo.referralId, // 추천인 ID
+              rewardAmount: 10000 // 보상 금액
+            };
+            
+            const rewardResponse = await signupApi.giveReferralReward(rewardData);
+            
+            if (rewardResponse.data.success) {
+              alert('회원가입이 성공적으로 완료되었습니다!\n추천인과 함께 10,000cm를 받았습니다!');
+            } else {
+              alert('회원가입이 성공적으로 완료되었습니다!\n추천 보상 지급에 실패했습니다.');
+            }
+          } catch (rewardErr) {
+            console.error('추천 보상 지급 오류:', rewardErr);
+            alert('회원가입이 성공적으로 완료되었습니다!\n추천 보상 지급 중 오류가 발생했습니다.');
           }
+        } else {
+          // 추천인이 없는 경우
+          alert('회원가입이 성공적으로 완료되었습니다!');
         }
+        
+        // 로그인 페이지로 이동
+        navigate('/login');
       } else {
         setError(response.data.message || '회원가입에 실패했습니다.');
       }
     } catch (err) {
-      setError('회원가입 중 오류가 발생했습니다.');
+      console.error('회원가입 오류:', err);
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('회원가입 중 오류가 발생했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -330,7 +372,12 @@ const SignupPage = () => {
         setError('이미 사용 중인 이메일입니다.');
       }
     } catch (e) {
-      setError('이메일 중복확인 중 오류가 발생했습니다.');
+      console.error('이메일 중복확인 오류:', e);
+      if (e.response?.data?.message) {
+        setError(e.response.data.message);
+      } else {
+        setError('이메일 중복확인 중 오류가 발생했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -347,7 +394,12 @@ const SignupPage = () => {
         setError('이미 사용 중인 닉네임입니다.');
       }
     } catch (e) {
-      setError('닉네임 중복확인 중 오류가 발생했습니다.');
+      console.error('닉네임 중복확인 오류:', e);
+      if (e.response?.data?.message) {
+        setError(e.response.data.message);
+      } else {
+        setError('닉네임 중복확인 중 오류가 발생했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -475,15 +527,27 @@ const SignupPage = () => {
                 <label>이메일</label>
                 <div className="email-input-group">
                   <input
-                    type="email"
+                    type="text"
                     value={emailAuth.email}
                     onChange={(e) => setEmailAuth(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="이메일을 입력하세요"
+                    placeholder="이메일 주소를 입력하세요"
                   />
+                  <select
+                    value={emailAuth.emailDomain}
+                    onChange={(e) => setEmailAuth(prev => ({ ...prev, emailDomain: e.target.value }))}
+                    className="email-domain-select"
+                  >
+                    <option value="">도메인 선택</option>
+                    {emailDomains.map((domain, index) => (
+                      <option key={index} value={domain}>
+                        {domain}
+                      </option>
+                    ))}
+                  </select>
                   <button 
                     className="auth-button"
                     onClick={handleSendAuthEmail}
-                    disabled={loading || !emailAuth.email || !emailAuth.name}
+                    disabled={loading || !emailAuth.email || !emailAuth.emailDomain || !emailAuth.name}
                   >
                     {loading ? '발송 중...' : '인증 메일 발송'}
                   </button>
@@ -609,6 +673,31 @@ const SignupPage = () => {
                   onChange={(e) => setUserInfo(prev => ({ ...prev, referralId: e.target.value }))}
                   placeholder="추천인 이메일 또는 닉네임"
                 />
+              </div>
+              
+              <div className="input-group">
+                <label>생일 (선택)</label>
+                <input
+                  type="date"
+                  value={userInfo.birthday}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, birthday: e.target.value }))}
+                  placeholder="생일을 선택하세요"
+                />
+              </div>
+              
+              <div className="input-group">
+                <label>성별 (선택)</label>
+                <select
+                  value={userInfo.userGenderIndex || ''}
+                  onChange={(e) => setUserInfo(prev => ({ 
+                    ...prev, 
+                    userGenderIndex: e.target.value ? parseInt(e.target.value) : null 
+                  }))}
+                >
+                  <option value="">성별을 선택하세요</option>
+                  <option value="1">남성</option>
+                  <option value="2">여성</option>
+                </select>
               </div>
               
               <div className="input-group">
