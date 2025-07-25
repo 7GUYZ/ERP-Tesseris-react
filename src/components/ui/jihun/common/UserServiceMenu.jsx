@@ -28,7 +28,7 @@ import {
   CalendarPlus,
 } from "lucide-react";
 import '../../../../styles/jihun/common/common.css';
-
+import { useNavigate } from "react-router-dom";
 
 // [커스텀 메뉴 구성 위치] 아래 배열을 개발자가 원하는 대로 추가/삭제/변경하면 됩니다.
 // path: 클릭 시 이동할 주소
@@ -54,6 +54,8 @@ let serviceItems = baseServiceItems;
 
 export default function UserServiceMenu() {
   const [userRole, setUserRole] = useState(null);
+  const navigate = useNavigate();
+
 
   if (userRole === "1") {
     // 일반회원 전용 메뉴 
@@ -116,7 +118,7 @@ export default function UserServiceMenu() {
               <div
                 key={index}
                 className="usermain-servicemenu-item"
-                onClick={() => window.location.href = item.path} // [주소 이동 기능]
+                onClick={() => navigate(item.path)} // [주소 이동 기능]
                 style={{ cursor: 'pointer' }}
               >
                 <div className={`usermain-servicemenu-iconwrap ${item.color}`}>

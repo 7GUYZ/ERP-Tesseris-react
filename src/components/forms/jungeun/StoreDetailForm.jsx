@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import "../../../styles/jungeun/storeDetail.css";
 import { ChevronLeft, Phone, MapPin, Clock, ChevronRight, MoveLeftIcon as SlideLeft, Coffee, Globe, Info, Coins, Image } from "lucide-react"
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { storeDetail } from "../../../api/auth/JungeunAuth";
 
 const StoreDetailForm = () => {
@@ -9,6 +9,7 @@ const StoreDetailForm = () => {
     const { storeIndex } = useParams();
     const [store, setStore] = useState({});
     const autoSlideRef = useRef(null);
+    const navigate = useNavigate();
 
     // store가 없으면 빈 값 처리
     const name = store?.storeName || "";
@@ -78,7 +79,7 @@ const StoreDetailForm = () => {
 
     const handlePhoneCall = () => {
         if (store.storePhone != null) {
-            window.location.href = `tel:${store.storePhone}`;
+            navigate(`tel:${store.storePhone}`);
         }
     };
 
