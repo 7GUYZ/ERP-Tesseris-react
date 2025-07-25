@@ -157,7 +157,7 @@ const LoginForm = () => {
         {isLoading ? "로그인 중..." : "로그인"}
       </LoginButton>
       <div className="user-login-link-container">
-        <a
+        <button
           href="/"
           className="user-login-link"
           onMouseEnter={(e) => {
@@ -170,14 +170,14 @@ const LoginForm = () => {
           }}
           onClick={(e) => {
             e.preventDefault()
-            navigate("/TestFindPw");
+            navigate("/TestFindPw")
           }}
         >
           비밀번호 찾기
-        </a>
-        <a
-          href="/"
-          className="user-login-link"
+        </button>
+        <button
+          type="button"
+          className="userlogin-link"
           onMouseEnter={(e) => {
             e.target.style.color = "#FDCD00"
             e.target.style.opacity = "1"
@@ -188,11 +188,11 @@ const LoginForm = () => {
           }}
           onClick={(e) => {
             e.preventDefault()
-            navigate("/signup");
+            navigate("/signup")
           }}
         >
           회원가입
-        </a>
+        </button>
       </div>
     </form>
   )
