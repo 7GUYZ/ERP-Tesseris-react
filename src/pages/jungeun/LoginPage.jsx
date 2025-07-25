@@ -5,7 +5,7 @@ import "../../styles/jungeun/login.css"
 
 const LoginPage = () => {
   return (
-    <div className="login-container">
+    <div className="user-login-container">
       <LoginForm />
     </div>
   )

@@ -13,10 +13,10 @@ const Toast = ({ type, message, onClose }) => {
 
   const getTypeClass = () => {
     switch (type) {
-      case "success": return "toast toast-success"
-      case "error": return "toast toast-error"
-      case "info": return "toast toast-info"
-      default: return "toast"
+      case "success": return "user-toast user-toast-success"
+      case "error": return "user-toast user-toast-error"
+      case "info": return "user-toast user-toast-info"
+      default: return "user-toast"
     }
   }
 
@@ -65,7 +65,7 @@ const Toast = ({ type, message, onClose }) => {
           {getIcon()}
           <span>{message}</span>
           <button
-            className="toast-close"
+            className="user-toast-close"
             onClick={onClose}
             onMouseEnter={e => (e.target.style.opacity = "1")}
             onMouseLeave={e => (e.target.style.opacity = "0.8")}
