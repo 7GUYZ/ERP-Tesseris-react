@@ -218,7 +218,7 @@ export default function MobileMyPage() {
               <h3 className="mypage-cardTitle">보안 / 설정</h3>
             </div>
             <div className="mypage-menuContent">
-              <Link className="mypage-menuItem">
+              <Link to="/mypage/changepassword" className="mypage-menuItem">
                 <div className="mypage-menuLabel">
                   <Lock className="menuIcon" />
                   <span>비밀번호 변경</span>
