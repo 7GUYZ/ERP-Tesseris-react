@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   Settings,
@@ -54,6 +55,7 @@ let serviceItems = baseServiceItems;
 
 export default function UserServiceMenu() {
   const [userRole, setUserRole] = useState(null);
+  const navigate = useNavigate();
 
   if (userRole === "1") {
     // 일반회원 전용 메뉴 
@@ -116,7 +118,7 @@ export default function UserServiceMenu() {
               <div
                 key={index}
                 className="usermain-servicemenu-item"
-                onClick={() => window.location.href = item.path} // [주소 이동 기능]
+                onClick={() => navigate(item.path)} // [주소 이동 기능] - SPA 방식으로 변경
                 style={{ cursor: 'pointer' }}
               >
                 <div className={`usermain-servicemenu-iconwrap ${item.color}`}>
