@@ -12,6 +12,7 @@ const ChargeCalculator = (userCurrentPoint) => {
     const { showToast } = useToast();
     const { source } = useParams();
     const safeSource = source || 'deault';
+    const basePath = process.env.NODE_ENV === 'production' ? '/react' : '';
     // 결제 금액 계산
     const calculatePaymentDetails = () => {
         const amount = parseFloat(paymentAmount) || 0;
@@ -19,7 +20,6 @@ const ChargeCalculator = (userCurrentPoint) => {
         const totalPayment = amount + vatAmount;
         const cmToCharge = amount * cmRate;
         const newBalance = currentBalance + cmToCharge;
-
         return {
             vatAmount,
             totalPayment,
@@ -35,7 +35,7 @@ const ChargeCalculator = (userCurrentPoint) => {
         }
         try {
             // 토스페이먼츠 SDK 초기화
-            const clientKey = 'test_ck_d46qopOB89J0nJKlpZxE3ZmM75y0';
+            const clientKey = process.env.REACT_APP_TOSS_JiHUN_CLIENT_KEY;
             const tossPayments = await loadTossPayments(clientKey);
             // 결제 위젯 렌더링
             await tossPayments.requestPayment('카드',{
@@ -44,8 +44,8 @@ const ChargeCalculator = (userCurrentPoint) => {
                 orderName: '택준이 팝니다.',
                 customerName: JSON.parse(localStorage.getItem('user-info')).name,
                 customerEmail: JSON.parse(localStorage.getItem('user-info')).email,
-                successUrl: `${window.location.origin}/charge/result?source=${safeSource}`,
-                failUrl: `${window.location.origin}/charge/result?source=${safeSource}`,
+                successUrl: `${window.location.origin}${basePath}/charge/result?source=${safeSource}`,
+                failUrl: `${window.location.origin}${basePath}/charge/result?source=${safeSource}`,
                 card: {
                     useEscrow: false,
                     flowMode: "DEFAULT",
