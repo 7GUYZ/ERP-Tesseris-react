@@ -66,6 +66,12 @@
     transition: all 0.3s ease;
     font-weight: 500;
     position: relative;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    font-family: inherit;
 }
 
 /* InputField */

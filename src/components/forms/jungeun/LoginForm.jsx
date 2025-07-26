@@ -107,14 +107,16 @@ const LoginForm = () => {
         // 로그인 성공 시 Zustand 스토어 상태 업데이트
         useAuthStore.getState().zu_login();
 
-        // 성공 토스트 메시지
-        showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
 
         if (["1", "2", "3"].includes(userInfo.user_role_index)) {
-          setTimeout(() => navigate("/main"), 1500);
+          // 성공 토스트 메시지
+          showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
         } else {
           showToast("error", "허용되지 않은 사용자입니다");
+          return;
         }
+        setTimeout(() => navigate("/main"), 2500);
+
       }
     } catch (error) {
       console.error("로그인 에러:", error);
@@ -133,7 +135,7 @@ const LoginForm = () => {
 
   return (
     <form className="user-login-form" onSubmit={handleLogin}>
-      <h1 className="user-login-title">TESSERIS<br/><span style={{fontSize:18}}>소상공인 물물교환 결제시스템</span></h1>
+      <h1 className="user-login-title">TESSERIS<br /><span style={{ fontSize: 18 }}>소상공인 물물교환 결제시스템</span></h1>
       <p className="user-login-subtitle">서비스 이용을 위해 로그인해주세요.</p>
       <InputField
         type="text"
@@ -177,7 +179,7 @@ const LoginForm = () => {
         </button>
         <button
           type="button"
-          className="userlogin-link"
+          className="user-login-link"
           onMouseEnter={(e) => {
             e.target.style.color = "#FDCD00"
             e.target.style.opacity = "1"
