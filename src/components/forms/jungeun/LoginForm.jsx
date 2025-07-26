@@ -8,6 +8,7 @@ import ErrorMessage from "../../ui/jungeun/ErrorMessage.jsx"
 import { login } from "../../../api/auth/JungeunAuth.jsx"
 import useAuthStore from "../../../store/jungeun/AuthStore.js"
 import { useToast } from "../../../context/jungeun/ToastContext.jsx"
+import { useWebSocket } from "../../../context/jungeun/WebSocketContext.jsx"
 
 const LoginForm = () => {
   const [email, setEmail] = useState("")
@@ -16,6 +17,7 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({})
   const { showToast } = useToast()
   const navigate = useNavigate();
+  const { connectWebSocket } = useWebSocket();
 
   // 이메일 유효성 검사
   const validateEmail = (email) => {
@@ -90,33 +92,34 @@ const LoginForm = () => {
 
       // 백엔드 응답에 맞춰서 처리
       if (response.data && response.data.resultCode === 200) {
-        // 토큰 저장
-        const accessToken = response.headers['authorization'];
-
         // response.data.data = user-info 변수에 저장
         const userInfo = response.data.data
 
-        if (accessToken) {
-          // localStorage에 토큰 저장
-          localStorage.setItem("access-token", accessToken)
-          // localStorage에 user-info 저장 - 백엔드에서 응답 본문에 포함된 데이터 저장
-          localStorage.setItem("user-info", JSON.stringify(response.data.data))
-          // 쿠키에 refresh 토큰 저장은 수동처리 할 필요 없음. 자동으로 처리됨-백엔드에서 Set-Cookie 처리함.
-        }
-
-        // 로그인 성공 시 Zustand 스토어 상태 업데이트
-        useAuthStore.getState().zu_login();
-
-
         if (["1", "2", "3"].includes(userInfo.user_role_index)) {
+          // 토큰 저장
+          const accessToken = response.headers['authorization'];
+
+          if (accessToken) {
+            // localStorage에 토큰 저장
+            localStorage.setItem("access-token", accessToken)
+            // localStorage에 user-info 저장 - 백엔드에서 응답 본문에 포함된 데이터 저장
+            localStorage.setItem("user-info", JSON.stringify(response.data.data))
+          }
+
+          // 로그인 성공 시 Zustand 스토어 상태 업데이트
+          useAuthStore.getState().zu_login();
+
+          // ✅ WebSocket 연결 (자동 알림 수신) - 권한 체크 안에서 실행
+          connectWebSocket(accessToken, userInfo.user_index, (notification) => {
+            if (window.showToast) window.showToast('info', notification.message);
+          });
+
           // 성공 토스트 메시지
           showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
+          setTimeout(() => navigate("/main"), 2500);
         } else {
           showToast("error", "허용되지 않은 사용자입니다");
-          return;
         }
-        setTimeout(() => navigate("/main"), 2500);
-
       }
     } catch (error) {
       console.error("로그인 에러:", error);
