@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import "../../../styles/jiyun/alert/alert.css";
 
 export default function AlertPage() {
+  // admin 방식의 알림 설정 데이터
+  const initialSettings = [
+    { key: "announcement", label: "공지사항 알림", active: 1 },
+    { key: "coupon1", label: "쿠폰 알림", active: 0 },
+    { key: "qa", label: "Q&A 알림", active: 0 },
+    { key: "coupon2", label: "쿠폰 알림", active: 0 },
+    { key: "charge", label: "충전 알림", active: 0 },
+    { key: "coupon3", label: "쿠폰 알림", active: 0 },
+  ];
+
   const [isExpanded, setIsExpanded] = useState(false);
-  const [settings, setSettings] = useState({
-    announcement: true,
-    qa: false,
-    charge: false,
-    coupon1: false,
-    coupon2: false,
-    coupon3: false,
-  });
+  const [settings, setSettings] = useState(initialSettings);
 
   const notifications = [
     {
@@ -69,13 +72,27 @@ export default function AlertPage() {
       isRead: true,
       type: "coupon",
     },
+    {
+      id: 9,
+      message: "OO 가맹점에서 쿠폰을 선물했습니다.",
+      timestamp: "2024.01.15 08:55",
+      isRead: false,
+      type: "coupon",
+    },
   ];
 
-  const handleToggle = (key) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+  // 알림을 isRead 기준으로 정렬: 신규 알림(false) 위, 지난 알림(true) 아래
+  const sortedNotifications = [...notifications].sort((a, b) => {
+    if (a.isRead === b.isRead) return 0;
+    return a.isRead ? 1 : -1;
+  });
+
+  const handleSettingChange = (key) => {
+    setSettings((prev) =>
+      prev.map((item) =>
+        item.key === key ? { ...item, active: item.active ? 0 : 1 } : item
+      )
+    );
   };
 
   const toggleExpand = () => {
@@ -98,95 +115,22 @@ export default function AlertPage() {
             {isExpanded && (
               <div className="alert-settings-panel">
                 <div className="alert-settings-grid">
-                  <div className="alert-setting-row">
-                    <span className="alert-setting-label">• 공지사항 알림</span>
-                    <label className="alert-toggle">
-                      <input
-                        type="checkbox"
-                        checked={settings.announcement}
-                        onChange={() => handleToggle("announcement")}
-                      />
-                      <span className="alert-slider"></span>
-                      <span className="alert-toggle-text">
-                        {settings.announcement ? "ON" : "OFF"}
-                      </span>
-                    </label>
-                  </div>
-
-                  <div className="alert-setting-row">
-                    <span className="alert-setting-label">• 쿠폰 알림</span>
-                    <label className="alert-toggle">
-                      <input
-                        type="checkbox"
-                        checked={settings.coupon1}
-                        onChange={() => handleToggle("coupon1")}
-                      />
-                      <span className="alert-slider"></span>
-                      <span className="alert-toggle-text">
-                        {settings.coupon1 ? "ON" : "OFF"}
-                      </span>
-                    </label>
-                  </div>
-
-                  <div className="alert-setting-row">
-                    <span className="alert-setting-label">• Q&A 알림</span>
-                    <label className="alert-toggle">
-                      <input
-                        type="checkbox"
-                        checked={settings.qa}
-                        onChange={() => handleToggle("qa")}
-                      />
-                      <span className="alert-slider"></span>
-                      <span className="alert-toggle-text">
-                        {settings.qa ? "ON" : "OFF"}
-                      </span>
-                    </label>
-                  </div>
-
-                  <div className="alert-setting-row">
-                    <span className="alert-setting-label">• 쿠폰 알림</span>
-                    <label className="alert-toggle">
-                      <input
-                        type="checkbox"
-                        checked={settings.coupon2}
-                        onChange={() => handleToggle("coupon2")}
-                      />
-                      <span className="alert-slider"></span>
-                      <span className="alert-toggle-text">
-                        {settings.coupon2 ? "ON" : "OFF"}
-                      </span>
-                    </label>
-                  </div>
-
-                  <div className="alert-setting-row">
-                    <span className="alert-setting-label">• 충전 알림</span>
-                    <label className="alert-toggle">
-                      <input
-                        type="checkbox"
-                        checked={settings.charge}
-                        onChange={() => handleToggle("charge")}
-                      />
-                      <span className="alert-slider"></span>
-                      <span className="alert-toggle-text">
-                        {settings.charge ? "ON" : "OFF"}
-                      </span>
-                    </label>
-                  </div>
-
-                  <div className="alert-setting-row">
-                    <span className="alert-setting-label">• 쿠폰 알림</span>
-                    <label className="alert-toggle">
-                      <input
-                        type="checkbox"
-                        checked={settings.coupon3}
-                        onChange={() => handleToggle("coupon3")}
-                      />
-                      <span className="alert-slider"></span>
-                      <span className="alert-toggle-text">
-                        {settings.coupon3 ? "ON" : "OFF"}
-                      </span>
-                    </label>
-                  </div>
+                  {settings.map((setting) => (
+                    <div className="alert-setting-row" key={setting.key}>
+                      <span className="alert-setting-label">• {setting.label}</span>
+                      <label className="alert-toggle">
+                        <input
+                          type="checkbox"
+                          checked={!!setting.active}
+                          onChange={() => handleSettingChange(setting.key)}
+                        />
+                        <span className="alert-slider"></span>
+                        <span className="alert-toggle-text">
+                          {setting.active ? "ON" : "OFF"}
+                        </span>
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -207,7 +151,7 @@ export default function AlertPage() {
             </div>
 
             <div className="alert-notification-list">
-              {notifications.map((notification) => (
+              {sortedNotifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`alert-notification-row ${

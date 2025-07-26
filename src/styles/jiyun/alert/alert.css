@@ -166,10 +166,6 @@
   margin: 0;
 }
 
-.alert-notification-list {
-  /* Empty for now */
-}
-
 .alert-notification-row {
   display: flex;
   justify-content: space-between;

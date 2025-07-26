@@ -237,7 +237,7 @@ export default function MobileMyPage() {
               <h3 className="mypage-cardTitle">보안 / 설정</h3>
             </div>
             <div className="mypage-menuContent">
-              <Link className="mypage-menuItem">
+              <Link to="/mypage/changepassword" className="mypage-menuItem">
                 <div className="mypage-menuLabel">
                   <Lock className="menuIcon" />
                   <span>비밀번호 변경</span>
@@ -304,7 +304,14 @@ export default function MobileMyPage() {
         </div>
         <footer className="mypage-footer">
           <div className="mypage-footerContent">
-            <Link className="mypage-kakaoLink">카카오톡 상담하기</Link>
+            <a
+              className="mypage-kakaoLink"
+              href="https://pf.kakao.com/_ebYWn/chat"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              카카오톡 상담하기
+            </a>
             <div className="mypage-companyInfo">
               씨엠바더코리아㈜ | 사업자 등록번호 364-86-03002
               <br />
