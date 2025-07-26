@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { getUserEventDetail, downloadUserCoupon } from '../../api/auth/DabinAuth';
-import '../../styles/dabin/UserEventDetailPage.css';
+import { ArrowLeft, Check } from 'lucide-react';
+import { getUserEventDetail, downloadUserCoupon, getMyStoreImages, getPresignedUrl } from '../../api/auth/DabinAuth';
+import '../../styles/dabin/EventDetailPage.css';
 
 const UserEventDetailPage = () => {
     const { eventMasterIndex } = useParams();
     const navigate = useNavigate();
     const [eventDetail, setEventDetail] = useState(null);
+    const [storeImages, setStoreImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [downloading, setDownloading] = useState(false);
 
@@ -17,32 +18,53 @@ const UserEventDetailPage = () => {
         }
     }, [eventMasterIndex]);
 
+    // StoreInfoPage와 동일한 Presigned URL 변환 함수
+    const fetchPresignedUrls = async (images) => {
+        if (!images || images.length === 0) {
+            setStoreImages([]);
+            return;
+        }
+        const urls = await Promise.all(
+            images.map(async (img) => {
+                try {
+                    const url = await getPresignedUrl(img.storeImage);
+                    return { ...img, presignedUrl: url };
+                } catch {
+                    return { ...img, presignedUrl: null };
+                }
+            })
+        );
+        // 대표이미지(T)만 필터링
+        const mainImages = urls.filter(img => img.storeMainImageStatus === 'T');
+        setStoreImages(mainImages);
+    };
+
     const fetchEventDetail = async () => {
         setLoading(true);
         try {
+            // 1. 이벤트 상세 정보 조회
             const response = await getUserEventDetail(eventMasterIndex);
             if (response.data.resultCode === 200) {
                 const data = response.data.data;
                 
-                // 기존 단일 쿠폰 데이터를 배열로 변환
-                const couponData = {
-                    couponIndex: data.couponIndex,
-                    couponName: data.couponName,
-                    couponPrice: data.couponPrice,
-                    couponIssuanceStatus: data.couponIssuanceStatus,
-                    couponLimit: data.couponLimit,
-                    couponLimitTime: data.couponLimitTime,
-                    couponIssuanceTime: data.couponIssuanceTime,
-                    backgroundImage: null // 배경 이미지 제거
-                };
+                // 새로운 API 응답 구조에 맞게 처리
+                // coupons 배열이 이미 포함되어 있음
+                setEventDetail(data);
                 
-                // 가게 정보와 쿠폰 목록을 포함한 새로운 객체 생성
-                const eventDetailData = {
-                    ...data,
-                    coupons: [couponData]
-                };
-                
-                setEventDetail(eventDetailData);
+                // 2. 가맹점 이미지 조회 (store_main_image_status = 'T'인 메인 이미지만)
+                try {
+                    const storeImagesResponse = await getMyStoreImages();
+                    console.log('Store Images Response:', storeImagesResponse);
+                    
+                    if (storeImagesResponse && storeImagesResponse.data) {
+                        await fetchPresignedUrls(storeImagesResponse.data);
+                    } else {
+                        setStoreImages([]);
+                    }
+                } catch (imageError) {
+                    console.error('가맹점 이미지 조회 실패:', imageError);
+                    setStoreImages([]);
+                }
             } else {
                 alert('이벤트 정보를 불러오는데 실패했습니다.');
                 navigate('/user-event-list');
@@ -90,156 +112,165 @@ const UserEventDetailPage = () => {
         navigate('/user-event-list');
     };
 
-    const getBusinessStateText = (state) => {
-        switch (state) {
-            case 0: return '영업 종료';
-            case 1: return '영업중';
-            case 2: return '미설정';
-            default: return '';
-        }
-    };
 
-    const getBusinessStateClass = (state) => {
-        switch (state) {
-            case 0: return 'user-event-detail-bg-wait';
-            case 1: return 'user-event-detail-bg-open';
-            case 2: return 'user-event-detail-bg-wait';
-            default: return '';
-        }
-    };
 
     const getCouponType = (price) => {
-        if (price >= 10000) return "user-event-detail-coupon-background-gray";
-        if (price >= 5000) return "user-event-detail-coupon-background-bronze";
-        return "user-event-detail-coupon-background-main";
+        if (price >= 50000) return "price-50000"      // ₩50,000 - 신사임당 - 노란색
+        if (price >= 10000) return "price-10000"      // ₩10,000 - 세종대왕 - 초록색
+        if (price >= 5000) return "price-5000"        // ₩5,000 - 율곡 이이 - 주황색
+        if (price >= 1000) return "price-1000"        // ₩1,000 - 퇴계 이황 - 파란색
+        return "main"                                  // 기본값
     };
 
     if (loading) {
         return (
-            <div className="user-event-detail-page">
-                <div className="user-event-detail-loading">
-                    <div className="user-event-detail-loading-circle"></div>
-                    <div className="user-event-detail-loading-text">로딩 중</div>
-                </div>
+            <div className="event-detail-page">
+                <div className="event-detail-loading">이벤트 상세 정보를 불러오는 중...</div>
             </div>
         );
     }
 
     if (!eventDetail) {
         return (
-            <div className="user-event-detail-page">
-                <p>이벤트 정보를 찾을 수 없습니다.</p>
+            <div className="event-detail-page">
+                <div className="event-detail-error">이벤트 정보를 찾을 수 없습니다.</div>
             </div>
         );
     }
 
     return (
-        <div className="user-event-detail-page">
+        <div className="event-detail-page">
             {/* Header */}
-            <div className="user-event-detail-header-h">
-                <header className="user-event-detail-header-wrap">
-                    <button className="event-list-back-btn" onClick={() => window.history.back()}>
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <p className="user-event-detail-header-title">쿠폰 이벤트</p>
-                </header>
+            <div className="event-detail-header">
+                <button className="event-detail-back-btn" onClick={() => window.history.back()}>
+                    <ArrowLeft className="w-6 h-6" />
+                </button>
+                <h1 className="event-detail-header-title">쿠폰 이벤트</h1>
+                <div className="event-detail-header-spacer"></div>
             </div>
 
             {/* Store Information */}
-            <div>
-                <ul className="user-event-detail-fran-listw">
-                    <li className="user-event-detail-fran-list flex_between">
-                        <div className="user-event-detail-franchise-imglist">
-                            <div className="user-event-detail-store-image-placeholder" style={{
-                                width: '100px',
-                                height: '100px',
-                                backgroundColor: '#f0f0f0',
-                                borderRadius: '8px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '12px',
-                                color: '#666'
-                            }}>
-                                {eventDetail.storeName ? eventDetail.storeName.charAt(0) : 'S'}
-                            </div>
-                            <div className={getBusinessStateClass(eventDetail.storeBusinessState)}>
-                                <p>{getBusinessStateText(eventDetail.storeBusinessState)}</p>
+            <div className="event-detail-store-section">
+                <div className="event-detail-store-card">
+                    <div className="event-detail-store-image">
+                        {storeImages.length > 0 ? (
+                            <img 
+                                src={storeImages[0].presignedUrl || storeImages[0].storeImage} 
+                                alt={eventDetail.storeName}
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    const noImageDiv = e.target.nextSibling;
+                                    if (noImageDiv) {
+                                        noImageDiv.style.display = 'flex';
+                                    }
+                                }}
+                            />
+                        ) : null}
+                        <div className="event-detail-no-image" style={{ display: storeImages.length > 0 ? 'none' : 'flex' }}>
+                            <span>{eventDetail.storeName ? eventDetail.storeName.charAt(0) : 'S'}</span>
+                        </div>
+                    </div>
+                    <div className="event-detail-store-info">
+                        <div className="event-detail-store-header">
+                            <h2 className="event-detail-store-name">{eventDetail.storeName}</h2>
+                            <div className="event-detail-cm-available">
+                                <span>{eventDetail.userCmUse} CM 가능</span>
                             </div>
                         </div>
-                        <div className="user-event-detail-fran-infotxt">
-                            <div className="user-event-detail-fran-amountbox">
-                                <p className="user-event-detail-fran-infoone">{eventDetail.storeName}</p>
-                                <div className="user-event-detail-myamount-btn">
-                                    <p className="user-event-detail-myamount-ltxt">{eventDetail.userCmUse} CM 가능</p>
-                                </div>
-                            </div>
-                            <p className="user-event-detail-m-B10 user-event-detail-m-T10 user-event-detail-fran-inftw">{eventDetail.storeAddress}</p>
-                            <div className="user-event-detail-flex-start user-event-detail-flex-wrap">
-                                <p className="user-event-detail-fran-man-type">{eventDetail.storeCategoryName}</p>
-                                <p className="user-event-detail-flex-start">
-                                    <a href={`tel:${eventDetail.storePhone}`} className="user-event-detail-fran-state">
-                                        📞
-                                    </a>
-                                    <a href={`/pages/franchisee/franchisee_map.php?fidx=${eventDetail.storeIndex}`} className="user-event-detail-m-L10 user-event-detail-fran-state">
-                                        🗺️
-                                    </a>
-                                </p>
+                        <p className="event-detail-store-address">{eventDetail.storeAddress}</p>
+                        <div className="event-detail-store-actions">
+                            <span className="event-detail-store-category">{eventDetail.storeCategoryName}</span>
+                            <div className="event-detail-action-buttons">
+                                <button 
+                                    className="event-detail-action-btn event-detail-phone-btn"
+                                    onClick={() => window.location.href = `tel:${eventDetail.storePhone}`}
+                                >
+                                    📞
+                                </button>
+                                <button 
+                                    className="event-detail-action-btn event-detail-map-btn"
+                                    onClick={() => window.location.href = `/franchisee-map?fidx=${eventDetail.storeIndex}`}
+                                >
+                                    🗺️
+                                </button>
                             </div>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
 
             {/* Coupon Section */}
-            <div className="user-event-detail-coupon-section">
+            <div className="event-reg-coupons-container">
                 {eventDetail.coupons && eventDetail.coupons.map((coupon, index) => (
-                    <div key={coupon.couponIndex} className="user-event-detail-coupon-card">
-                        <div className={`user-event-detail-coupon-background ${getCouponType(coupon.couponPrice)}`}>
-                            <div className="user-event-detail-coupon-content">
-                                <div className="user-event-detail-coupon-info">
-                                    <div className="user-event-detail-coupon-name">{coupon.couponName}</div>
-                                    <div className="user-event-detail-coupon-status">{coupon.couponIssuanceStatus}</div>
-                                    <div className="user-event-detail-coupon-period">{coupon.couponLimit}일</div>
+                    <div key={coupon.couponIndex} className="event-reg-coupon-card selected">
+                        <div className={`event-reg-coupon-background ${getCouponType(coupon.couponPrice)}`}>
+                            {/* Checkbox */}
+                            <div className="event-reg-coupon-checkbox">
+                                <input
+                                    type="checkbox"
+                                    id={`user-event-detail-coupon-checkbox-${coupon.couponIndex}`}
+                                    checked={true}
+                                    readOnly
+                                    className="event-reg-checkbox-input"
+                                />
+                                <label htmlFor={`user-event-detail-coupon-checkbox-${coupon.couponIndex}`} className="event-reg-checkbox-label"></label>
+                            </div>
+
+                            <div className="event-reg-coupon-brand">
+                                <div className="event-reg-brand-logo">Tesseris</div>
+                                <div className="event-reg-brand-decoration"></div>
+                            </div>
+
+                            <div className="event-reg-coupon-content">
+                                <div className="event-reg-coupon-info-box">
+                                    <div className="event-reg-coupon-name">{coupon.couponName}</div>
+                                    <div className="event-reg-coupon-status">{coupon.couponIssuanceStatus}</div>
+                                    <div className="event-reg-coupon-period">
+                                        {coupon.couponLimitTime 
+                                            ? new Date(coupon.couponLimitTime).toLocaleDateString() 
+                                            : (coupon.couponLimit ? `${coupon.couponLimit}일` : '')}
+                                    </div>
                                 </div>
                             </div>
-                            <div className="user-event-detail-coupon-badge">
-                                <div className="user-event-detail-badge-circle">
-                                    <div className="user-event-detail-badge-text">CMBARTER KOREA INC.</div>
-                                    <div className="user-event-detail-badge-dots">••••••••••••</div>
-                                    <div className="user-event-detail-badge-amount">{coupon.couponPrice.toLocaleString()}</div>
-                                    <div className="user-event-detail-badge-dots">••••••••••••</div>
+
+                            <div className="event-reg-coupon-badge">
+                                <div className="event-reg-badge-circle">
+                                    <div className="event-reg-badge-text">TESSERIS KOREA INC.</div>
+                                    <div className="event-reg-badge-dots">••••••••••••</div>
+                                    <div className="event-reg-badge-amount">{coupon.couponPrice.toLocaleString()}</div>
+                                    <div className="event-reg-badge-dots">••••••••••••</div>
                                 </div>
                             </div>
-                            <div className="user-event-detail-coupon-brand">
-                                <div className="user-event-detail-brand-logo">CMBarterkorea</div>
-                                <div className="user-event-detail-brand-decoration"></div>
+
+                            <div className="event-reg-coupon-decoration">
+                                <div className="event-reg-decoration-lines"></div>
+                                <div className="event-reg-decoration-elements">
+                                    <div className="event-reg-decoration-leaf"></div>
+                                </div>
                             </div>
-                            <div className="user-event-detail-coupon-decoration">
-                                <div className="user-event-detail-decoration-lines"></div>
-                                <div className="user-event-detail-decoration-elements">
-                                    <div className="user-event-detail-decoration-leaf"></div>
+
+                            <div className="event-reg-selection-overlay">
+                                <div className="event-reg-selection-check">
+                                    <Check className="w-8 h-8" />
                                 </div>
                             </div>
                         </div>
-                        {coupon.couponIssuanceStatus === '보유중' && (
-                            <button
-                                className="user-event-detail-download-button"
-                                onClick={() => handleCouponDownload(coupon.couponIndex)}
-                                disabled={downloading}
-                                style={{
-                                    marginTop: '10px',
-                                    padding: '10px 20px',
-                                    backgroundColor: '#007bff',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                {downloading ? '다운로드 중...' : '쿠폰 받기'}
-                            </button>
-                        )}
+
+                        <div className="event-reg-coupon-footer">
+                            {coupon.couponIssuanceStatus === '보유중' ? (
+                                <button
+                                    className="user-event-detail-download-button"
+                                    onClick={() => handleCouponDownload(coupon.couponIndex)}
+                                    disabled={downloading}
+                                >
+                                    {downloading ? '다운로드 중...' : '쿠폰 받기'}
+                                </button>
+                            ) : (
+                                <button className="event-reg-coupon-detail-btn">
+                                    쿠폰 상세보기
+                                </button>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>

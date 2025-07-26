@@ -12,6 +12,7 @@ import EventDetailPage from '../pages/dabin/EventDetailPage';
 import StoreImageRegisterPage from '../pages/dabin/StoreImageRegisterPage';
 import UserEventListPage from '../pages/dabin/UserEventListPage';
 import UserEventDetailPage from '../pages/dabin/UserEventDetailPage';
+import FranchiseeMapPage from '../pages/dabin/FranchiseeMapPage';
 
 
 function DabinRoute() {
@@ -32,6 +33,8 @@ function DabinRoute() {
                 {/* 사용자용 쿠폰 이벤트 */}
                 <Route path='/user-event-list' element={<UserEventListPage />} />
                 <Route path='/user-event-detail/:eventMasterIndex' element={<UserEventDetailPage />} />
+                {/* 가맹점 지도 */}
+                <Route path='/franchisee-map' element={<FranchiseeMapPage />} />
             </Route>
         </>
     );

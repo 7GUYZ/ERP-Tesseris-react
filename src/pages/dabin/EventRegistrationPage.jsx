@@ -1,7 +1,5 @@
-"use client"
-
 import { useState, useEffect } from "react"
-import { ArrowLeft, Check } from "lucide-react"
+import { ArrowLeft, Check, X } from "lucide-react"
 import { getAvailableCoupons, registerEvent } from "../../api/auth/DabinAuth"
 import "../../styles/dabin/EventRegistrationPage.css"
 
@@ -9,13 +7,17 @@ export default function EventRegistrationPage() {
   const [formData, setFormData] = useState({
     couponType: "전체",
     eventName: "",
-    targetCondition: "적용할 조건",
+    targetCondition: "",
     downloadCode: "",
   })
 
   const [availableCoupons, setAvailableCoupons] = useState([])
   const [selectedCoupons, setSelectedCoupons] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showCouponDetail, setShowCouponDetail] = useState(false)
+  const [selectedCouponDetail, setSelectedCouponDetail] = useState(null)
+  const [couponDetailLoading, setCouponDetailLoading] = useState(false)
+
 
   // 쿠폰 목록 조회
   useEffect(() => {
@@ -28,20 +30,27 @@ export default function EventRegistrationPage() {
       // 쿠폰 가격 필터링
       const minPrice = selectedType === "전체" ? 0 : parseInt(selectedType)
       console.log('필터링 요청:', { selectedType, minPrice })
-      const response = await getAvailableCoupons(110, minPrice)
+      const response = await getAvailableCoupons(minPrice)
       
       if (response.data.resultCode === 200) {
         console.log('API 응답 성공:', response.data.data)
         // 쿠폰 타입에 따른 스타일 매핑
-        const couponsWithStyle = response.data.data.map((coupon, index) => ({
-          id: coupon.couponIndex,
-          name: coupon.couponName,
-          amount: coupon.couponPrice,
-          status: coupon.couponIssuanceStatus,
-          period: "30일", // 기본값
-          type: getCouponType(coupon.couponPrice),
-          couponIndex: coupon.couponIndex
-        }))
+        const couponsWithStyle = response.data.data.map((coupon, index) => {
+          // couponLimitTime 값 로깅
+          console.log(`쿠폰 ${coupon.couponName} - couponLimitTime:`, coupon.couponLimitTime);
+          
+          return {
+            id: coupon.couponIndex,
+            name: coupon.couponName,
+            amount: coupon.couponPrice,
+            status: coupon.couponIssuanceStatus,
+            period: coupon.couponLimitTime 
+              ? new Date(coupon.couponLimitTime).toLocaleDateString() 
+              : (coupon.couponLimit ? `${coupon.couponLimit}일` : ''), // 만료일이 없으면 일수로 표시
+            type: getCouponType(coupon.couponPrice),
+            couponIndex: coupon.couponIndex
+          };
+        })
         console.log('필터링된 쿠폰 목록:', couponsWithStyle)
         setAvailableCoupons(couponsWithStyle)
       } else {
@@ -54,11 +63,13 @@ export default function EventRegistrationPage() {
     }
   }
 
-  // 쿠폰 가격에 따른 타입 결정
+  // 쿠폰 가격에 따른 타입 결정 (지폐 색상 적용)
   const getCouponType = (price) => {
-    if (price >= 10000) return "gray"
-    if (price >= 5000) return "bronze"
-    return "main"
+    if (price >= 50000) return "price-50000"      // ₩50,000 - 신사임당 - 노란색
+    if (price >= 10000) return "price-10000"      // ₩10,000 - 세종대왕 - 초록색
+    if (price >= 5000) return "price-5000"        // ₩5,000 - 율곡 이이 - 주황색
+    if (price >= 1000) return "price-1000"        // ₩1,000 - 퇴계 이황 - 파란색
+    return "main"                                  // 기본값
   }
 
   const handleInputChange = (field, value) => {
@@ -73,7 +84,11 @@ export default function EventRegistrationPage() {
         fetchAvailableCoupons(value)
       }, 100)
     }
+    
+
   }
+
+
 
   const toggleCouponSelection = (couponId) => {
     setSelectedCoupons((prev) => 
@@ -91,6 +106,82 @@ export default function EventRegistrationPage() {
     }
   }
 
+  const handleCouponDetail = async (couponIndex) => {
+    setShowCouponDetail(true)
+    setCouponDetailLoading(true)
+    setSelectedCouponDetail(null)
+    
+    try {
+      const accessToken = localStorage.getItem("access-token")
+      
+      const response = await fetch(`/api/coupon-detail/${couponIndex}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': accessToken ? (accessToken.startsWith("Bearer ") ? accessToken : `Bearer ${accessToken}`) : ''
+        }
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSelectedCouponDetail(data.coupon)
+      } else {
+        console.error('쿠폰 상세 정보 조회 실패:', data.message)
+      }
+    } catch (error) {
+      console.error('쿠폰 상세 정보 조회 오류:', error)
+    } finally {
+      setCouponDetailLoading(false)
+    }
+  }
+
+  const closeCouponDetail = () => {
+    setShowCouponDetail(false)
+    setSelectedCouponDetail(null)
+  }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "미설정"
+    try {
+      // LocalDateTime 형식 처리 (예: "2025-01-27T01:06:26.122")
+      let date
+      if (typeof dateString === 'string') {
+        // ISO 형식이 아닌 경우 처리
+        if (dateString.includes('T')) {
+          date = new Date(dateString)
+        } else {
+          // 숫자나 다른 형식인 경우
+          date = new Date(dateString)
+        }
+      } else {
+        date = new Date(dateString)
+      }
+      
+      if (isNaN(date.getTime())) {
+        console.log('Invalid date:', dateString)
+        return "미설정"
+      }
+      
+      return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+    } catch (error) {
+      console.error('Date formatting error:', error, dateString)
+      return "미설정"
+    }
+  }
+
+  const formatNumber = (number) => {
+    return new Intl.NumberFormat('ko-KR').format(number)
+  }
+
+  const maskUserName = (name) => {
+    if (!name) return ''
+    return name.replace(/.(?=.$)/g, '*')
+  }
+
   const handleRegister = async () => {
     try {
       // 유효성 검사
@@ -104,6 +195,8 @@ export default function EventRegistrationPage() {
         return;
       }
       
+
+      
       // 등록 중 로딩 상태
       setLoading(true)
       
@@ -114,27 +207,62 @@ export default function EventRegistrationPage() {
         couponIssuanceIndexList: selectedCoupons
       }
 
-      const response = await registerEvent(110, requestData)
+      const response = await registerEvent(requestData)
       
       if (response.data.resultCode === 200) {
-        const currentFilter = formData.couponType === "전체" ? "전체" : `${formData.couponType}원`
-        alert(`이벤트가 등록되었습니다!\n현재 필터링: ${currentFilter}`)
-        // 폼 초기화 (쿠폰 종류는 현재 필터링 상태 유지)
+        alert("이벤트가 등록되었습니다!")
+        
+        // 폼 초기화 (쿠폰 종류도 전체로 초기화)
         setFormData({
-          couponType: formData.couponType, // 현재 필터링 상태 유지
+          couponType: "전체", // 필터링 초기화
           eventName: "",
           targetCondition: "적용할 조건",
           downloadCode: "",
         })
         setSelectedCoupons([])
-        // 쿠폰 목록 새로고침 (현재 필터링 상태 유지)
-        fetchAvailableCoupons(formData.couponType)
+        // 쿠폰 목록 새로고침 (전체로 초기화)
+        fetchAvailableCoupons("전체")
       } else {
-        alert("이벤트 등록에 실패했습니다: " + response.data.resultMessage)
+        // 서버에서 반환된 오류 메시지 확인
+        let errorMessage = "이벤트 등록에 실패했습니다."
+        
+        if (response.data.resultMessage) {
+          // 중복 이름 오류인지 확인
+          if (response.data.resultMessage.includes("Duplicate entry") || 
+              response.data.resultMessage.includes("중복") ||
+              response.data.resultMessage.includes("이미 존재")) {
+            errorMessage = "이미 존재하는 이벤트 이름입니다. 다른 이름을 사용해주세요."
+          } else {
+            errorMessage = response.data.resultMessage
+          }
+        }
+        
+        alert(errorMessage)
       }
     } catch (error) {
       console.error('이벤트 등록 오류:', error)
-      alert("이벤트 등록 중 오류가 발생했습니다.")
+      
+      // 네트워크 오류나 서버 오류 처리
+      let errorMessage = "이벤트 등록 중 오류가 발생했습니다."
+      
+      if (error.response) {
+        // 서버에서 응답이 온 경우
+        const responseData = error.response.data
+        if (responseData && responseData.resultMessage) {
+          if (responseData.resultMessage.includes("Duplicate entry") || 
+              responseData.resultMessage.includes("중복") ||
+              responseData.resultMessage.includes("이미 존재")) {
+            errorMessage = "이미 존재하는 이벤트 이름입니다. 다른 이름을 사용해주세요."
+          } else {
+            errorMessage = responseData.resultMessage
+          }
+        }
+      } else if (error.request) {
+        // 네트워크 오류
+        errorMessage = "네트워크 연결을 확인해주세요."
+      }
+      
+      alert(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -243,7 +371,7 @@ export default function EventRegistrationPage() {
               </div>
 
               <div className="event-reg-coupon-brand">
-                <div className="event-reg-brand-logo">CMBarterkorea</div>
+                <div className="event-reg-brand-logo">Tesseris</div>
                 <div className="event-reg-brand-decoration"></div>
               </div>
 
@@ -257,7 +385,7 @@ export default function EventRegistrationPage() {
 
               <div className="event-reg-coupon-badge">
                 <div className="event-reg-badge-circle">
-                  <div className="event-reg-badge-text">CMBARTER KOREA INC.</div>
+                  <div className="event-reg-badge-text">TESSERIS KOREA INC.</div>
                   <div className="event-reg-badge-dots">••••••••••••</div>
                   <div className="event-reg-badge-amount">{coupon.amount.toLocaleString()}</div>
                   <div className="event-reg-badge-dots">••••••••••••</div>
@@ -285,7 +413,7 @@ export default function EventRegistrationPage() {
                 className="event-reg-coupon-detail-btn"
                 onClick={(e) => {
                   e.stopPropagation()
-                  window.open(`/coupon-detail/${coupon.id}`, '_blank')
+                  handleCouponDetail(coupon.couponIndex)
                 }}
               >
                 쿠폰 상세보기
@@ -294,6 +422,117 @@ export default function EventRegistrationPage() {
           </div>
         ))}
       </div>
+
+      {/* 쿠폰 상세보기 모달 */}
+      {showCouponDetail && (
+        <div className="event-reg-modal-overlay" onClick={closeCouponDetail}>
+          <div className="event-reg-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="event-reg-modal-header">
+              <h2>쿠폰 상세보기</h2>
+              <button className="event-reg-modal-close" onClick={closeCouponDetail}>
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="event-reg-modal-body">
+              {couponDetailLoading ? (
+                <div className="event-reg-modal-loading">로딩 중...</div>
+              ) : selectedCouponDetail ? (
+                <div className="event-reg-coupon-detail">
+                  <div className="event-reg-detail-field">
+                    <label>쿠폰 이름</label>
+                    <input 
+                      type="text" 
+                      value={selectedCouponDetail.couponName || ''} 
+                      readOnly 
+                    />
+                  </div>
+
+                  <div className="event-reg-detail-field">
+                    <label>쿠폰 가격</label>
+                    <input 
+                      type="text" 
+                      value={formatNumber(selectedCouponDetail.couponPrice || 0)} 
+                      readOnly 
+                    />
+                  </div>
+
+                  <div className="event-reg-detail-field">
+                    <label>쿠폰 기한</label>
+                    <input 
+                      type="text" 
+                      value={selectedCouponDetail.couponLimit || ''} 
+                      readOnly 
+                    />
+                  </div>
+
+                  <div className="event-reg-detail-field">
+                    <label>쿠폰 발행일</label>
+                    <input 
+                      type="text" 
+                      value={formatDate(selectedCouponDetail.couponIssuanceTime)} 
+                      readOnly 
+                    />
+                  </div>
+
+                  <div className="event-reg-detail-field">
+                    <label>쿠폰 상태</label>
+                    <input 
+                      type="text" 
+                      value={selectedCouponDetail.couponIssuanceStatus || ''} 
+                      readOnly 
+                    />
+                  </div>
+
+                  {selectedCouponDetail.providedUserIndex && (
+                    <>
+                      <div className="event-reg-detail-field">
+                        <label>지급 받은 회원 이름</label>
+                        <input 
+                          type="text" 
+                          value={maskUserName(selectedCouponDetail.userName || '')} 
+                          readOnly 
+                        />
+                      </div>
+
+                      <div className="event-reg-detail-field">
+                        <label>지급 쿠폰 상태</label>
+                        <input 
+                          type="text" 
+                          value={selectedCouponDetail.couponProvidedStatus || ''} 
+                          readOnly 
+                        />
+                      </div>
+
+                      <div className="event-reg-detail-field">
+                        <label>쿠폰 지급일</label>
+                        <input 
+                          type="text" 
+                          value={formatDate(selectedCouponDetail.couponProvidedTime)} 
+                          readOnly 
+                        />
+                      </div>
+
+                      <div className="event-reg-detail-field">
+                        <label>쿠폰 지급 만기일</label>
+                        <input 
+                          type="text" 
+                          value={formatDate(selectedCouponDetail.couponLimitTime)} 
+                          readOnly 
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="event-reg-modal-error">
+                  쿠폰 정보를 불러올 수 없습니다.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
-} 
+}

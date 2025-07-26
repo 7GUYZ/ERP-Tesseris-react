@@ -59,13 +59,9 @@ const StoreOperationEditPage = () => {
 
   const fetchOperationInfo = async () => {
     try {
-      // 개발 단계 하드코딩
-      const userIndex = 110; // 임시 값 - 실제 사용자 인덱스가 아님
+      console.log('🔍 [React] EditPage API 호출 시작 (JWT 방식)');
       
-      console.log('🔍 [React] EditPage API 호출 시작');
-      console.log('🔍 [React] EditPage userIndex:', userIndex);
-      
-      const response = await getStoreOperationInfo(userIndex);
+      const response = await getStoreOperationInfo(); // JWT 방식으로 변경
       
       console.log('✅ [React] EditPage API 응답 성공');
       console.log('✅ [React] EditPage 응답 데이터:', response.data);
@@ -184,14 +180,11 @@ const StoreOperationEditPage = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // 개발 단계 하드코딩
-      const userIndex = 110; // 임시 값 - 실제 사용자 인덱스가 아님
-      
-      console.log('🔍 [React] EditPage 저장 시작');
+      console.log('🔍 [React] EditPage 저장 시작 (JWT 방식)');
       console.log('🔍 [React] EditPage 저장 데이터:', operationInfo);
       console.log('🔍 [React] EditPage removeList:', operationInfo.removeList);
       
-      const response = await updateStoreOperationInfo(userIndex, operationInfo);
+      const response = await updateStoreOperationInfo(operationInfo); // JWT 방식으로 변경
       
       console.log('✅ [React] EditPage 저장 성공');
       console.log('✅ [React] EditPage 저장 응답:', response.data);

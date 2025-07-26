@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getStoreInfo, getStoreImages, updateStoreInfo, uploadStoreImage, deleteStoreImage, getPresignedUrl } from '../../api/auth/DabinAuth';
+import { getStoreMyInfo, getMyStoreImages, updateStoreInfo, getPresignedUrl, getStoreCategories } from '../../api/auth/DabinAuth';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/dabin/StoreInfo.css';
 
@@ -8,7 +8,7 @@ const StoreEditPage = () => {
     const [storeImages, setStoreImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [userIndex, setUserIndex] = useState(null);
+    const [categoryOptions, setCategoryOptions] = useState([]);
     
     // Form states
     const [formData, setFormData] = useState({
@@ -22,41 +22,34 @@ const StoreEditPage = () => {
         storeMemo: ''
     });
     
-    // Category options (DB 값과 일치하는 value, 보기 좋은 label)
-    const categoryOptions = [
-        { value: '슈퍼/마트', label: '슈퍼 / 마트' },
-        { value: '레저', label: '레저' },
-        { value: '미용/뷰티/위생', label: '미용 / 뷰티 / 위생' },
-        { value: '병원/약국', label: '병원 / 약국' },
-        { value: '스포츠/헬스', label: '스포츠 / 헬스' },
-        { value: '식품', label: '식품' },
-        { value: '학원/교육', label: '학원 / 교육' },
-        { value: '서비스업', label: '서비스업' },
-        { value: '가구/인테리어', label: '가구 / 인테리어' },
-        { value: '디지털/가전', label: '디지털 / 가전' },
-        { value: '생활/주방용품', label: '생활 / 주방용품' },
-        { value: '음식점/카페', label: '음식점 / 카페' },
-        { value: '패션잡화', label: '패션잡화' },
-        { value: '기타 도소매', label: '기타 도소매' }
-    ];
-    
     const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
     const [charCount, setCharCount] = useState(0);
     
     const navigate = useNavigate();
 
     useEffect(() => {
-        // 세션에서 사용자 정보 가져오기
-        const userIdx = sessionStorage.getItem('user_index');
-        
-        // 테스트용: 임의의 user_index 설정 (실제 테스트할 때만 사용)
-        const testUserIndex = 110; // 여기에 테스트할 user_index 입력
-        
-        setUserIndex(testUserIndex); // 실제: parseInt(userIdx)
-        
-        // 테스트용: 임의의 user_index로 데이터 조회
-        fetchStoreData(testUserIndex); // 실제: parseInt(userIdx)
+        // JWT 방식으로 데이터 조회 (백엔드에서 자동으로 사용자 정보 추출)
+        fetchStoreData();
+        fetchCategories();
     }, []);
+
+    // 카테고리 목록 조회
+    const fetchCategories = async () => {
+        try {
+            const response = await getStoreCategories();
+            if (response && response.data && response.data.resultCode === 200) {
+                const categories = response.data.data.map(category => ({
+                    value: category.storeCategoryName,
+                    label: category.storeCategoryName
+                }));
+                setCategoryOptions(categories);
+            } else {
+                console.error('Failed to fetch categories:', response?.data?.resultMessage || 'Unknown error');
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
 
     // presigned URL 변환 함수
     const fetchPresignedUrls = async (images) => {
@@ -77,17 +70,17 @@ const StoreEditPage = () => {
         setStoreImages(urls);
     };
 
-    const fetchStoreData = async (userIdx) => {
+    const fetchStoreData = async () => {
         setLoading(true);
         try {
-            console.log('Fetching store data for userIndex:', userIdx);
+            console.log('Fetching store data using JWT authentication');
             
-            // 가맹점 정보 조회
-            const storeInfoResponse = await getStoreInfo(userIdx);
+            // 가맹점 정보 조회 (JWT 방식)
+            const storeInfoResponse = await getStoreMyInfo();
             console.log('Store Info Response:', storeInfoResponse);
             
             if (storeInfoResponse && storeInfoResponse.data && storeInfoResponse.data.success) {
-                const info = storeInfoResponse.data.storeInfo;
+                const info = storeInfoResponse.data.data;
                 setStoreInfo(info);
                 setFormData({
                     storeName: info.storeName || '',
@@ -104,21 +97,15 @@ const StoreEditPage = () => {
                 console.error('Failed to fetch store info:', storeInfoResponse?.data?.message || 'Unknown error');
             }
             
-            // 가맹점 이미지 조회
-            const storeImagesResponse = await getStoreImages(userIdx);
+            // 가맹점 이미지 조회 (JWT 방식)
+            const storeImagesResponse = await getMyStoreImages();
             console.log('Store Images Response:', storeImagesResponse);
-            // 응답 구조에 따라 안전하게 파싱
-            let images = [];
+            
             if (storeImagesResponse && storeImagesResponse.data) {
-                if (Array.isArray(storeImagesResponse.data)) {
-                    images = storeImagesResponse.data;
-                } else if (Array.isArray(storeImagesResponse.data.images)) {
-                    images = storeImagesResponse.data.images;
-                } else if (Array.isArray(storeImagesResponse.data.data)) {
-                    images = storeImagesResponse.data.data;
-                }
+                await fetchPresignedUrls(storeImagesResponse.data);
+            } else {
+                setStoreImages([]);
             }
-            await fetchPresignedUrls(images);
             
         } catch (error) {
             console.error('Error fetching store data:', error);
@@ -211,7 +198,8 @@ const StoreEditPage = () => {
 
         setSaving(true);
         try {
-            const response = await updateStoreInfo(userIndex, formData);
+            // JWT 방식으로 업데이트 (백엔드에서 자동으로 사용자 정보 추출)
+            const response = await updateStoreInfo(null, formData);
             console.log('Update Response:', response);
             
             if (response && response.data && response.data.success) {
