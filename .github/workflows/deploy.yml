@@ -36,6 +36,7 @@ jobs:
             REACT_APP_BASENAME=/react
             REACT_APP_API_BASE_URL=/springboot/api
             REACT_APP_TOSS_CLIENT_KEY=${{ secrets.REACT_APP_TOSS_CLIENT_KEY }}
+            REACT_APP_TOSS_JiHUN_CLIENT_KEY=${{ secrets.REACT_APP_TOSS_JiHUN_CLIENT_KEY }}
 
       - name: Set up Kubeconfig
         uses: azure/setup-kubectl@v4
