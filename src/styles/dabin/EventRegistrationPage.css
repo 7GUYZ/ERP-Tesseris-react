@@ -97,6 +97,8 @@
   color: #9ca3af;
 }
 
+
+
 /* Action Buttons */
 .event-reg-action-buttons {
   display: flex;
@@ -176,6 +178,27 @@
   overflow: hidden;
 }
 
+/* ₩1,000 - 퇴계 이황 - 파란색 #3A66A5 */
+.event-reg-coupon-background.price-1000 {
+  background: linear-gradient(135deg, #3A66A5 0%, #4A76B5 50%, #3A66A5 100%);
+}
+
+/* ₩5,000 - 율곡 이이 - 주황색 #D17F3F */
+.event-reg-coupon-background.price-5000 {
+  background: linear-gradient(135deg, #D17F3F 0%, #E18F4F 50%, #D17F3F 100%);
+}
+
+/* ₩10,000 - 세종대왕 - 초록색 #3E7A4D */
+.event-reg-coupon-background.price-10000 {
+  background: linear-gradient(135deg, #3E7A4D 0%, #4E8A5D 50%, #3E7A4D 100%);
+}
+
+/* ₩50,000 - 신사임당 - 노란색 #F2C849 */
+.event-reg-coupon-background.price-50000 {
+  background: linear-gradient(135deg, #F2C849 0%, #F2D859 50%, #F2C849 100%);
+}
+
+/* 기존 클래스들 (하위 호환성 유지) */
 .event-reg-coupon-background.main {
   background: linear-gradient(135deg, #170f58 0%, #2a1b7a 50%, #170f58 100%);
 }
@@ -460,6 +483,108 @@
 
 .event-reg-coupon-detail-btn:hover {
   color: #fdcd00;
+}
+
+/* 모달 스타일 */
+.event-reg-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.event-reg-modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-reg-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.event-reg-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.event-reg-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.event-reg-modal-close:hover {
+  background-color: #f3f4f6;
+}
+
+.event-reg-modal-body {
+  padding: 20px;
+}
+
+.event-reg-modal-loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+}
+
+.event-reg-modal-error {
+  text-align: center;
+  padding: 40px;
+  color: #dc2626;
+}
+
+.event-reg-coupon-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-reg-detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-reg-detail-field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.event-reg-detail-field input {
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #1f2937;
+  background-color: #f9fafb;
+  cursor: not-allowed;
+}
+
+.event-reg-detail-field input:read-only {
+  background-color: #f3f4f6;
+  color: #6b7280;
 }
 
 /* Responsive Design */

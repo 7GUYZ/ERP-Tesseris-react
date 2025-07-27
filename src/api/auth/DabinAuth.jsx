@@ -1,40 +1,22 @@
 import { api } from "../Http";
 
-// 가맹점 정보 조회 API
-export const getStoreMyInfo = () => api.get("/store/my");
+// 가맹점 정보 조회 (JWT 방식)
+export const getStoreMyInfo = () => api.get("/store/basic-info/info");
 
-// 일반회원 수당 내역 조회
-export const getUserCommissionHistory = (userIndex, page = 1, limit = 20) => 
+// 일반회원, 가맹점점 수당 내역 조회
+export const getUserCommissionHistory = (page = 1, limit = 20) => 
     api.get("/user/commission-history", {
-        params: { userIndex, page, limit }
+        params: { page, limit }
     });
 
-// 가맹점 정보 조회
-export const getStoreInfo = async (userIndex) => {
-    try {
-        const response = await api.get(`/store/basic-info/info?userIndex=${userIndex}`);
-        return response;
-    } catch (error) {
-        console.error('Error fetching store info:', error);
-        throw error;
-    }
-};
+// JWT 방식의 가맹점 이미지 조회
+export const getMyStoreImages = () => api.get("/store/images/my");
 
-// 대표이미지(가맹점 이미지) 조회
-export const getStoreImages = async (userIndex) => {
-    try {
-        const response = await api.get(`/store/images/by-user?userIndex=${userIndex}`);
-        return response;
-    } catch (error) {
-        console.error('Error fetching store images:', error);
-        throw error;
-    }
-};
-
-// 가맹점 정보 수정
+// 가맹점 정보 수정 (JWT 방식)
 export const updateStoreInfo = async (userIndex, storeData) => {
     try {
-        const response = await api.put(`/store/basic-info/info?userIndex=${userIndex}`, storeData);
+        // JWT 방식으로 변경 - userIndex는 더 이상 필요하지 않음
+        const response = await api.put(`/store/basic-info/info`, storeData);
         return response;
     } catch (error) {
         console.error('Error updating store info:', error);
@@ -72,6 +54,19 @@ export const deleteStoreImage = async (imageIndex) => {
     }
 };
 
+// presigned URL 받아오기
+export const getPresignedUrl = async (fileKey) => {
+    try {
+        const response = await api.get(`/store/images/presigned`, {
+            params: { fileKey }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching presigned url:', error);
+        throw error;
+    }
+};
+
 // 가맹점 카테고리 조회
 export const getStoreCategories = async () => {
     try {
@@ -83,21 +78,13 @@ export const getStoreCategories = async () => {
     }
 };
 
-// 가맹점 운영정보 조회
-export const getStoreOperationInfo = async (userIndex) => {
-    try {
-        const response = await api.get(`/store/operation/${userIndex}`);
-        return response;
-    } catch (error) {
-        console.error('Error fetching store operation info:', error);
-        throw error;
-    }
-};
+// 가맹점 운영정보 조회 (JWT 방식)
+export const getStoreOperationInfo = () => api.get("/store/operation/my");
 
-// 가맹점 운영정보 수정
-export const updateStoreOperationInfo = async (userIndex, operationData) => {
+// 가맹점 운영정보 수정 (JWT 방식)
+export const updateStoreOperationInfo = async (operationData) => {
     try {
-        const response = await api.put(`/store/operation/${userIndex}`, operationData);
+        const response = await api.put(`/store/operation/my`, operationData);
         return response;
     } catch (error) {
         console.error('Error updating store operation info:', error);
@@ -105,30 +92,15 @@ export const updateStoreOperationInfo = async (userIndex, operationData) => {
     }
 };
 
-// 쿠폰 이벤트 등록 - 사용 가능한 쿠폰 목록 조회
-export const getAvailableCoupons = async (userIndex, minPrice = 0) => {
-    try {
-        const response = await api.get('/dabin/event-registration/coupons', {
-            params: { userIndex, minPrice }
-        });
-        return response;
-    } catch (error) {
-        console.error('Error fetching available coupons:', error);
-        throw error;
-    }
-};
 
-// 쿠폰 이벤트 등록
-export const registerEvent = async (userIndex, eventData) => {
-    try {
-        const response = await api.post('/dabin/event-registration/register', eventData, {
-            params: { userIndex }
-        });
-        return response;
-    } catch (error) {
-        console.error('Error registering event:', error);
-        throw error;
-    }
+
+// JWT 방식 쿠폰 조회
+export const getAvailableCoupons = async (minPrice = 0) => {
+    return api.get('/dabin/event-registration/coupons', { params: { minPrice } });
+};
+// JWT 방식 이벤트 등록
+export const registerEvent = async (eventData) => {
+    return api.post('/dabin/event-registration/register', eventData);
 };
 
 // 쿠폰 이벤트 리스트 - 진행중인 이벤트 조회
@@ -164,18 +136,7 @@ export const getEventDetail = async (eventMasterIndex) => {
     }
 };
 
-// presigned URL 받아오기
-export const getPresignedUrl = async (fileKey) => {
-    try {
-        const response = await api.get(`/store/images/presigned`, {
-            params: { fileKey }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching presigned url:', error);
-        throw error;
-    }
-};
+
 
 // 사용자용 활성 이벤트 목록 조회
 export const getUserActiveEvents = async () => {
@@ -228,6 +189,40 @@ export const downloadUserCoupon = async (eventMasterIndex, couponIndex) => {
     } catch (error) {
         console.error('사용자 쿠폰 다운로드 오류:', error);
         console.error('오류 상세:', error.response?.data);
+        throw error;
+    }
+};
+
+// 가맹점 지도 관련 API 함수들
+// 특정 가맹점 정보 조회
+export const getFranchiseInfo = async (storeIndex) => {
+    try {
+        const response = await api.get(`/api/franchise/${storeIndex}`);
+        return response;
+    } catch (error) {
+        console.error('Error fetching franchise info:', error);
+        throw error;
+    }
+};
+
+// 모든 가맹점 카테고리 조회
+export const getFranchiseCategories = async () => {
+    try {
+        const response = await api.get('/api/franchise/categories');
+        return response;
+    } catch (error) {
+        console.error('Error fetching franchise categories:', error);
+        throw error;
+    }
+};
+
+// 주변 가맹점 검색
+export const getNearbyFranchises = async (requestData) => {
+    try {
+        const response = await api.post('/api/franchise/nearby', requestData);
+        return response;
+    } catch (error) {
+        console.error('Error fetching nearby franchises:', error);
         throw error;
     }
 };
