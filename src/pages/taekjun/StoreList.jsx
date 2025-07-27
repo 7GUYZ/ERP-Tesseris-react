@@ -25,8 +25,10 @@ const StoreList = () => {
   const fetchCategories = async () => {
     try {
       const response = await storeListApi.getStoreCategories();
-      if (response.data.success) {
+      console.log('태균님 카테고리 데이터:', response.data);
+      if (response.data.resultCode === 200) {
         setCategories(response.data.data);
+        console.log('태균님 설정된 카테고리:', response.data.data);
       }
     } catch (err) {
       console.error('카테고리 로딩 오류:', err);
@@ -40,10 +42,22 @@ const StoreList = () => {
     
     try {
       const response = await storeListApi.getFilteredStoreList(selectedCategory);
-      if (response.data.success) {
+      console.log('태균님 가맹점 데이터:', response.data);
+      if (response.data.resultCode === 200) {
         setStores(response.data.data);
+        console.log('태균님 설정된 가맹점:', response.data.data);
+        // 영업시간 데이터 확인
+        response.data.data.forEach((store, index) => {
+          console.log(`가맹점 ${index + 1}:`, {
+            storeName: store.storeName,
+            storeBusinessDate: store.storeBusinessDate,
+            storeBusinessHour: store.storeBusinessHour,
+            storeRestHour: store.storeRestHour,
+            storeBusinessState: store.storeBusinessState
+          });
+        });
       } else {
-        setError(response.data.message || '가맹점 목록을 불러오는데 실패했습니다.');
+        setError(response.data.resultMessage || '가맹점 목록을 불러오는데 실패했습니다.');
       }
     } catch (err) {
       console.error('가맹점 목록 로딩 오류:', err);
@@ -232,6 +246,25 @@ const StoreList = () => {
                   <div className="store-category">
                     {store.storeCategoryName}
                   </div>
+                  {/* 영업시간 정보 추가 */}
+                  {store.storeBusinessDate && (
+                    <div className="store-business-info">
+                      <span className="business-label">영업일:</span>
+                      <span className="business-value">{store.storeBusinessDate}</span>
+                    </div>
+                  )}
+                  {store.storeBusinessHour && (
+                    <div className="store-business-info">
+                      <span className="business-label">영업시간:</span>
+                      <span className="business-value">{store.storeBusinessHour}</span>
+                    </div>
+                  )}
+                  {store.storeRestHour && (
+                    <div className="store-business-info">
+                      <span className="business-label">휴게시간:</span>
+                      <span className="business-value">{store.storeRestHour}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* CM 정보 및 액션 버튼 */}
