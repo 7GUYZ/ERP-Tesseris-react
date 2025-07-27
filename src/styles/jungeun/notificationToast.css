@@ -8,14 +8,14 @@
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 8px 32px rgba(33, 150, 243, 0.18), 0 1.5px 6px rgba(0,0,0,0.08);
-  border-left: 6px solid #2196F3;
+  border-left: 6px solid #170F58;
   animation: notification-slide-in 0.3s cubic-bezier(.4,1.4,.6,1);
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow: hidden;
 }
 
 .notification-toast-info {
-  border-left-color: #2196F3;
+  border-left-color: #170F58;
 }
 .notification-toast-success {
   border-left-color: #4CAF50;
@@ -45,7 +45,7 @@
   font-size: 1.18rem;
   font-weight: 600;
   line-height: 1.5;
-  color: #2196F3;
+  color: #170F58;
   word-break: keep-all;
   letter-spacing: -0.01em;
 }
@@ -68,7 +68,7 @@
 }
 .notification-toast-close:hover {
   background: #F5F6FA;
-  color: #2196F3;
+  color: #170F58;
 }
 
 .notification-toast-progress {
@@ -81,7 +81,7 @@
   content: '';
   display: block;
   height: 100%;
-  background: #2196F3;
+  background: #170F58;
   animation: notification-progress 5s linear;
 }
 .notification-toast-success .notification-toast-progress::before {
@@ -111,24 +111,39 @@
 
 @media (max-width: 768px) {
   .notification-toast {
-    top: 10px;
-    right: 10px;
-    left: 10px;
+    top: 16px;
+    right: 16px;
+    left: 16px;
     min-width: auto;
     max-width: none;
     border-radius: 10px;
   }
   .notification-toast-content {
-    padding: 16px 14px 16px 12px;
+    padding: 14px 12px 14px 10px;
     gap: 10px;
+    align-items: center;
+  }
+  .notification-toast-icon {
+    font-size: 1.5rem;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
   }
   .notification-toast-message {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
   }
   .notification-toast-close {
-    width: 28px;
-    height: 28px;
-    font-size: 1.2rem;
+    width: 26px;
+    height: 26px;
+    font-size: 1.1rem;
+    padding: 0;
+    margin-left: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .notification-toast-progress {
     height: 3px;

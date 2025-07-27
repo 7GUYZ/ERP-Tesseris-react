@@ -101,12 +101,12 @@ export const WebSocketProvider = ({ children }) => {
     const token = localStorage.getItem('access-token');
     if (userInfo && token) {
       console.log('🔄 재연결 정보:', { userIndex: userInfo.user_index, hasToken: !!token });
-      setTimeout(() => {
-        connectWebSocket(token, userInfo.user_index, (notification) => {
-          console.log('📨 재연결 후 알림 수신:', notification);
-          if (window.showToast) window.showToast('info', notification.message);
-        });
-      }, 1000);
+              setTimeout(() => {
+          connectWebSocket(token, userInfo.user_index, (notification) => {
+            console.log('📨 재연결 후 알림 수신:', notification);
+            if (window.showNotificationToast) window.showNotificationToast('info', notification.message);
+          });
+        }, 1000);
     } else {
       console.log('❌ 재연결 실패: 사용자 정보 또는 토큰 없음');
     }

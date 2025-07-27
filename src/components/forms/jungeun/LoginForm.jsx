@@ -9,6 +9,7 @@ import { login } from "../../../api/auth/JungeunAuth.jsx"
 import useAuthStore from "../../../store/jungeun/AuthStore.js"
 import { useToast } from "../../../context/jungeun/ToastContext.jsx"
 import { useWebSocket } from "../../../context/jungeun/WebSocketContext.jsx"
+import { useNotificationToast } from "../../../context/jungeun/NotificationToastContext.jsx";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("")
@@ -16,6 +17,7 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const { showToast } = useToast()
+  const { showNotificationToast } = useNotificationToast();
   const navigate = useNavigate();
   const { connectWebSocket } = useWebSocket();
 
@@ -111,7 +113,7 @@ const LoginForm = () => {
 
           // ✅ WebSocket 연결 (자동 알림 수신) - 권한 체크 안에서 실행
           connectWebSocket(accessToken, userInfo.user_index, (notification) => {
-            if (window.showToast) window.showToast('info', notification.message);
+            showNotificationToast('info', notification.message);
           });
 
           // 성공 토스트 메시지
