@@ -129,6 +129,33 @@ const StoreOperationEditPage = () => {
     });
   };
 
+  // 시간 유효성 검증 함수
+  const validateRestTime = (workStartTime, workEndTime, restStartTime, restEndTime) => {
+    const convertToMinutes = (time) => {
+      const [hours, minutes] = time.split(':').map(Number);
+      return hours * 60 + minutes;
+    };
+    
+    let workStart = convertToMinutes(workStartTime);
+    let workEnd = convertToMinutes(workEndTime);
+    let restStart = convertToMinutes(restStartTime);
+    let restEnd = convertToMinutes(restEndTime);
+    
+    // 자정(00:00)을 넘어가는 경우 처리
+    if (workEnd === 0) workEnd = 24 * 60; // 00:00을 24:00으로 변환
+    if (restEnd === 0) restEnd = 24 * 60; // 00:00을 24:00으로 변환
+    
+    console.log('검증:', {
+      workStart: workStartTime, workEnd: workEndTime,
+      restStart: restStartTime, restEnd: restEndTime,
+      workStartMin: workStart, workEndMin: workEnd,
+      restStartMin: restStart, restEndMin: restEnd,
+      isValid: restStart >= workStart && restEnd <= workEnd && restStart < restEnd
+    });
+    
+    return restStart >= workStart && restEnd <= workEnd && restStart < restEnd;
+  };
+
   const updateBusinessHours = (index, field, value) => {
     setOperationInfo(prev => ({
       ...prev,
@@ -172,12 +199,44 @@ const StoreOperationEditPage = () => {
       // 현재 편집 중인 영업시간 찾기
       const hoursIndex = parseInt(currentTimeField.split('_')[0]);
       const field = currentTimeField.split('_')[1];
+      
+      // 휴식시간 변경인 경우 유효성 검증
+      if (field === 'restStartTime' || field === 'restEndTime') {
+        const hours = operationInfo.businessHours[hoursIndex];
+        const newRestStart = field === 'restStartTime' ? currentTimeValue : hours.restStartTime;
+        const newRestEnd = field === 'restEndTime' ? currentTimeValue : hours.restEndTime;
+        
+        if (!validateRestTime(hours.workStartTime, hours.workEndTime, newRestStart, newRestEnd)) {
+          alert('휴식시간은 운영시간 안으로만 설정 가능합니다.');
+          setShowTimePicker(false);
+          return;
+        }
+      }
+      
       updateBusinessHours(hoursIndex, field, currentTimeValue);
     }
     setShowTimePicker(false);
   };
 
   const handleSave = async () => {
+    // 휴식시간 유효성 검증
+    const invalidRestTimes = operationInfo.businessHours.filter(hours => {
+      if (hours.restTime === 'Y') {
+        return !validateRestTime(
+          hours.workStartTime, 
+          hours.workEndTime, 
+          hours.restStartTime, 
+          hours.restEndTime
+        );
+      }
+      return false;
+    });
+    
+    if (invalidRestTimes.length > 0) {
+      alert('휴식시간이 운영시간을 벗어나는 설정이 있습니다. 확인해주세요.');
+      return;
+    }
+    
     setSaving(true);
     try {
       console.log('🔍 [React] EditPage 저장 시작 (JWT 방식)');
@@ -518,8 +577,27 @@ const StoreOperationEditPage = () => {
         </div>
 
         {/* Time Picker Dialog */}
-        <Dialog open={showTimePicker} onClose={() => setShowTimePicker(false)}>
-          <DialogTitle>시간 선택</DialogTitle>
+        <Dialog 
+          open={showTimePicker} 
+          onClose={() => setShowTimePicker(false)}
+          PaperProps={{
+            sx: {
+              '& .MuiDialogTitle-root': {
+                backgroundColor: '#170F58 !important',
+                color: '#fff !important'
+              },
+              '& .MuiDialog-paper': {
+                '& .MuiDialogTitle-root': {
+                  backgroundColor: '#170F58 !important',
+                  color: '#fff !important'
+                }
+              }
+            }
+          }}
+        >
+          <DialogTitle style={{ backgroundColor: '#170F58', color: '#fff' }}>
+            시간 선택
+          </DialogTitle>
           <DialogContent>
             <TimePicker
               value={currentTimeValue ? parse(currentTimeValue, 'HH:mm', new Date()) : null}
@@ -528,8 +606,22 @@ const StoreOperationEditPage = () => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setShowTimePicker(false)}>취소</Button>
-            <Button onClick={confirmTimeChange} variant="contained">확인</Button>
+            <Button 
+              onClick={() => setShowTimePicker(false)}
+              sx={{ color: '#170F58' }}
+            >
+              취소
+            </Button>
+            <Button 
+              onClick={confirmTimeChange} 
+              variant="contained"
+              sx={{ 
+                backgroundColor: '#170F58',
+                '&:hover': { backgroundColor: '#120a40' }
+              }}
+            >
+              확인
+            </Button>
           </DialogActions>
         </Dialog>
       </div>

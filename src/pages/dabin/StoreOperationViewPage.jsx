@@ -145,15 +145,20 @@ const StoreOperationViewPage = () => {
                   )}
                   
                   <Box className="store-operation-view-business-days">
-                    {hours.businessDays.map((day, dayIndex) => (
-                      <Chip
-                        key={dayIndex}
-                        label={getDayName(day)}
-                        className="store-operation-view-day-chip active"
-                        size="small"
-                        sx={{ background: '#170F58', color: '#fff' }}
-                      />
-                    ))}
+                    {hours.businessDays
+                      .sort((a, b) => {
+                        const dayOrder = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                        return dayOrder.indexOf(a) - dayOrder.indexOf(b);
+                      })
+                      .map((day, dayIndex) => (
+                        <Chip
+                          key={dayIndex}
+                          label={getDayName(day)}
+                          className="store-operation-view-day-chip active"
+                          size="small"
+                          sx={{ background: '#170F58', color: '#fff' }}
+                        />
+                      ))}
                   </Box>
                 </Box>
               </Box>

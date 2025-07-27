@@ -67,7 +67,15 @@ const StoreEditPage = () => {
                 }
             })
         );
-        setStoreImages(urls);
+        
+        // 메인 이미지(storeMainImageStatus === 'T')를 먼저 정렬
+        const sortedUrls = urls.sort((a, b) => {
+            if (a.storeMainImageStatus === 'T' && b.storeMainImageStatus !== 'T') return -1;
+            if (a.storeMainImageStatus !== 'T' && b.storeMainImageStatus === 'T') return 1;
+            return 0;
+        });
+        
+        setStoreImages(sortedUrls);
     };
 
     const fetchStoreData = async () => {

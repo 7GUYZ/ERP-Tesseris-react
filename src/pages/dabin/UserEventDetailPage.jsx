@@ -173,9 +173,6 @@ const UserEventDetailPage = () => {
                     <div className="event-detail-store-info">
                         <div className="event-detail-store-header">
                             <h2 className="event-detail-store-name">{eventDetail.storeName}</h2>
-                            <div className="event-detail-cm-available">
-                                <span>{eventDetail.userCmUse} CM 가능</span>
-                            </div>
                         </div>
                         <p className="event-detail-store-address">{eventDetail.storeAddress}</p>
                         <div className="event-detail-store-actions">
