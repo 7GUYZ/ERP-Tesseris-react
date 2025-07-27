@@ -49,15 +49,15 @@ export default function NoticeDetail() {
       </div>
       <div className="notice-section">
         <div className="notice-card">
-          <div className="notice-content">
-            <div className="notice-meta">
-              <p className="notice-subject">{noticeData.noticeTitle}</p>
-              <p className="notice-date">
-                {formatDate(noticeData.noticeCreateTime)}
-              </p>
-            </div>
-            <div className="notice-body">{noticeData.noticeDesc}</div>
-          </div>
+      <div className="notice-content">
+        <div className="notice-meta">
+          <p className="notice-subject">{noticeData.noticeTitle}</p>
+          <p className="notice-date">
+            {formatDate(noticeData.noticeCreateTime)}
+          </p>
+        </div>
+        <div className="notice-body">{noticeData.noticeDesc}</div>
+      </div>
         </div>
       </div>
     </div>

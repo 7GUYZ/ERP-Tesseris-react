@@ -12,6 +12,8 @@ import {
   FileText,
   LogOut,
 } from "lucide-react";
+import { logout } from "../../../api/auth/JungeunAuth";
+import useAuthStore from "../../../store/jungeun/AuthStore";
 
 export default function MobileMyPage() {
   const [userInfo, setUserInfo] = useState(null);
@@ -25,6 +27,24 @@ export default function MobileMyPage() {
   const [itemsPerPage] = useState(5);
   const navigate = useNavigate();
   const qrRef = useRef(null);
+
+  const handleLogout = async (e) => {
+    e.preventDefault()
+
+    try {
+      const response = await logout();
+      if (response.data.status === "success") {
+        useAuthStore.getState().zu_logout();
+        localStorage.removeItem("access-token");
+        localStorage.removeItem("user-info");
+        // 홈으로 이동
+        navigate("/");
+
+      }
+    } catch (error) {
+
+    }
+  }
 
   useEffect(() => {
     const userData = localStorage.getItem("user-info");
@@ -197,9 +217,8 @@ export default function MobileMyPage() {
                       (page) => (
                         <button
                           key={page}
-                          className={`mypage-pageNumber${
-                            currentPage === page ? " active" : ""
-                          }`}
+                          className={`mypage-pageNumber${currentPage === page ? " active" : ""
+                            }`}
                           onClick={() => handlePageChange(page)}
                         >
                           {page}
@@ -218,7 +237,7 @@ export default function MobileMyPage() {
               <h3 className="mypage-cardTitle">보안 / 설정</h3>
             </div>
             <div className="mypage-menuContent">
-              <Link className="mypage-menuItem">
+              <Link to="/mypage/changepassword" className="mypage-menuItem">
                 <div className="mypage-menuLabel">
                   <Lock className="menuIcon" />
                   <span>비밀번호 변경</span>
@@ -274,8 +293,8 @@ export default function MobileMyPage() {
                 <ChevronRight className="menuIcon" />
               </Link>
               <div className="mypage-separator"></div>
-              <button className="mypage-menuItem">
-                <div className="mypage-menuLabel">
+              <button className="mypage-menuItem" onClick={handleLogout}>
+                <div className="mypage-menuLabel" >
                   <LogOut className="menuIcon" />
                   <span>로그아웃</span>
                 </div>
@@ -285,7 +304,14 @@ export default function MobileMyPage() {
         </div>
         <footer className="mypage-footer">
           <div className="mypage-footerContent">
-            <Link className="mypage-kakaoLink">카카오톡 상담하기</Link>
+            <a
+              className="mypage-kakaoLink"
+              href="https://pf.kakao.com/_ebYWn/chat"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              카카오톡 상담하기
+            </a>
             <div className="mypage-companyInfo">
               씨엠바더코리아㈜ | 사업자 등록번호 364-86-03002
               <br />

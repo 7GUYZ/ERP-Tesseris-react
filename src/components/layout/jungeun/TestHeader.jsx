@@ -2,13 +2,17 @@ import React from "react";
 import { logout } from "../../../api/auth/JungeunAuth";
 import useAuthStore from "../../../store/jungeun/AuthStore";
 import { useNavigate } from "react-router-dom";
+import { useWebSocket } from "../../../context/jungeun/WebSocketContext";
 
 const TestHeader = () => {
     const navigate = useNavigate();
+    const { disconnectWebSocket } = useWebSocket();
     const handleLogout = async (e) => {
         e.preventDefault()
 
         try {
+            // WebSocket 연결 해제
+            disconnectWebSocket();
             const response = await logout();
             if (response.data.status === "success") {
                 useAuthStore.getState().zu_logout();
@@ -16,7 +20,6 @@ const TestHeader = () => {
                 localStorage.removeItem("user-info");
                 // 홈으로 이동
                 navigate("/");
-
             }
         } catch (error) {
 
