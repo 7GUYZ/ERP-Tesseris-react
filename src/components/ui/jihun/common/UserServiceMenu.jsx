@@ -22,7 +22,6 @@ import {
   Coins,
   BanknoteArrowUp,
   Building2,
-  Dices,
   Tickets,
   PartyPopper,
   FolderPlus,
@@ -68,9 +67,8 @@ export default function UserServiceMenu() {
       { icon: BanknoteArrowUp, label: "수당 내역", color: "usermain-icon-red", path: "/main" },
       { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: Building2, label: "가맹점 신청", color: "usermain-icon-cyan", path: "/registerstore0" },
-      { icon: Tickets, label: "쿠폰 보관함", color: "usermain-icon-violet", path: "/main" },
+      { icon: Tickets, label: "쿠폰 보관함", color: "usermain-icon-violet", path: "/couponlist" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
-      { icon: Dices, label: "씨엠 게임 보상", color: "usermain-icon-teal", path: "/main" },
       { icon: PartyPopper, label: "쿠폰 이벤트", color: "usermain-icon-indigo", path: "/main" },
       { icon: ShoppingCart, label: "쇼핑몰", color: "usermain-icon-green", path: "/main" },
     ];
@@ -85,6 +83,7 @@ export default function UserServiceMenu() {
       { icon: Store, label: "산하 가맹점", color: "usermain-icon-violet", path: "/StoreList" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
       { icon: ShoppingCart, label: "쇼핑몰", color: "usermain-icon-green", path: "/main" },
+      { icon: Tickets, label: "쿠폰 보관함", color: "usermain-icon-violet", path: "/couponlist" }
     ];
   }
   if (userRole === "3") {
@@ -95,9 +94,9 @@ export default function UserServiceMenu() {
       { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: Coins, label: "CM 충전", color: "usermain-icon-pink", path: "/main" },
       { icon: Store, label: "매장 관리", color: "usermain-icon-cyan", path: "/" },
-      { icon: FolderPlus, label: "쿠폰 발행함", color: "usermain-icon-green", path: "/main" },
+      { icon: FolderPlus, label: "쿠폰 보관함", color: "usermain-icon-indigo", path: "/couponlist" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
-      { icon: Users, label: "고객 관리", color: "usermain-icon-orange", path: "/main" },
+      { icon: Users, label: "고객 관리", color: "usermain-icon-orange", path: "/customer-management" },
       { icon: PartyPopper, label: "쿠폰 이벤트", color: "usermain-icon-indigo", path: "/main" },
       { icon: CalendarPlus, label: "쿠폰 이벤트 등록", color: "usermain-icon-red", path: "/main" },
       { icon: ShoppingCart, label: "쇼핑몰", color: "usermain-icon-green", path: "/main" },

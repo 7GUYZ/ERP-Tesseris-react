@@ -114,7 +114,7 @@ export const businessList = (business_grade_index) => {
 // 가맹점 카테고리 불러오는 api
 export const storeCategoryFilter = () => {
   const token = localStorage.getItem("access-token"); // 항상 최신 토큰
-  return api.get("/user/storeList", {
+  return api.get("/user/userStoreList", {
     headers: {
       Authorization: `${token}`
     }
@@ -124,7 +124,7 @@ export const storeCategoryFilter = () => {
 // 가맹점 카테고리 선택했을 때 가맹점 리스트 불러오는 api
 export const storeList = (user_index, store_category_index) => {
   const token = localStorage.getItem("access-token"); // 항상 최신 토큰
-  return api.get("/user/storeList/filtered", {
+  return api.get("/user/userStoreList/filtered", {
     params: {user_index, store_category_index},
     headers: {
       Authorization: `${token}`
@@ -135,7 +135,7 @@ export const storeList = (user_index, store_category_index) => {
 // 가맹점 상세보기
 export const storeDetail = (store_index) => {
   const token = localStorage.getItem("access-token"); // 항상 최신 토큰
-  return api.get("/user/storeList/detail", {
+  return api.get("/user/userStoreList/detail", {
     params: {store_index},
     headers: {
       Authorization: `${token}`

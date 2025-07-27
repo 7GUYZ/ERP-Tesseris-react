@@ -1,0 +1,602 @@
+/* 고객 관리 페이지 스타일 */
+.customer-management {
+  min-height: 100vh;
+  background-color: #F5F5F9;
+  padding: 20px;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.customer-management-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(23, 15, 88, 0.1);
+  overflow: hidden;
+}
+
+/* 헤더 스타일 */
+.customer-management-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #170F58 0%, #2A1B8A 100%);
+  color: white;
+  position: relative;
+}
+
+.header-back {
+  margin-right: 16px;
+}
+
+.back-arrow {
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.back-arrow:hover {
+  transform: translateX(-2px);
+}
+
+.header-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+/* 검색 섹션 */
+.customer-search-section {
+  padding: 24px;
+  background: white;
+  border-bottom: 1px solid #E8E8F0;
+}
+
+.search-input-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.customer-search-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  border-top: 1px solid #E8E8F0;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border: 2px solid #E8E8F0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #170F58;
+  box-shadow: 0 0 0 3px rgba(23, 15, 88, 0.1);
+}
+
+.member-filter {
+  min-width: 120px;
+  padding: 12px 16px;
+  border: 2px solid #E8E8F0;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.member-filter:focus {
+  outline: none;
+  border-color: #170F58;
+}
+
+.search-button {
+  padding: 12px 24px;
+  background: #170F58;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.search-button:hover:not(:disabled) {
+  background: #2A1B8A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(23, 15, 88, 0.3);
+}
+
+.search-button:disabled {
+  background: #B8B8C8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 액션 버튼 */
+.customer-action-buttons {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  background: white;
+  border-bottom: 1px solid #E8E8F0;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.action-button.regular-customer {
+  background: #170F58;
+  color: white;
+}
+
+.action-button.regular-customer:hover:not(:disabled) {
+  background: #2A1B8A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(23, 15, 88, 0.3);
+}
+
+.action-button.general-customer {
+  background: #6B7280;
+  color: white;
+}
+
+.action-button.general-customer:hover:not(:disabled) {
+  background: #4B5563;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+.action-button.gift-coupon {
+  background: #FDCD00;
+  color: #170F58;
+}
+
+.action-button.gift-coupon:hover:not(:disabled) {
+  background: #FFD700;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(253, 205, 0, 0.4);
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 메시지 스타일 */
+.error-message {
+  margin: 16px 24px;
+  padding: 12px 16px;
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  border-radius: 8px;
+  color: #DC2626;
+  font-size: 14px;
+}
+
+.success-message {
+  margin: 16px 24px;
+  padding: 12px 16px;
+  background: #D1FAE5;
+  border: 1px solid #A7F3D0;
+  border-radius: 8px;
+  color: #059669;
+  font-size: 14px;
+}
+
+.info-message {
+  margin: 16px 24px;
+  padding: 12px 16px;
+  background: #E0F2FE;
+  border: 1px solid #7DD3FC;
+  border-radius: 8px;
+  color: #0284C7;
+  font-size: 14px;
+}
+
+/* 테이블 컨테이너 */
+.customer-table-container {
+  background: white;
+}
+
+/* 테이블 헤더 */
+.table-header {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 1.5fr 1fr;
+  gap: 16px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #170F58 0%, #2A1B8A 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  align-items: center;
+}
+
+.header-checkbox {
+  display: flex;
+  justify-content: center;
+}
+
+.header-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #FDCD00;
+}
+
+/* 테이블 바디 */
+.table-body {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 1.5fr 1fr;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #F3F4F6;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+  background-color: #F9FAFB;
+}
+
+.row-checkbox {
+  display: flex;
+  justify-content: center;
+}
+
+.row-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #FDCD00;
+}
+
+.table-row > div {
+  font-size: 14px;
+  color: #374151;
+}
+
+.row-name {
+  font-weight: 500;
+}
+
+.row-id {
+  font-family: 'Courier New', monospace;
+  color: #6B7280;
+}
+
+.row-phone {
+  font-weight: 500;
+}
+
+.row-type {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  background: #F3F4F6;
+  color: #374151;
+}
+
+/* 로딩 및 빈 데이터 메시지 */
+.loading-message,
+.no-data-message {
+  padding: 40px 24px;
+  text-align: center;
+  color: #6B7280;
+  font-size: 16px;
+}
+
+.loading-message {
+  color: #170F58;
+  font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .customer-management {
+    padding: 10px;
+  }
+  
+  .customer-management-container {
+    border-radius: 12px;
+  }
+  
+  .customer-management-header {
+    padding: 16px 20px;
+  }
+  
+  .header-title {
+    font-size: 20px;
+  }
+  
+  .customer-search-section {
+    padding: 20px;
+  }
+  
+  .search-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-input,
+  .member-filter,
+  .search-button {
+    width: 100%;
+  }
+  
+  .customer-action-buttons {
+    padding: 16px 20px;
+    justify-content: center;
+  }
+  
+  .action-button {
+    flex: 1;
+    min-width: auto;
+  }
+  
+  .table-header,
+  .table-row {
+    grid-template-columns: 40px 1fr 1fr 1.2fr 1fr;
+    gap: 12px;
+    padding: 12px 20px;
+    font-size: 13px;
+  }
+  
+  .header-checkbox,
+  .row-checkbox {
+    justify-content: center;
+  }
+  
+  .header-checkbox input[type="checkbox"],
+  .row-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 35px 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+  
+  .header-id,
+  .row-id {
+    display: none;
+  }
+  
+  .customer-action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-button {
+    width: 100%;
+  }
+}
+
+/* 쿠폰 모달 스타일 */
+.taekjun-coupon-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.taekjun-coupon-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.taekjun-coupon-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #E8E8F0;
+}
+
+.taekjun-coupon-modal-header h3 {
+  margin: 0;
+  color: #170F58;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.taekjun-coupon-modal-close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.taekjun-coupon-modal-close-button:hover {
+  background-color: #F5F5F9;
+}
+
+.taekjun-coupon-modal-content {
+  padding: 24px;
+}
+
+.taekjun-coupon-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.taekjun-coupon-modal-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.taekjun-coupon-modal-form-group label {
+  font-weight: 500;
+  color: #170F58;
+  font-size: 14px;
+}
+
+.taekjun-coupon-modal-form-input {
+  padding: 12px 16px;
+  border: 1px solid #E8E8F0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.taekjun-coupon-modal-form-input:focus {
+  outline: none;
+  border-color: #FDCD00;
+}
+
+/* select 요소 스타일 추가 */
+.taekjun-coupon-modal-form-input[type="text"],
+.taekjun-coupon-modal-form-input[type="number"],
+.taekjun-coupon-modal-form-input[type="select-one"] {
+  padding: 12px 16px;
+  border: 1px solid #E8E8F0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.taekjun-coupon-modal-form-input[type="text"]:focus,
+.taekjun-coupon-modal-form-input[type="number"]:focus,
+.taekjun-coupon-modal-form-input[type="select-one"]:focus {
+  outline: none;
+  border-color: #FDCD00;
+}
+
+/* select 전용 스타일 */
+select.taekjun-coupon-modal-form-input {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+select.taekjun-coupon-modal-form-input:focus {
+  border-color: #FDCD00;
+  box-shadow: 0 0 0 2px rgba(253, 205, 0, 0.1);
+}
+
+.taekjun-coupon-modal-selected-info {
+  background: #F5F5F9;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.taekjun-coupon-modal-selected-info p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #170F58;
+}
+
+.taekjun-coupon-modal-selected-info p:first-child {
+  font-weight: 500;
+}
+
+.taekjun-coupon-modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #E8E8F0;
+  justify-content: flex-end;
+}
+
+.taekjun-coupon-modal-cancel-button {
+  padding: 12px 24px;
+  border: 1px solid #E8E8F0;
+  background: white;
+  color: #666;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.taekjun-coupon-modal-cancel-button:hover:not(:disabled) {
+  background: #F5F5F9;
+}
+
+.taekjun-coupon-modal-confirm-button {
+  padding: 12px 24px;
+  border: none;
+  background: #FDCD00;
+  color: #170F58;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.taekjun-coupon-modal-confirm-button:hover:not(:disabled) {
+  background: #F4C000;
+}
+
+.taekjun-coupon-modal-confirm-button:disabled {
+  background: #E8E8F0;
+  color: #999;
+  cursor: not-allowed;
+} 

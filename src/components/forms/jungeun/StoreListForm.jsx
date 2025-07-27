@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import "../../../styles/jungeun/storeList.css";
-import { storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
+import { storeListApi } from "../../../api/auth/TaekjunAuth";
 import { Image } from "lucide-react";
 
 const MAIN_COLOR = "#170F58";
@@ -142,7 +142,7 @@ const StoreListForm = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await storeCategoryFilter();
+                const res = await storeListApi.getStoreCategories();
                 if (res.data.resultCode === 200) {
                     // 전체 옵션 추가
                     const allCategories = [
@@ -160,14 +160,13 @@ const StoreListForm = () => {
 
     // 카테고리가 바뀔 때마다 백엔드에서 데이터 받아오기
     useEffect(() => {
-        const user_index = Number(JSON.parse(localStorage.getItem("user-info"))?.user_index);
         const fetchStores = async () => {
             if (selectedCategory === null || selectedCategory === undefined) {
                 setStores([]);
                 return;
             }
             try {
-                const res = await storeList(user_index, selectedCategory);
+                const res = await storeListApi.getFilteredStoreList(selectedCategory);
                 if (res.data.resultCode === 200) {
                     setStores(res.data.data);
                 }
@@ -223,7 +222,7 @@ const StoreListForm = () => {
                             gap: "0.5rem"
                         }}
                     >
-                        <h3 className="company-name" style={{ fontSize: "1.1rem", margin: 0 }}>{store.storeName}</h3>
+                        <h3 className="company-name" style={{ fontSize: "1.1rem", margin: 0 }}>{store.storeName || '가맹점명 없음'}</h3>
                         <div
                             className="position-badge"
                             style={{
@@ -235,7 +234,7 @@ const StoreListForm = () => {
                                 whiteSpace: "nowrap"
                             }}
                         >
-                            {store.storeCategoryName}
+                            {store.storeCategoryName || '업종 없음'}
                         </div>
                     </div>
                 </div>
@@ -243,15 +242,15 @@ const StoreListForm = () => {
                 <div className="card-content" style={{ padding: "0 1.5rem 1.2rem 1.5rem" }}>
                     <div className="info-row">
                         <span className="info-label">가맹점명</span>
-                        <span className="info-value">{store.storeName}</span>
+                        <span className="info-value">{store.storeName || '정보 없음'}</span>
                     </div>
                     <div className="info-row">
                         <span className="info-label">업종</span>
-                        <span className="info-value">{store.storeCategoryName}</span>
+                        <span className="info-value">{store.storeCategoryName || '정보 없음'}</span>
                     </div>
                     <div className="info-row">
                         <span className="info-label">사용 가능 CM</span>
-                        <span className="info-value">{store.userCmUse.toLocaleString()} CM</span>
+                        <span className="info-value">{store.userCmUse ? store.userCmUse.toLocaleString() : '0'} CM</span>
                     </div>
                     <div className="info-row">
                         <span className="info-label">영업 상태</span>
@@ -265,11 +264,11 @@ const StoreListForm = () => {
                     </div>
                     <div className="info-row">
                         <span className="info-label">전화번호</span>
-                        <span className="info-value">{store.storePhone}</span>
+                        <span className="info-value">{store.storePhone || '정보 없음'}</span>
                     </div>
                     <div className="info-row">
                         <span className="info-label">주소</span>
-                        <span className="info-value">{store.storeAddress}</span>
+                        <span className="info-value">{store.storeAddress || '정보 없음'}</span>
                     </div>
                 </div>
 
