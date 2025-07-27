@@ -41,3 +41,58 @@ export const signupApi = {
     // 이메일/닉네임 중복확인
     checkDuplicate: ({ email, nickname }) => api.get('signin/check-duplicate', { params: { email, nickname } }),
 };
+
+// 고객 관리 API
+export const customerManagementApi = {
+    // 내 가맹점 고객 목록 조회
+    getMyCustomers: (params) => api.get('customer-management/my-customers', { params }),
+    
+    // 내 가맹점 특정 고객 조회
+    getMyCustomerByUserIndex: (storeUserIndex, customerUserIndex) => 
+        api.get('customer-management/my-customer', { params: { storeUserIndex, customerUserIndex } }),
+    
+    // user_index로 고객 정보 조회
+    getCustomerByUserIndex: (userIndex) => 
+        api.get('customer-management/customer-by-user-index', { params: { userIndex } }),
+    
+    // user_index로 고객 상태 조회
+    getCustomerStatusByUserIndex: (userIndex) => 
+        api.get('customer-management/customer-status', { params: { userIndex } }),
+    
+    // 특정 가맹점의 고객 조회
+    getCustomerByStoreAndUserIndex: (storeUserIndex, customerUserIndex) => 
+        api.get('customer-management/store-customer', { params: { storeUserIndex, customerUserIndex } }),
+    
+    // 고객 상태 변경 (단골/일반 등록)
+    updateCustomerStatus: (data) => api.put('customer-management/update-status', data),
+    
+    // 쿠폰 선물
+    giftCoupon: (data) => api.post('customer-management/gift-coupon', data),
+};
+
+// 쿠폰 리스트 API
+export const couponListApi = {
+    // 내가 받은 쿠폰 리스트 조회
+    getMyCoupons: (userIndex) => api.get('coponlist/my-coupons', { params: { userIndex } }),
+};
+
+// 가맹점 리스트 API
+export const storeListApi = {
+    // 가맹점 카테고리 목록 조회
+    getStoreCategories: () => api.get('storelist'),
+    // 필터링된 가맹점 목록 조회
+    getFilteredStoreList: (storeCategoryIndex) => {
+        // 전체(0) 선택 시에는 카테고리 파라미터를 제거
+        if (storeCategoryIndex === 0) {
+            return api.get('storelist/filtered');
+        } else {
+            return api.get('storelist/filtered', { 
+                params: { store_category_index: storeCategoryIndex } 
+            });
+        }
+    },
+    // 가맹점 상세 정보 조회
+    getStoreDetail: (storeIndex) => api.get('storelist/detail', { 
+        params: { store_index: storeIndex } 
+    }),
+};

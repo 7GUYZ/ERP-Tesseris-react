@@ -2,12 +2,14 @@ import { useEffect } from "react";
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import useAuthStore from './store/jungeun/AuthStore';
 import { ToastProvider } from './context/jungeun/ToastContext';
+import { NotificationToastProvider } from './context/jungeun/NotificationToastContext';
 import { setupInterceptors } from './api/auth/JungeunAuth';
 import AppRoutes from "./routes/AppRoutes";
 import LoginPage from "./pages/jungeun/LoginPage";
 import TestSignUp from "./pages/jungeun/TestSignUp";
 import TestFindPw from "./pages/jungeun/TestFindPw";
 import SignupPage from "./pages/taekjun/SignupPage";
+import { WebSocketProvider, useWebSocket } from './context/jungeun/WebSocketContext';
 
 function App() {
   const navigate = useNavigate();
@@ -22,17 +24,44 @@ function App() {
   }, [navigate]);
 
   return (
-    <ToastProvider>
+    <WebSocketProvider>
+      <AppContent />
+    </WebSocketProvider>
+  );
+}
+
+function AppContent() {
+  const { connectWebSocket } = useWebSocket();
+
+  useEffect(() => {
+    // 새로고침 시 WebSocket 자동 재연결
+    const userInfo = localStorage.getItem("user-info");
+    const token = localStorage.getItem("access-token");
+    if (userInfo && token) {
+      const parsedUserInfo = JSON.parse(userInfo);
+      connectWebSocket(token, parsedUserInfo.user_index, (notification) => {
+        // 알림 토스트 사용
+        if (window.showNotificationToast) {
+          window.showNotificationToast('info', notification.message);
+        }
+      });
+    }
+  }, [connectWebSocket]);
+
+  return (
+    <NotificationToastProvider>
+      <ToastProvider>
         <Routes>
           <Route path='/' element={<LoginPage />} />
-          <Route path='/signup' element={<SignupPage />} /> {/* 회원가입 페이지 */}
-          <Route path='/TestSignUp' element={<TestSignUp />} /> {/* 임시 회원가입 페이지 */}
-          <Route path='/TestFindPw' element={<TestFindPw />} /> {/* 임시 비번찾기 페이지 */}
+          <Route path='/signup' element={<SignupPage />} />
+          <Route path='/TestSignUp' element={<TestSignUp />} />
+          <Route path='/TestFindPw' element={<TestFindPw />} />
           {/* 공통 레이아웃과 Route들이 들어있는 AppRoutes(헤더, 내비 포함) */}
           <Route path="/*" element={<AppRoutes />} />
         </Routes>
-    </ToastProvider>
-  )
+      </ToastProvider>
+    </NotificationToastProvider>
+  );
 }
 
 export default App

@@ -13,6 +13,14 @@ export const ToastProvider = ({ children }) => {
     setToast({ type, message });
   }, []);
 
+  // 전역 함수로 등록 (새로고침 후에도 사용 가능)
+  useEffect(() => {
+    window.showToast = showToast;
+    return () => {
+      delete window.showToast;
+    };
+  }, [showToast]);
+
   // 커스텀 이벤트 리스너 등록
   useEffect(() => {
     const handler = (e) => {
