@@ -9,45 +9,38 @@ const UserCommissionHistoryPage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [userRoleIndex, setUserRoleIndex] = useState(null);
-    const [userIndex, setUserIndex] = useState(null);
     
     const navigate = useNavigate();
     const limit = 20;
 
     useEffect(() => {
-        // 세션에서 사용자 정보 가져오기
-        const userRole = sessionStorage.getItem('user_role_index');
-        const userIdx = sessionStorage.getItem('user_index');
-        
-        // 테스트용: 임의의 user_index 설정 (실제 테스트할 때만 사용)
-        const testUserIndex = 110; // 여기에 테스트할 user_index 입력
-        
-        setUserRoleIndex(parseInt(userRole));
-        setUserIndex(testUserIndex); // 실제: parseInt(userIdx)
-        
-        // 테스트용: 임의의 user_index로 데이터 조회
-        fetchHistoryData(testUserIndex, 1); // 실제: parseInt(userIdx)
+        // 백엔드에서 JWT로 자동 처리하므로 바로 호출
+        fetchHistoryData(1);
     }, []);
 
-    const fetchHistoryData = async (userIdx, page) => {
+    const fetchHistoryData = async (page) => {
         setLoading(true);
         try {
-            console.log('Fetching data for userIndex:', userIdx, 'page:', page);
-            const response = await getUserCommissionHistory(userIdx, page, limit);
+            const response = await getUserCommissionHistory(page, limit);
             console.log('API Response:', response);
             
             if (response && response.data && response.data.success) {
-                setHistoryData(response.data.data);
-                setTotalPages(response.data.totalPages);
-                setTotalCount(response.data.totalCount);
-                setCurrentPage(response.data.currentPage);
+                setHistoryData(response.data.data || []);
+                setTotalPages(response.data.totalPages || 1);
+                setTotalCount(response.data.totalCount || 0);
+                setCurrentPage(response.data.currentPage || page);
             } else {
                 console.error('Failed to fetch history data:', response?.data?.message || 'Unknown error');
+                setHistoryData([]);
+                setTotalPages(1);
+                setTotalCount(0);
             }
         } catch (error) {
             console.error('Error fetching history data:', error);
             console.error('Error details:', error.response?.data);
+            setHistoryData([]);
+            setTotalPages(1);
+            setTotalCount(0);
         } finally {
             setLoading(false);
         }
@@ -56,7 +49,7 @@ const UserCommissionHistoryPage = () => {
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) {
             setCurrentPage(page);
-            fetchHistoryData(userIndex, page);
+            fetchHistoryData(page);
         }
     };
 
@@ -130,11 +123,6 @@ const UserCommissionHistoryPage = () => {
                 <span className="user-commission-history-title">
                     수당 내역
                 </span>
-                {userRoleIndex === 1 && (
-                    <div className="user-commission-history-info-note">
-                        <span className="user-commission-history-star">★</span> 정회원만 지급가능합니다.
-                    </div>
-                )}
             </div>
 
             {/* Content */}

@@ -14,6 +14,7 @@ import UserEventListPage from '../pages/dabin/UserEventListPage';
 import UserEventDetailPage from '../pages/dabin/UserEventDetailPage';
 
 
+
 function DabinRoute() {
     return (
         <>
@@ -32,6 +33,7 @@ function DabinRoute() {
                 {/* 사용자용 쿠폰 이벤트 */}
                 <Route path='/user-event-list' element={<UserEventListPage />} />
                 <Route path='/user-event-detail/:eventMasterIndex' element={<UserEventDetailPage />} />
+
             </Route>
         </>
     );
