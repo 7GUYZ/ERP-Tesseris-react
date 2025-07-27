@@ -42,7 +42,7 @@ const UserEventListPage = () => {
     };
 
     const handleEventClick = (eventMasterIndex) => {
-        navigate(`/user-event-detail/${eventMasterIndex}`);
+        window.location.href = `/user-event-detail/${eventMasterIndex}`;
     };
 
     const handleBackClick = () => {
@@ -125,7 +125,7 @@ const UserEventListPage = () => {
                                 <div style={{ textAlign: 'center', width: '150px' }}>
                                     <p>{formatAddress(event.storeAddress)}</p>
                                     <p style={{ fontWeight: 'bold' }}>{event.storeName}</p>
-                                    <p>다운로드 가능: {event.eventMasterCount || 0}</p>
+                                    <p>참여 가능 횟수: {event.remainingDownloads || 0}</p>
                                 </div>
                             </div>
                         </div>
@@ -153,6 +153,7 @@ const UserEventListPage = () => {
                                 <div style={{ textAlign: 'center', width: '150px' }}>
                                     <p>{formatAddress(event.storeAddress)}</p>
                                     <p style={{ fontWeight: 'bold' }}>{event.storeName}</p>
+                                    <p>다운로드 가능: {event.remainingDownloads || 0}</p>
                                 </div>
                             </div>
                         </div>
