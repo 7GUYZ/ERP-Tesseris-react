@@ -184,12 +184,7 @@ const UserEventDetailPage = () => {
                                 >
                                     📞
                                 </button>
-                                <button 
-                                    className="event-detail-action-btn event-detail-map-btn"
-                                    onClick={() => window.location.href = `/franchisee-map?fidx=${eventDetail.storeIndex}`}
-                                >
-                                    🗺️
-                                </button>
+
                             </div>
                         </div>
                     </div>

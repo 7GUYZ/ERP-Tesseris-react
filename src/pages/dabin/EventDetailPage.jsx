@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Phone, MapPin, Check } from "lucide-react"
+import { ArrowLeft, Phone, Check } from "lucide-react"
 import { useParams } from "react-router-dom"
 import { getEventDetail, getMyStoreImages, getPresignedUrl } from "../../api/auth/DabinAuth"
 import "../../styles/dabin/EventDetailPage.css"
@@ -89,10 +89,7 @@ export default function EventDetailPage() {
     }
   }
 
-  const handleMapClick = (storeIndex) => {
-    // React 컴포넌트로 이동
-    window.open(`/franchisee-map?fidx=${storeIndex}`, '_blank')
-  }
+
 
   const getCouponType = (price) => {
     if (price >= 50000) return "price-50000"      // ₩50,000 - 신사임당 - 노란색
@@ -164,12 +161,7 @@ export default function EventDetailPage() {
                 >
                   <Phone className="w-4 h-4" />
                 </button>
-                <button 
-                  className="event-detail-action-btn event-detail-map-btn"
-                  onClick={() => handleMapClick(eventDetail.storeIndex)}
-                >
-                  <MapPin className="w-4 h-4" />
-                </button>
+
               </div>
             </div>
           </div>
