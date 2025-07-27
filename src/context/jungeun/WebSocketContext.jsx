@@ -17,7 +17,12 @@ export const WebSocketProvider = ({ children }) => {
     }
     console.log('🔌 WebSocket 연결 시도...', { userIndex, accessToken: accessToken ? '있음' : '없음' });
     
-    const socket = new SockJS('http://localhost:19091/ws/notifications');
+    // 상대 경로로 WebSocket URL 설정
+    // 개발환경: http://localhost:19091, 운영환경: 현재 도메인 사용
+    const wsBaseUrl = process.env.NODE_ENV === 'production' 
+      ? '' // 운영환경: 현재 도메인 사용 (https://kschost.ddns.net)
+      : 'http://localhost:19091'; // 개발환경: localhost 사용
+    const socket = new SockJS(`${wsBaseUrl}/springboot/ws/notifications`);
     const stompClient = new StompClient({
       webSocketFactory: () => socket,
       debug: (str) => console.log('🔧 STOMP Debug:', str),
