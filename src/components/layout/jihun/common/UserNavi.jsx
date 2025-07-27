@@ -7,7 +7,7 @@ const navigationItems = [
   { icon: Home, label: "홈", id: "home", path: "/main" }, 
   { icon: CreditCard, label: "결제", id: "credit", path: "/credit" }, // 결제 페이지 route 걸기
   { icon: Gift, label: "선물", id: "gift", path: "/gift" }, // 선물 페이지 route 걸기
-  { icon: MapPin, label: "가맹점 찾기", id: "merchants", path: "/franchise" }, // 가맹점 찾기 route 걸기
+  { icon: MapPin, label: "가맹점 찾기", id: "merchants", path: "/storelist" }, // 가맹점 찾기 route 걸기
 ];
 
 export default function UserNavi() {
