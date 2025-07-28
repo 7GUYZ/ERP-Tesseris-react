@@ -8,7 +8,7 @@ export default function PrivacyTermsPage() {
   return (
     <div className="terms-container">
       <div className="terms-header">
-        <button className="back-button" onClick={() => navigate("/terms")}>
+        <button className="privacy-terms-back-button" onClick={() => navigate("/terms")}>
           &lt;
         </button>
         <h2>개인정보 수집 및 이용약관</h2>
