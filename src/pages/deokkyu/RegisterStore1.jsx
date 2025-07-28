@@ -13,14 +13,16 @@ export default function RegisterStore1() {
 
   // 비정상 종료 시 localStorage 정리
   useEffect(() => {
-    const cleanupLocalStorage = () => {
-      console.log('🧹 RegisterStore1: 비정상 종료 감지 - localStorage 정리')
-      localStorage.removeItem('register-store-temp')
-      localStorage.removeItem('register-store-agreements')
-      if (window.tempFormData) {
-        delete window.tempFormData
+          const cleanupLocalStorage = () => {
+        console.log('🧹 RegisterStore1: 비정상 종료 감지 - localStorage 정리')
+        localStorage.removeItem('register-store-temp')
+        localStorage.removeItem('register-store-agreements')
+        localStorage.removeItem('@tosspayments/client-id')
+        localStorage.removeItem('@tosspayments/merchant-browser-id')
+        if (window.tempFormData) {
+          delete window.tempFormData
+        }
       }
-    }
 
     const handleBeforeUnload = (event) => {
       cleanupLocalStorage()
