@@ -17,10 +17,12 @@ const StoreDetail = () => {
     
     try {
       const response = await storeListApi.getStoreDetail(storeIndex);
-      if (response.data.success) {
+      console.log('태균님 가맹점 상세 데이터:', response.data);
+      if (response.data.resultCode === 200) {
         setStoreDetail(response.data.data);
+        console.log('태균님 설정된 가맹점 상세:', response.data.data);
       } else {
-        setError(response.data.message || '가맹점 정보를 불러오는데 실패했습니다.');
+        setError(response.data.resultMessage || '가맹점 정보를 불러오는데 실패했습니다.');
       }
     } catch (err) {
       console.error('가맹점 상세 정보 로딩 오류:', err);
@@ -196,6 +198,32 @@ const StoreDetail = () => {
                 <span className="info-value">{storeDetail.storeBusinessDate}</span>
               </div>
             )}
+            
+            {storeDetail.storeTemporaryClosingDate && (
+              <div className="info-item">
+                <span className="info-label">임시 휴무</span>
+                <span className="info-value">
+                  {storeDetail.storeTemporaryClosingDate}
+                  {storeDetail.storeTemporam && ` (${storeDetail.storeTemporam})`}
+                </span>
+              </div>
+            )}
+            
+            {storeDetail.storeRegularClosingInterval && storeDetail.storeRegularClosingWeek && (
+              <div className="info-item">
+                <span className="info-label">정기 휴무</span>
+                <span className="info-value">
+                  {storeDetail.storeRegularClosingInterval} {storeDetail.storeRegularClosingWeek}
+                </span>
+              </div>
+            )}
+            
+            <div className="info-item">
+              <span className="info-label">영업 상태</span>
+              <span className="info-value">{getBusinessStatusText(storeDetail.storeBusinessState)}</span>
+            </div>
+            
+
           </div>
 
           {/* 가맹점 소개 */}

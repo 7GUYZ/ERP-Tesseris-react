@@ -7,6 +7,7 @@ import StoreDetailPage from "../pages/jungeun/StoreDetailPage";
 import UserMainHome from '../pages/jihun/main/UserMainHome';
 import GiftPage from '../pages/jungeun/GiftPage';
 import PinPage from '../pages/jungeun/PinPage';
+import BrokerageFeePage from '../pages/jungeun/BrokerageFeePage';
 
 function JungeunRoute() {
     return (
@@ -20,6 +21,7 @@ function JungeunRoute() {
                 <Route path="/main" element={<UserMainHome />} />
                 <Route path="/gift" element={<GiftPage />} />
                 <Route path="/gift/pin" element={<PinPage />} />
+                <Route path="/brokerageFee" element={<BrokerageFeePage />} />
             </Route>
         </>
     );

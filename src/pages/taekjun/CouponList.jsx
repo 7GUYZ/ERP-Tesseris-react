@@ -130,7 +130,7 @@ const CouponList = () => {
         filtered = filtered.filter(coupon => coupon.couponProvidedStatusIndex === 2);
         break;
       case '기한 경과':
-        filtered = filtered.filter(coupon => coupon.couponProvidedStatusIndex === 5);
+        filtered = filtered.filter(coupon => coupon.couponProvidedStatusIndex === 3 || coupon.couponProvidedStatusIndex === 5);
         break;
       default:
         break;
@@ -146,6 +146,8 @@ const CouponList = () => {
         return '사용 가능';
       case 2:
         return '사용 완료';
+      case 3:
+        return '기한 경과';
       case 5:
         return '기한 경과';
       default:
@@ -160,7 +162,7 @@ const CouponList = () => {
         return 'status-available';
       case 2:
         return 'status-used';
-      case 5:
+      case 3:
         return 'status-expired';
       default:
         return 'status-unknown';

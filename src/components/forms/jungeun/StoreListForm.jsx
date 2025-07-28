@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import "../../../styles/jungeun/storeList.css";
-import { storeListApi } from "../../../api/auth/TaekjunAuth";
+import { storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
 import { Image } from "lucide-react";
 
 const MAIN_COLOR = "#170F58";
@@ -114,12 +114,15 @@ export const Map = ({ stores = [] }) => {
 const StoreListForm = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const location = useLocation();
+    const navigate = useNavigate();
     // category 쿼리 없으면 "0"(전체)로
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "0");
     const [stores, setStores] = useState([]);
     const [categories, setCategories] = useState([]);
     const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "list"); // "list" 또는 "map"
-    const navigate = useNavigate();
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [filteredStores, setFilteredStores] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // 쿼리스트링이 바뀔 때마다 state 동기화
     useEffect(() => {
@@ -138,21 +141,26 @@ const StoreListForm = () => {
         setSearchParams(params, { replace: true });
     }, [selectedCategory, activeTab, setSearchParams]);
 
-    // 카테고리 목록 받아오기 (컴포넌트 마운트 시 1회)
+    // 카테고리 목록 가져오기
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await storeListApi.getStoreCategories();
+                const res = await storeCategoryFilter();
+                console.log('카테고리 데이터:', res.data);
                 if (res.data.resultCode === 200) {
                     // 전체 옵션 추가
                     const allCategories = [
-                        { categoryIndex: 0, categoryName: "전체" },
-                        ...res.data.data
+                        { store_category_index: 0, store_category_name: "전체" },
+                        ...res.data.data.map(item => ({
+                            store_category_index: item.categoryIndex,
+                            store_category_name: item.categoryName
+                        }))
                     ];
+                    console.log('설정된 카테고리:', allCategories);
                     setCategories(allCategories);
                 }
             } catch (e) {
-                setCategories([]);
+                console.error('카테고리 로딩 오류:', e);
             }
         };
         fetchCategories();
@@ -160,17 +168,22 @@ const StoreListForm = () => {
 
     // 카테고리가 바뀔 때마다 백엔드에서 데이터 받아오기
     useEffect(() => {
+        const user_index = Number(JSON.parse(localStorage.getItem("user-info"))?.user_index);
         const fetchStores = async () => {
             if (selectedCategory === null || selectedCategory === undefined) {
                 setStores([]);
                 return;
             }
             try {
-                const res = await storeListApi.getFilteredStoreList(selectedCategory);
+                const categoryIndex = selectedCategory ? Number(selectedCategory) : 0;
+                const res = await storeList(user_index, categoryIndex);
+             
                 if (res.data.resultCode === 200) {
                     setStores(res.data.data);
+                 
                 }
             } catch (e) {
+                
                 setStores([]);
             }
         };
@@ -313,7 +326,7 @@ const StoreListForm = () => {
     }
 
     const StoreList = ({ stores, category }) => {
-        const displayCategoryName = category?.categoryName || "전체";
+        const displayCategoryName = category?.store_category_name || "전체";
         return (
             <div className="business-partner-list">
                 <div className="list-header">
@@ -374,16 +387,16 @@ const StoreListForm = () => {
                 <div className="grade-buttons">
                     {categories.map((category) => (
                         <button
-                            key={category.categoryIndex}
-                            className={`grade-button ${selectedCategory === String(category.categoryIndex) ? "active" : ""}`}
-                            onClick={() => onCategorySelect(String(category.categoryIndex))}
+                            key={category.store_category_index}
+                            className={`grade-button ${selectedCategory === String(category.store_category_index) ? "active" : ""}`}
+                            onClick={() => onCategorySelect(String(category.store_category_index))}
                             style={{
                                 borderColor: MAIN_COLOR,
-                                background: selectedCategory === String(category.categoryIndex) ? MAIN_COLOR : "transparent",
-                                color: selectedCategory === String(category.categoryIndex) ? "#fff" : MAIN_COLOR,
+                                background: selectedCategory === String(category.store_category_index) ? MAIN_COLOR : "transparent",
+                                color: selectedCategory === String(category.store_category_index) ? "#fff" : MAIN_COLOR,
                             }}
                         >
-                            <span className="grade-name">{category.categoryName}</span>
+                            <span className="grade-name">{category.store_category_name}</span>
                         </button>
                     ))}
                 </div>
@@ -402,7 +415,7 @@ const StoreListForm = () => {
             {selectedCategory !== "" && selectedCategory !== null && selectedCategory !== undefined && (
                 <StoreList
                     stores={stores}
-                    category={categories.find((c) => c.categoryIndex === selectedCategory)}
+                    category={categories.find((c) => c.store_category_index === selectedCategory)}
                 />
             )}
         </div>

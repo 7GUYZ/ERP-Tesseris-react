@@ -15,7 +15,7 @@
   border-bottom: 1px solid #E5E5E5;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 50;
 }
 
 .back-button {
@@ -27,6 +27,13 @@
   padding: 8px;
   border-radius: 50%;
   transition: background-color 0.2s;
+  position: relative;
+  z-index: 10;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .back-button:hover {
@@ -245,6 +252,25 @@
 .store-category {
   font-size: 12px;
   color: #999;
+}
+
+/* 영업시간 정보 스타일 추가 */
+.store-business-info {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.business-label {
+  color: #666;
+  margin-right: 4px;
+  font-weight: 500;
+}
+
+.business-value {
+  color: #170F58;
+  font-weight: 600;
 }
 
 .store-actions {
