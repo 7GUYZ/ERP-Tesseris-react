@@ -20,6 +20,7 @@ export default function AlertPage() {
       { key: 1, label: "공지사항 알림", alarmTypesId: 5 },
       { key: 2, label: "Q&A 답변 알림", alarmTypesId: 7 },
       { key: 5, label: "쿠폰 선물 알림", alarmTypesId: 11 },
+      { key: 6, label: "월 CM 한도 변경 알림", alarmTypesId: 3 },
     ];
 
     // 일반/정회원(1) 전용 알림 설정
@@ -31,7 +32,7 @@ export default function AlertPage() {
     // 사용자 역할에 따라 알림 설정 결정
     let alertSettings = [...baseAlertSettings];
 
-    if (userRoleIndex === 1) {
+    if (userRoleIndex === "1") {
       // 일반/정회원인 경우 추가 알림 설정 포함
       alertSettings = [...baseAlertSettings, ...regularUserSettings];
     }
