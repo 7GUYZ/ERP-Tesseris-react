@@ -5,13 +5,16 @@ import {
   getUserAlarmSetting,
   updateUserAlarmSetting,
 } from "../../../api/auth/JungeunAuth";
+import useNotificationStore from "../../../store/jiyun/NotificationStore";
 
 export default function AlertPage() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [notifications, setNotifications] = useState([]);
   const [settings, setSettings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // 전역 상태에서 알림 데이터 가져오기
+  const { notifications, setNotifications, setLoading: setGlobalLoading, setError: setGlobalError, markAsRead: markAsReadGlobal } = useNotificationStore();
 
   // 사용자 알림 설정을 동적으로 생성하는 함수
   const createUserAlertSettings = async (userIndex, userRoleIndex) => {
@@ -109,31 +112,19 @@ export default function AlertPage() {
   useEffect(() => {
     const getAlarmList = async () => {
       try {
-        setLoading(true);
-        setError(null);
+        setGlobalLoading(true);
+        setGlobalError(null);
 
         // localStorage에서 user_index 가져오기
         const userInfo = JSON.parse(localStorage.getItem("user-info"));
         const userIndex = userInfo?.user_index;
 
         if (!userIndex) {
-          setError("사용자 정보를 찾을 수 없습니다.");
+          setGlobalError("사용자 정보를 찾을 수 없습니다.");
           return;
         }
 
-        console.log("알림 데이터 로드 시작 - userIndex:", userIndex);
-
         const response = await getMyAlarmHistory(userIndex);
-
-        console.log("알림 내역 응답:", response);
-        console.log("전체 응답:", response);
-        console.log("response.data:", response?.data);
-        console.log("response.data.data:", response?.data?.data);
-        console.log("response.data.data 타입:", typeof response?.data?.data);
-        console.log(
-          "response.data.data가 배열인가?",
-          Array.isArray(response?.data?.data)
-        );
 
         if (
           response &&
@@ -141,21 +132,19 @@ export default function AlertPage() {
           response.data.data &&
           Array.isArray(response.data.data)
         ) {
-          console.log("알림 데이터 설정:", response.data.data);
           setNotifications(response.data.data);
         } else {
-          console.log("알림 데이터가 없거나 배열이 아님, 빈 배열 설정");
           setNotifications([]);
         }
       } catch (error) {
         console.error("알림 데이터 로드 실패:", error);
-        setError("알림 내역을 불러오는데 실패했습니다.");
+        setGlobalError("알림 내역을 불러오는데 실패했습니다.");
       } finally {
-        setLoading(false);
+        setGlobalLoading(false);
       }
     };
     getAlarmList();
-  }, []);
+  }, [setNotifications, setGlobalLoading, setGlobalError]);
 
   // 알림을 isRead 기준으로 정렬: 신규 알림(0) 위, 지난 알림(1) 아래
   const sortedNotifications = Array.isArray(notifications)
@@ -214,19 +203,12 @@ export default function AlertPage() {
   // 알림 클릭 핸들러 (읽음 처리)
   const handleNotificationClick = async (notification) => {
     try {
-      console.log("알림 클릭 - alarmId:", notification.alarmId);
-
       // 읽음 처리 API 호출
       await markAsRead(notification.alarmId);
 
-      // UI 업데이트 (새로운 알림 → 지난 알림으로 이동)
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.alarmId === notification.alarmId ? { ...n, isRead: 1 } : n
-        )
-      );
+      // 전역 상태 업데이트 (Popover도 함께 업데이트됨)
+      markAsReadGlobal(notification.alarmId);
 
-      console.log("알림 읽음 처리 완료 - alarmId:", notification.alarmId);
     } catch (error) {
       console.error("알림 읽음 처리 실패:", error);
     }
@@ -257,18 +239,18 @@ export default function AlertPage() {
                       <span className="alert-setting-label">
                         • {setting.label}
                       </span>
-                      <label className="alert-toggle">
-                        <input
-                          type="checkbox"
+                    <label className="alert-toggle">
+                      <input
+                        type="checkbox"
                           checked={setting.active === 0}
                           onChange={() => handleSettingChange(setting.key)}
-                        />
-                        <span className="alert-slider"></span>
-                        <span className="alert-toggle-text">
+                      />
+                      <span className="alert-slider"></span>
+                      <span className="alert-toggle-text">
                           {setting.active === 0 ? "ON" : "OFF"}
-                        </span>
-                      </label>
-                    </div>
+                      </span>
+                    </label>
+                  </div>
                   ))}
                 </div>
               </div>
@@ -285,7 +267,7 @@ export default function AlertPage() {
                 <span className="alert-indicator">●</span>
               </h2>
               <p className="alert-subtitle">
-                *최근 1개월 이내의 알림만 표시됩니다.
+                *최근 1개월 이내의 알림만 표시됩니다. 내역 클릭 시 읽음 처리됩니다.
               </p>
             </div>
 
@@ -317,24 +299,24 @@ export default function AlertPage() {
                 return (
                   <div
                     key={notification.alarmId}
-                    className={`alert-notification-row ${
+                  className={`alert-notification-row ${
                       notification.isRead === 1 ? "alert-read" : "alert-unread"
-                    }`}
+                  }`}
                     onClick={() => handleNotificationClick(notification)}
                     style={{ cursor: "pointer" }}
-                  >
-                    <div className="alert-message-content">
-                      <span className="alert-message">
-                        {notification.message}
-                      </span>
-                      <span className="alert-timestamp">
+                >
+                  <div className="alert-message-content">
+                    <span className="alert-message">
+                      {notification.message}
+                    </span>
+                    <span className="alert-timestamp">
                         {formatCreatedAt(notification.createdAt)}
-                      </span>
-                    </div>
-                    {notification.isRead === 0 && (
-                      <div className="alert-unread-dot"></div>
-                    )}
+                    </span>
                   </div>
+                    {notification.isRead === 0 && (
+                    <div className="alert-unread-dot"></div>
+                  )}
+                </div>
                 );
               })}
             </div>
