@@ -1,0 +1,300 @@
+.franchisee-map-page {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+/* Header */
+.franchisee-map-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 10;
+}
+
+.franchisee-map-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #374151;
+}
+
+.franchisee-map-title {
+  flex: 1;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+/* Search Options */
+.franchisee-map-search-options {
+  padding: 0.75rem 1rem;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.franchisee-map-search-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.franchisee-map-search-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.franchisee-map-search-tab {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 1.5rem;
+  background-color: #fff;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.franchisee-map-search-tab:hover {
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.franchisee-map-search-tab.active {
+  background-color: #1749C2;
+  border-color: #1749C2;
+  color: #fff;
+}
+
+/* Map Container */
+.franchisee-map-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.franchisee-map {
+  width: 100%;
+  height: 100%;
+}
+
+.franchisee-map-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 5;
+}
+
+.franchisee-map-loading-circle {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #1749C2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.franchisee-map-loading-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.franchisee-map-current-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: all 0.2s;
+}
+
+.franchisee-map-current-btn:hover {
+  background-color: #f9fafb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Franchise Info Panel */
+.franchisee-map-info-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.franchisee-map-info-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem 0;
+}
+
+.franchisee-map-info-close {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: none;
+  font-size: 1.25rem;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.franchisee-map-info-content {
+  display: flex;
+  padding: 0 1rem 1rem;
+  gap: 1rem;
+}
+
+.franchisee-map-info-image {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+}
+
+.franchisee-map-info-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.franchisee-map-info-no-image {
+  width: 100%;
+  height: 100%;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.franchisee-map-info-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.franchisee-map-info-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.4;
+}
+
+.franchisee-map-info-address {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.4;
+}
+
+.franchisee-map-info-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.franchisee-map-info-category {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  background-color: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.franchisee-map-info-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.franchisee-map-info-phone,
+.franchisee-map-info-map {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.franchisee-map-info-phone:hover,
+.franchisee-map-info-map:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .franchisee-map-info-content {
+    padding: 0 0.75rem 0.75rem;
+  }
+  
+  .franchisee-map-info-image {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .franchisee-map-info-name {
+    font-size: 0.875rem;
+  }
+  
+  .franchisee-map-info-address {
+    font-size: 0.75rem;
+  }
+} 

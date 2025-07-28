@@ -1,0 +1,252 @@
+.store-operation-view-page {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.store-operation-view-header {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 24px;
+  background: #fff;
+}
+
+.store-operation-view-back-button {
+  color: #666;
+}
+
+.store-operation-view-title {
+  font-weight: 600;
+  color: #333;
+}
+
+.store-operation-view-edit-button {
+  color: #1976d2;
+}
+
+.store-operation-view-tabs {
+  display: flex;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.store-operation-view-tab {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.store-operation-view-tab.store-operation-view-active {
+  background: #fff !important;
+  color: #170F58 !important;
+  border-bottom: 2px solid #170F58 !important;
+  font-weight: 700;
+}
+
+.store-operation-view-tab.store-operation-view-inactive {
+  color: #666;
+}
+
+.store-operation-view-tab.store-operation-view-inactive:hover {
+  background-color: #f5f5f5;
+}
+
+.store-operation-view-section-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.store-operation-view-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.store-operation-view-section-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  border-radius: 4px;
+}
+
+.store-operation-view-business-icon {
+  background-color: #4caf50;
+}
+
+.store-operation-view-settings-icon {
+  background-color: #ff9800;
+}
+
+.store-operation-view-section-title {
+  font-weight: 600;
+  color: #333;
+}
+
+.store-operation-view-business-hours-item {
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107 !important;
+}
+
+.store-operation-view-hours-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.store-operation-view-hours-content {
+  space-y: 8px;
+}
+
+.store-operation-view-time-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.store-operation-view-time-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.store-operation-view-time-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.store-operation-view-business-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.store-operation-view-day-chip {
+  background-color: #ffc107 !important;
+  color: white !important;
+}
+
+.store-operation-view-day-chip.store-operation-view-active {
+  background: #ffc107 !important;
+  color: #fff !important;
+}
+
+.store-operation-view-no-data {
+  color: #666;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+.store-operation-view-setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.store-operation-view-setting-item:last-child {
+  border-bottom: none;
+}
+
+.store-operation-view-setting-label {
+  color: #333;
+  font-weight: 500;
+}
+
+.store-operation-view-setting-value {
+  color: #666;
+  font-weight: 600;
+}
+
+.store-operation-view-status-chip {
+  font-weight: 600;
+}
+
+.store-operation-view-status-chip.store-operation-view-open {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.store-operation-view-status-chip.store-operation-view-closed {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.store-operation-view-bottom-actions {
+  margin-top: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.store-operation-view-edit-button-large {
+  background-color: #1976d2 !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 12px !important;
+}
+
+.store-operation-view-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #666;
+}
+
+.store-operation-view-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #f44336;
+}
+
+.store-operation-view-bottom-actions button {
+  width: 100%;
+  background: #170F58;
+  color: #fff;
+  padding: 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 20px;
+  margin-top: 32px;
+  cursor: pointer;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .store-operation-view-page {
+    padding: 16px;
+  }
+  
+  .store-operation-view-section-card {
+    margin-bottom: 16px;
+  }
+  
+  .store-operation-view-business-hours-item {
+    padding: 12px;
+  }
+  
+  .store-operation-view-bottom-actions {
+    padding: 16px;
+  }
+} 

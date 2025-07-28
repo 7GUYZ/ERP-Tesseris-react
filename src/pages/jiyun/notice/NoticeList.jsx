@@ -46,19 +46,19 @@ export default function NoticeList() {
       </div>
       <div className="notice-section">
         <div className="notice-card">
-          <div className="notice-list">
-            {sortedList.map((item) => (
-              <div
-                key={item.noticeIndex}
-                className="notice-item"
-                onClick={() => navigate(`/notice-view/${item.noticeIndex}`)}
-              >
-                <span className="notice-item-title">{item.noticeTitle}</span>
-                <span className="notice-item-date">
-                  {formatDate(item.noticeCreateTime)}
-                </span>
-              </div>
-            ))}
+      <div className="notice-list">
+        {sortedList.map((item) => (
+          <div
+            key={item.noticeIndex}
+            className="notice-item"
+            onClick={() => navigate(`/notice-view/${item.noticeIndex}`)}
+          >
+            <span className="notice-item-title">{item.noticeTitle}</span>
+            <span className="notice-item-date">
+              {formatDate(item.noticeCreateTime)}
+            </span>
+          </div>
+        ))}
           </div>
         </div>
       </div>

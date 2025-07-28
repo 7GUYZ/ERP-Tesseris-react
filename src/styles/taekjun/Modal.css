@@ -1,0 +1,265 @@
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+/* 모달 컨테이너 */
+.modal-container {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(23, 15, 88, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 모달 헤더 */
+.modal-header {
+  background: linear-gradient(135deg, #170F58 0%, #FDCD00 100%);
+  color: white;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 20px 20px 0 0;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.modal-close-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.modal-close-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 모달 바디 */
+.modal-body {
+  padding: 30px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* 검색 입력 */
+.modal-search-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease;
+  background: #fafafa;
+}
+
+.modal-search-input:focus {
+  outline: none;
+  border-color: #FDCD00;
+  background: white;
+}
+
+.modal-search-input::placeholder {
+  color: #999;
+}
+
+/* 로딩 인디케이터 */
+.modal-loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+.modal-loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #FDCD00;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: modalSpin 1s linear infinite;
+  margin-left: 10px;
+}
+
+@keyframes modalSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 리스트 컨테이너 */
+.modal-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+/* 리스트 아이템 */
+.modal-list-item {
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-list-item:last-child {
+  border-bottom: none;
+}
+
+.modal-list-item:hover {
+  background: #e8f5e8;
+}
+
+.modal-list-item.selected {
+  background: #4caf50;
+  color: white;
+}
+
+.modal-list-item.selected:hover {
+  background: #45a049;
+}
+
+/* 아이템 정보 */
+.modal-item-info {
+  flex: 1;
+}
+
+.modal-item-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: #170F58;
+  margin-bottom: 5px;
+}
+
+.modal-item-details {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  gap: 15px;
+}
+
+.modal-item-price {
+  background: #FDCD00;
+  color: #170F58;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* 선택된 아이템 표시 */
+.modal-selected-indicator {
+  background: #4caf50;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* 빈 상태 */
+.modal-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.modal-empty-text {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.modal-empty-subtext {
+  font-size: 14px;
+  color: #999;
+}
+
+/* 에러 메시지 */
+.modal-error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border-left: 4px solid #c62828;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .modal-container {
+    max-width: 95vw;
+    max-height: 95vh;
+    margin: 10px;
+  }
+  
+  .modal-header {
+    padding: 15px 20px;
+  }
+  
+  .modal-title {
+    font-size: 18px;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .modal-list-item {
+    padding: 12px 15px;
+  }
+  
+  .modal-item-details {
+    flex-direction: column;
+    gap: 5px;
+  }
+} 

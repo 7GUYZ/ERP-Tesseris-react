@@ -114,12 +114,15 @@ export const Map = ({ stores = [] }) => {
 const StoreListForm = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const location = useLocation();
+    const navigate = useNavigate();
     // category 쿼리 없으면 "0"(전체)로
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "0");
     const [stores, setStores] = useState([]);
     const [categories, setCategories] = useState([]);
     const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "list"); // "list" 또는 "map"
-    const navigate = useNavigate();
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [filteredStores, setFilteredStores] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // 쿼리스트링이 바뀔 때마다 state 동기화
     useEffect(() => {
@@ -138,21 +141,26 @@ const StoreListForm = () => {
         setSearchParams(params, { replace: true });
     }, [selectedCategory, activeTab, setSearchParams]);
 
-    // 카테고리 목록 받아오기 (컴포넌트 마운트 시 1회)
+    // 카테고리 목록 가져오기
     useEffect(() => {
         const fetchCategories = async () => {
             try {
                 const res = await storeCategoryFilter();
+                console.log('카테고리 데이터:', res.data);
                 if (res.data.resultCode === 200) {
                     // 전체 옵션 추가
                     const allCategories = [
-                        { categoryIndex: 0, categoryName: "전체" },
-                        ...res.data.data
+                        { store_category_index: 0, store_category_name: "전체" },
+                        ...res.data.data.map(item => ({
+                            store_category_index: item.categoryIndex,
+                            store_category_name: item.categoryName
+                        }))
                     ];
+                    console.log('설정된 카테고리:', allCategories);
                     setCategories(allCategories);
                 }
             } catch (e) {
-                setCategories([]);
+                console.error('카테고리 로딩 오류:', e);
             }
         };
         fetchCategories();
@@ -167,11 +175,15 @@ const StoreListForm = () => {
                 return;
             }
             try {
-                const res = await storeList(user_index, selectedCategory);
+                const categoryIndex = selectedCategory ? Number(selectedCategory) : 0;
+                const res = await storeList(user_index, categoryIndex);
+             
                 if (res.data.resultCode === 200) {
                     setStores(res.data.data);
+                 
                 }
             } catch (e) {
+                
                 setStores([]);
             }
         };
@@ -223,7 +235,7 @@ const StoreListForm = () => {
                             gap: "0.5rem"
                         }}
                     >
-                        <h3 className="company-name" style={{ fontSize: "1.1rem", margin: 0 }}>{store.storeName}</h3>
+                        <h3 className="company-name" style={{ fontSize: "1.1rem", margin: 0 }}>{store.storeName || '가맹점명 없음'}</h3>
                         <div
                             className="position-badge"
                             style={{
@@ -235,7 +247,7 @@ const StoreListForm = () => {
                                 whiteSpace: "nowrap"
                             }}
                         >
-                            {store.storeCategoryName}
+                            {store.storeCategoryName || '업종 없음'}
                         </div>
                     </div>
                 </div>
@@ -243,15 +255,15 @@ const StoreListForm = () => {
                 <div className="card-content" style={{ padding: "0 1.5rem 1.2rem 1.5rem" }}>
                     <div className="info-row">
                         <span className="info-label">가맹점명</span>
-                        <span className="info-value">{store.storeName}</span>
+                        <span className="info-value">{store.storeName || '정보 없음'}</span>
                     </div>
                     <div className="info-row">
                         <span className="info-label">업종</span>
-                        <span className="info-value">{store.storeCategoryName}</span>
+                        <span className="info-value">{store.storeCategoryName || '정보 없음'}</span>
                     </div>
                     <div className="info-row">
                         <span className="info-label">사용 가능 CM</span>
-                        <span className="info-value">{store.userCmUse.toLocaleString()} CM</span>
+                        <span className="info-value">{store.userCmUse ? store.userCmUse.toLocaleString() : '0'} CM</span>
                     </div>
                     <div className="info-row">
                         <span className="info-label">영업 상태</span>
@@ -265,11 +277,11 @@ const StoreListForm = () => {
                     </div>
                     <div className="info-row">
                         <span className="info-label">전화번호</span>
-                        <span className="info-value">{store.storePhone}</span>
+                        <span className="info-value">{store.storePhone || '정보 없음'}</span>
                     </div>
                     <div className="info-row">
                         <span className="info-label">주소</span>
-                        <span className="info-value">{store.storeAddress}</span>
+                        <span className="info-value">{store.storeAddress || '정보 없음'}</span>
                     </div>
                 </div>
 
@@ -314,7 +326,7 @@ const StoreListForm = () => {
     }
 
     const StoreList = ({ stores, category }) => {
-        const displayCategoryName = category?.categoryName || "전체";
+        const displayCategoryName = category?.store_category_name || "전체";
         return (
             <div className="business-partner-list">
                 <div className="list-header">
@@ -375,16 +387,16 @@ const StoreListForm = () => {
                 <div className="grade-buttons">
                     {categories.map((category) => (
                         <button
-                            key={category.categoryIndex}
-                            className={`grade-button ${selectedCategory === String(category.categoryIndex) ? "active" : ""}`}
-                            onClick={() => onCategorySelect(String(category.categoryIndex))}
+                            key={category.store_category_index}
+                            className={`grade-button ${selectedCategory === String(category.store_category_index) ? "active" : ""}`}
+                            onClick={() => onCategorySelect(String(category.store_category_index))}
                             style={{
                                 borderColor: MAIN_COLOR,
-                                background: selectedCategory === String(category.categoryIndex) ? MAIN_COLOR : "transparent",
-                                color: selectedCategory === String(category.categoryIndex) ? "#fff" : MAIN_COLOR,
+                                background: selectedCategory === String(category.store_category_index) ? MAIN_COLOR : "transparent",
+                                color: selectedCategory === String(category.store_category_index) ? "#fff" : MAIN_COLOR,
                             }}
                         >
-                            <span className="grade-name">{category.categoryName}</span>
+                            <span className="grade-name">{category.store_category_name}</span>
                         </button>
                     ))}
                 </div>
@@ -403,7 +415,7 @@ const StoreListForm = () => {
             {selectedCategory !== "" && selectedCategory !== null && selectedCategory !== undefined && (
                 <StoreList
                     stores={stores}
-                    category={categories.find((c) => c.categoryIndex === selectedCategory)}
+                    category={categories.find((c) => c.store_category_index === selectedCategory)}
                 />
             )}
         </div>
