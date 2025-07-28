@@ -1,6 +1,7 @@
 import React from "react";
-import { Bell, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Popover from "../../../feature/jiyun/Popover";
 import '../../../../styles/jihun/common/common.css';
 
 export default function UserHeader() {
@@ -10,10 +11,6 @@ export default function UserHeader() {
     navigate('/mypage');
   };
 
-  const handleAlertClick = () => {
-    navigate('/alert');
-  };
-
   return (
     <div className="usermain-header">
       <div className="usermain-header-inner">
@@ -21,9 +18,7 @@ export default function UserHeader() {
           <h1 className="usermain-header-title">TESSERIS</h1>
         </div>
         <div className="usermain-header-actions">
-          <button className="usermain-header-actionbtn" onClick={handleAlertClick}>
-            <Bell className="usermain-header-actionicon" />
-          </button>
+          <Popover />
           <button className="usermain-header-actionbtn" onClick={handleSettingsClick}>
             <Settings className="usermain-header-actionicon" />
           </button>

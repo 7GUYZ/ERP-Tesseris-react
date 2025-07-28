@@ -8,7 +8,7 @@ export default function MarketingTermsPage() {
   return (
     <div className="terms-container">
       <div className="terms-header">
-        <button className="back-button" onClick={() => navigate("/terms")}>
+        <button className="marketing-terms-back-button" onClick={() => navigate("/terms")}>
           &lt;
         </button>
         <h2>마케팅 정보 수집 및 이용 동의</h2>

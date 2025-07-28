@@ -40,23 +40,23 @@ export default function NoticeDetail() {
   if (error) return <div className="notice-detail-page">{error}</div>;
 
   return (
-    <div className="notice-container">
-      <div className="notice-header">
-        <button className="back-button" onClick={() => navigate("/notice-list")}>
+    <div className="notice-detail-container">
+      <div className="notice-detail-header">
+        <button className="notice-detail-back-button" onClick={() => navigate("/notice-list")}>
           &lt;
         </button>
         <h2>공지사항</h2>
       </div>
-      <div className="notice-section">
-        <div className="notice-card">
-      <div className="notice-content">
-        <div className="notice-meta">
-          <p className="notice-subject">{noticeData.noticeTitle}</p>
-          <p className="notice-date">
+      <div className="notice-detail-section">
+        <div className="notice-detail-card">
+      <div className="notice-detail-content">
+        <div className="notice-detail-meta">
+          <p className="notice-detail-subject">{noticeData.noticeTitle}</p>
+          <p className="notice-detail-date">
             {formatDate(noticeData.noticeCreateTime)}
           </p>
         </div>
-        <div className="notice-body">{noticeData.noticeDesc}</div>
+        <div className="notice-detail-body">{noticeData.noticeDesc}</div>
       </div>
         </div>
       </div>

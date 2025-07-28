@@ -86,6 +86,8 @@ export default function RegisterStore3() {
       // localStorage 정리
       localStorage.removeItem('register-store-temp')
       localStorage.removeItem('register-store-agreements')
+      localStorage.removeItem('@tosspayments/client-id')
+      localStorage.removeItem('@tosspayments/merchant-browser-id')
       
       // FormData 정리
       if (window.tempFormData) {
@@ -125,6 +127,8 @@ export default function RegisterStore3() {
     if (window.confirm('가맹점 신청을 취소하시겠습니까? 입력한 정보가 모두 사라집니다.')) {
       localStorage.removeItem('register-store-temp')
       localStorage.removeItem('register-store-agreements')
+      localStorage.removeItem('@tosspayments/client-id')
+      localStorage.removeItem('@tosspayments/merchant-browser-id')
       
       // FormData 정리
       if (window.tempFormData) {
@@ -208,12 +212,14 @@ export default function RegisterStore3() {
         return
       }
       
-      console.log('🧹 RegisterStore3: 비정상 종료 감지 - localStorage 정리')
-      localStorage.removeItem('register-store-temp')
-      localStorage.removeItem('register-store-agreements')
-      if (window.tempFormData) {
-        delete window.tempFormData
-      }
+              console.log('🧹 RegisterStore3: 비정상 종료 감지 - localStorage 정리')
+        localStorage.removeItem('register-store-temp')
+        localStorage.removeItem('register-store-agreements')
+        localStorage.removeItem('@tosspayments/client-id')
+        localStorage.removeItem('@tosspayments/merchant-browser-id')
+        if (window.tempFormData) {
+          delete window.tempFormData
+        }
     }
 
     const handleBeforeUnload = (event) => {
