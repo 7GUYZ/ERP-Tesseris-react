@@ -16,7 +16,20 @@ const MyPageStoreInfo = () => {
 
   useEffect(() => {
     getStoreMyInfo()
-      .then((res) => setInfo(res.data))
+      .then((res) => {
+        if (res.data && res.data.success) {
+          setInfo(res.data.data);
+        } else {
+          setInfo({
+            storeName: "",
+            storeCategoryName: "",
+            storeAddress: "",
+            storePhone: "",
+            storeSite: "",
+            busineeUserId: "",
+          });
+        }
+      })
       .catch(() => setInfo({
         storeName: "",
         storeCategoryName: "",

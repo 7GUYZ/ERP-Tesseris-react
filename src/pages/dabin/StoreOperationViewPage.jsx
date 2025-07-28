@@ -16,13 +16,9 @@ const StoreOperationViewPage = () => {
 
   const fetchOperationInfo = async () => {
     try {
-      // 개발 단계 하드코딩
-      const userIndex = 110; // 임시 값 - 실제 사용자 인덱스가 아님
+      console.log('🔍 [React] API 호출 시작 (JWT 방식)');
       
-      console.log('🔍 [React] API 호출 시작');
-      console.log('🔍 [React] userIndex:', userIndex);
-      
-      const response = await getStoreOperationInfo(userIndex);
+      const response = await getStoreOperationInfo(); // JWT 방식으로 변경
       
       console.log('✅ [React] API 응답 성공');
       console.log('✅ [React] 응답 데이터:', response.data);
@@ -149,15 +145,20 @@ const StoreOperationViewPage = () => {
                   )}
                   
                   <Box className="store-operation-view-business-days">
-                    {hours.businessDays.map((day, dayIndex) => (
-                      <Chip
-                        key={dayIndex}
-                        label={getDayName(day)}
-                        className="store-operation-view-day-chip active"
-                        size="small"
-                        sx={{ background: '#170F58', color: '#fff' }}
-                      />
-                    ))}
+                    {hours.businessDays
+                      .sort((a, b) => {
+                        const dayOrder = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                        return dayOrder.indexOf(a) - dayOrder.indexOf(b);
+                      })
+                      .map((day, dayIndex) => (
+                        <Chip
+                          key={dayIndex}
+                          label={getDayName(day)}
+                          className="store-operation-view-day-chip active"
+                          size="small"
+                          sx={{ background: '#170F58', color: '#fff' }}
+                        />
+                      ))}
                   </Box>
                 </Box>
               </Box>

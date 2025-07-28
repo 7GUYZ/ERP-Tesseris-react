@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/dabin/StoreInfo.css';
-import { getStoreImages, uploadStoreImage, getStoreInfo, getPresignedUrl } from '../../api/auth/DabinAuth';
+import { getMyStoreImages, getStoreMyInfo, getPresignedUrl } from '../../api/auth/DabinAuth';
 import { api } from '../../api/Http';
 
 const MAX_DETAIL_IMAGES = 8;
@@ -14,13 +14,11 @@ const StoreImageRegisterPage = () => {
   const mainInputRef = useRef();
   const detailInputRef = useRef();
   const navigate = useNavigate();
-  // 실제는 세션 등에서 받아와야 함
-  const userIndex = parseInt(sessionStorage.getItem('user_index') || '110', 10);
 
-  // 이미지 목록 불러오기
+  // 이미지 목록 불러오기 (JWT 방식)
   useEffect(() => {
     setLoading(true);
-    getStoreImages(userIndex)
+    getMyStoreImages()
       .then(async res => {
         const images = Array.isArray(res.data) ? res.data : [];
         // presigned URL 변환
@@ -39,7 +37,7 @@ const StoreImageRegisterPage = () => {
         setDetailImages(urls.filter(img => img.storeMainImageStatus === 'N').map(img => ({ ...img, preview: img.presignedUrl, id: img.storeImageIndex, url: img.presignedUrl })));
       })
       .finally(() => setLoading(false));
-  }, [userIndex]);
+  }, []);
 
   // 대표 이미지 업로드
   const handleMainChange = e => {
@@ -80,21 +78,17 @@ const StoreImageRegisterPage = () => {
     });
   };
 
-  // 저장
+  // 저장 (JWT 방식)
   const handleSave = async () => {
     console.log('handleSave 호출');
     console.log('현재 deleteIds:', deleteIds);
     setLoading(true);
     try {
-      // userIndex로 storeIndex 조회
-      const infoRes = await getStoreInfo(userIndex);
+      // JWT 방식으로 storeIndex 조회
+      const infoRes = await getStoreMyInfo();
       let storeIndex = null;
-      if (infoRes && infoRes.data) {
-        if (infoRes.data.storeInfo && infoRes.data.storeInfo.storeIndex) {
-          storeIndex = infoRes.data.storeInfo.storeIndex;
-        } else if (infoRes.data.data && infoRes.data.data.storeIndex) {
-          storeIndex = infoRes.data.data.storeIndex;
-        }
+      if (infoRes && infoRes.data && infoRes.data.success) {
+        storeIndex = infoRes.data.data.storeIndex;
       }
       if (!storeIndex) {
         alert('매장 정보를 찾을 수 없습니다.');
@@ -134,54 +128,65 @@ const StoreImageRegisterPage = () => {
   };
 
   return (
-    <div className="store-info-page">
-      <div className="store-info-header">
-        <button onClick={() => navigate(-1)} className="store-info-back-button" aria-label="뒤로가기">{'<'}</button>
-        <span className="store-info-title">이미지 등록</span>
-        <button onClick={() => navigate(-1)} className="store-info-edit-button">취소</button>
+    <div className="storeinfopage-edit-page">
+      <div className="storeinfopage-header">
+        <button onClick={() => navigate(-1)} className="storeinfopage-back-button" aria-label="뒤로가기">{'<'}</button>
+        <span className="storeinfopage-title">이미지 등록</span>
+        <button onClick={() => navigate(-1)} className="storeinfopage-edit-button">취소</button>
       </div>
-      <div className="store-info-content">
+      <div className="storeinfopage-content">
         {/* 대표 이미지 */}
-        <div className="store-info-section">
-          <div className="store-info-section-title">대표 이미지</div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ width: 240, height: 180, border: '2px dashed #ccc', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12, background: '#fafafa', position: 'relative' }}>
+        <div className="storeinfopage-section">
+          <div className="storeinfopage-section-title">대표 이미지</div>
+          <div className="storeinfopage-image-upload-container">
+            <div className="storeinfopage-main-image-upload">
               {mainImage && mainImage.preview ? (
-                <img src={mainImage.preview} alt="대표 이미지" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12 }} />
+                <img src={mainImage.preview} alt="대표 이미지" className="storeinfopage-preview-image" />
               ) : (
-                <span style={{ color: '#bbb', fontSize: 32 }}>+</span>
+                <span className="storeinfopage-upload-placeholder">+</span>
               )}
-              <input type="file" accept="image/*" ref={mainInputRef} style={{ display: 'none' }} onChange={handleMainChange} />
-              <button onClick={() => mainInputRef.current.click()} style={{ position: 'absolute', bottom: 8, right: 8, background: '#fff', border: '1px solid #ccc', borderRadius: 6, padding: '2px 8px', cursor: 'pointer' }}>업로드</button>
+              <input type="file" accept="image/*" ref={mainInputRef} className="storeinfopage-file-input" onChange={handleMainChange} />
+              <button onClick={() => mainInputRef.current.click()} className="storeinfopage-upload-button">업로드</button>
             </div>
-            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>* 매장의 대표 이미지로 사용할 사진을 등록해 주세요.</div>
-            <div style={{ fontSize: 13, color: '#666' }}>* 4:3 비율, 최소 800x600 권장</div>
+            <div className="storeinfopage-upload-info">
+              <div>* 매장의 대표 이미지로 사용할 사진을 등록해 주세요.</div>
+              <div>* 4:3 비율, 최소 800x600 권장</div>
+            </div>
           </div>
         </div>
+        
         {/* 상세 이미지 */}
-        <div className="store-info-section">
-          <div className="store-info-section-title">상세 이미지</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+        <div className="storeinfopage-section">
+          <div className="storeinfopage-section-title">상세 이미지</div>
+          <div className="storeinfopage-detail-images-container">
             {detailImages.map((img, idx) => (
-              <div key={idx} style={{ width: 100, height: 75, border: '2px dashed #ccc', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa', position: 'relative' }}>
-                <img src={img.preview} alt="상세" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
-                <button onClick={e => { e.stopPropagation(); deleteDetail(idx); }} style={{ position: 'absolute', top: 2, right: 2, background: '#fff', border: '1px solid #ccc', borderRadius: '50%', width: 20, height: 20, cursor: 'pointer', fontWeight: 'bold' }}>×</button>
+              <div key={idx} className="storeinfopage-detail-image-item">
+                <img src={img.preview} alt="상세" className="storeinfopage-detail-preview" />
+                <button 
+                  onClick={e => { e.stopPropagation(); deleteDetail(idx); }} 
+                  className="storeinfopage-delete-image-button"
+                >
+                  ×
+                </button>
               </div>
             ))}
             {detailImages.length < MAX_DETAIL_IMAGES && (
-              <div style={{ width: 100, height: 75, border: '2px dashed #ccc', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa', cursor: 'pointer', position: 'relative' }} onClick={() => detailInputRef.current.click()}>
-                <span style={{ color: '#bbb', fontSize: 32 }}>+</span>
-                <input type="file" accept="image/*" multiple ref={detailInputRef} style={{ display: 'none' }} onChange={handleDetailChange} />
-                <span style={{ position: 'absolute', bottom: 4, left: 0, width: '100%', textAlign: 'center', fontSize: 12, color: '#888' }}>사진 추가</span>
+              <div className="storeinfopage-add-detail-image" onClick={() => detailInputRef.current.click()}>
+                <span className="storeinfopage-upload-placeholder">+</span>
+                <input type="file" accept="image/*" multiple ref={detailInputRef} className="storeinfopage-file-input" onChange={handleDetailChange} />
+                <span className="storeinfopage-add-text">사진 추가</span>
               </div>
             )}
           </div>
         </div>
       </div>
-      {/* 하단 버튼을 위로 올림 */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 32, background: 'linear-gradient(90deg, #6e6e6e 0%, #ffd600 100%)', borderRadius: 12, padding: '12px 0' }}>
-        <button onClick={() => navigate(-1)} style={{ minWidth: 120, background: '#888', border: 'none', color: '#fff', fontWeight: 500, fontSize: 16, borderRadius: 8, padding: '10px 0', cursor: 'pointer' }}>취소</button>
-        <button onClick={handleSave} style={{ minWidth: 120, background: '#ffd600', border: 'none', color: '#333', fontWeight: 700, fontSize: 16, borderRadius: 8, padding: '10px 0', cursor: 'pointer' }} disabled={loading}>{loading ? '저장 중...' : '저장'}</button>
+      
+      {/* 하단 버튼 */}
+      <div className="storeinfopage-action-buttons">
+        <button onClick={() => navigate(-1)} className="storeinfopage-cancel-button">취소</button>
+        <button onClick={handleSave} className="storeinfopage-save-button" disabled={loading}>
+          {loading ? '저장 중...' : '저장'}
+        </button>
       </div>
     </div>
   );
