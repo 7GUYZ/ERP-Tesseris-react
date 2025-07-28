@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { ChevronLeft } from "lucide-react"
 import Circle from "../../components/forms/deokkyu/registerstore/Circle"
 import { useNavigate, useLocation } from "react-router-dom"
@@ -16,6 +16,9 @@ export default function RegisterStore3() {
   
   // 이전 페이지에서 전달받은 데이터
   const [storeData, setStoreData] = useState(null)
+  
+  // 결제 시작 여부 추적 (useRef로 상태 변경과 무관하게 관리)
+  const isPaymentStartedRef = useRef(false)
   
   // PaymentCalculator 사용
   const {
@@ -45,6 +48,16 @@ export default function RegisterStore3() {
         alert('폼 데이터가 유실되었습니다. 이전 단계부터 다시 진행해주세요.')
         navigate('/registerstore2')
         return
+      }
+      
+      // FormData 상태 로그
+      console.log("=== RegisterStore3 페이지 로드 시 FormData 상태 ===");
+      console.log("window.tempFormData 존재 여부:", !!window.tempFormData);
+      if (window.tempFormData) {
+        console.log("FormData 항목 수:", window.tempFormData.entries().length);
+        for (let [key, value] of window.tempFormData.entries()) {
+          console.log(`${key}:`, value);
+        }
       }
     } catch (error) {
       console.error('데이터 파싱 오류:', error)
@@ -186,11 +199,12 @@ export default function RegisterStore3() {
     }
   }, [])
 
-  // 비정상 종료 시 localStorage 정리
+  // 비정상 종료 시 localStorage 정리 (결제창 진입 후에는 정리하지 않음)
   useEffect(() => {
     const cleanupLocalStorage = () => {
-      // 결제 중이거나 성공 상태일 때는 정리하지 않음 (정상적인 플로우)
-      if (isLoading || paymentStatus === 'success') {
+      // 결제가 시작되었거나 성공 상태일 때는 정리하지 않음
+      if (isPaymentStartedRef.current || paymentStatus === 'success') {
+        console.log('🔒 RegisterStore3: 결제 진행 중 - localStorage 정리 건너뜀')
         return
       }
       
@@ -216,18 +230,26 @@ export default function RegisterStore3() {
       cleanupLocalStorage()
     }
 
+    // 결제 시작 감지
+    const handlePaymentStart = () => {
+      isPaymentStartedRef.current = true
+      console.log('🚀 RegisterStore3: 결제 시작 감지 - localStorage 보호 활성화')
+    }
+
     // 이벤트 리스너 등록
     window.addEventListener('beforeunload', handleBeforeUnload)
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('pagehide', handlePageHide)
+    window.addEventListener('payment-start', handlePaymentStart) // 커스텀 이벤트
 
     // 클린업 함수
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('pagehide', handlePageHide)
+      window.removeEventListener('payment-start', handlePaymentStart)
     }
-  }, [isLoading, paymentStatus])
+  }, [paymentStatus]) // paymentStatus 의존성 유지
 
   if (!storeData) {
     return (
