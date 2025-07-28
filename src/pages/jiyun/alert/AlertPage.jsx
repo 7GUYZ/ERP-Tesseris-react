@@ -5,6 +5,7 @@ import { getUserAlarmSetting, updateUserAlarmSetting } from "../../../api/auth/J
 
 export default function AlertPage() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const [settings, setSettings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
