@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getMyAlarmHistory } from "../../../api/auth/JiyoonAuth";
+import { getMyAlarmHistory, markAsRead } from "../../../api/auth/JiyoonAuth";
 import "../../../styles/jiyun/alert/alert.css";
 
 export default function AlertPage() {
@@ -132,10 +132,12 @@ export default function AlertPage() {
   }, []);
 
   // 알림을 isRead 기준으로 정렬: 신규 알림(0) 위, 지난 알림(1) 아래
-  const sortedNotifications = [...notifications].sort((a, b) => {
-    if (a.isRead === b.isRead) return 0;
-    return a.isRead ? 1 : -1;
-  });
+  const sortedNotifications = Array.isArray(notifications) 
+    ? [...notifications].sort((a, b) => {
+        if (a.isRead === b.isRead) return 0;
+        return a.isRead ? 1 : -1;
+      })
+    : [];
 
   const handleSettingChange = (key) => {
     setSettings((prev) =>
@@ -147,6 +149,30 @@ export default function AlertPage() {
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  // 알림 클릭 핸들러 (읽음 처리)
+  const handleNotificationClick = async (notification) => {
+    try {
+      console.log("알림 클릭 - alarmId:", notification.alarmId);
+      
+      // 읽음 처리 API 호출
+      await markAsRead(notification.alarmId);
+      
+      // UI 업데이트 (새로운 알림 → 지난 알림으로 이동)
+      setNotifications(prev => 
+        prev.map(n => 
+          n.alarmId === notification.alarmId 
+            ? { ...n, isRead: 1 } 
+            : n
+        )
+      );
+      
+      console.log("알림 읽음 처리 완료 - alarmId:", notification.alarmId);
+      
+    } catch (error) {
+      console.error("알림 읽음 처리 실패:", error);
+    }
   };
 
   return (
@@ -228,6 +254,8 @@ export default function AlertPage() {
                     className={`alert-notification-row ${
                       notification.isRead === 1 ? "alert-read" : "alert-unread"
                     }`}
+                    onClick={() => handleNotificationClick(notification)}
+                    style={{ cursor: 'pointer' }}
                   >
                     <div className="alert-message-content">
                       <span className="alert-message">
