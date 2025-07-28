@@ -7,6 +7,7 @@ export default function AlertPage() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [settings, setSettings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // 사용자 알림 설정을 동적으로 생성하는 함수
   const createUserAlertSettings = async (userIndex, userRoleIndex) => {
