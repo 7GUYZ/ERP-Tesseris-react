@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getMyAlarmHistory } from "../../../api/auth/JiyoonAuth";
 import "../../../styles/jiyun/alert/alert.css";
 import { getUserAlarmSetting, updateUserAlarmSetting } from "../../../api/auth/JungeunAuth";
 
