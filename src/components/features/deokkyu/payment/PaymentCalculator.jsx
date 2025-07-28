@@ -27,6 +27,21 @@ const PaymentCalculator = (storeData) => {
       return
     }
 
+    // FormData 상태 확인
+    console.log("=== 결제 시작 전 FormData 상태 확인 ===");
+    console.log("window.tempFormData 존재 여부:", !!window.tempFormData);
+    if (window.tempFormData) {
+      console.log("FormData 내용:");
+      for (let [key, value] of window.tempFormData.entries()) {
+        console.log(`${key}:`, value);
+      }
+    } else {
+      console.error("❌ FormData가 없습니다!");
+    }
+
+    // 결제 시작 이벤트 발생 (localStorage 보호)
+    window.dispatchEvent(new CustomEvent('payment-start'));
+
     // 토스페이먼츠 스크립트 로드 확인
     if (!window.TossPayments) {
       alert('결제 시스템을 불러오는 중입니다. 잠시 후 다시 시도해주세요.')
@@ -34,7 +49,7 @@ const PaymentCalculator = (storeData) => {
     }
 
     // CLIENT_KEY 확인 및 검증
-    const clientKey = process.env.REACT_APP_TOSS_CLIENT_KEY || 'test_ck_4yKeq5bgrpWzpgF5oQaEzfLjPRnMKKxJ'
+    const clientKey = 'test_ck_KNbdOvk5rkmna9Q6ZzJ23n07xlzm';
     
     console.log('환경 변수 확인:', {
       'REACT_APP_TOSS_CLIENT_KEY': process.env.REACT_APP_TOSS_CLIENT_KEY ? '설정됨' : '설정되지 않음',
@@ -133,40 +148,65 @@ const PaymentCalculator = (storeData) => {
 
   // 결제 성공 처리
   const handlePaymentSuccess = useCallback(async (paymentKey, orderId, amount) => {
+    console.log("🎉 === 결제 성공 처리 시작 ===");
+    console.log("결제 정보:", { paymentKey, orderId, amount });
+    
+    // FormData를 localStorage에 임시 저장 (페이지 이동 시 유지)
+    if (window.tempFormData) {
+      console.log("💾 FormData를 localStorage에 임시 저장...");
+      const formDataEntries = [];
+      for (let [key, value] of window.tempFormData.entries()) {
+        if (value instanceof File) {
+          // File 객체는 Blob으로 변환하여 저장
+          const blob = new Blob([value], { type: value.type });
+          formDataEntries.push({ key, value: blob, isFile: true, fileName: value.name });
+        } else {
+          formDataEntries.push({ key, value, isFile: false });
+        }
+      }
+      localStorage.setItem('temp-formdata-entries', JSON.stringify(formDataEntries));
+      console.log("✅ FormData 임시 저장 완료");
+    }
+    
+    // 결제 정보를 localStorage에 저장
+    const paymentInfo = { paymentKey, orderId, amount };
+    localStorage.setItem('temp-payment-info', JSON.stringify(paymentInfo));
+    console.log("💾 결제 정보 저장:", paymentInfo);
+    
     try {
       // 1. 결제 승인 요청 (DeokkyuAuth 사용)
+      console.log("📞 1단계: 결제 승인 요청 시작...");
       const confirmData = {
         paymentKey,
         orderId,
         amount
       }
       
-      await confirmPayment(confirmData)
+      console.log("결제 승인 데이터:", confirmData);
+      const confirmResponse = await confirmPayment(confirmData);
+      console.log("✅ 결제 승인 성공:", confirmResponse);
       
-      // 2. 가맹점 정보 서버에 저장 (RegisterStore2에서 생성한 FormData 사용)
-      if (!window.tempFormData) {
-        throw new Error('FormData가 없습니다.')
-      }
-      
-      await registerStore(window.tempFormData)
-      
-      // 3. 성공 처리 및 데이터 정리
+      // 2. 성공 처리 및 데이터 정리
+      console.log("🎊 2단계: 성공 처리 및 데이터 정리...");
       setPaymentStatus('success')
       
-      // localStorage 정리
-      localStorage.removeItem('register-store-temp')
-      localStorage.removeItem('register-store-agreements')
-      
-      // FormData 정리
+      // FormData 정리 (localStorage는 RegisterComplete에서 정리)
       if (window.tempFormData) {
         delete window.tempFormData
+        console.log("🧹 FormData 정리 완료");
       }
       
-      // 4. 성공 완료 페이지로 이동 (alert 제거)
+      console.log("✅ 결제 승인 완료! 가맹점 정보 저장은 RegisterComplete에서 처리됩니다.");
+      
+      // 3. 성공 완료 페이지로 이동
+      console.log("🚀 성공 완료 페이지로 이동: /registercomplete");
       navigate('/registercomplete')
       
     } catch (error) {
-      console.error('결제 승인 오류:', error)
+      console.error('❌ 결제 승인 오류:', error)
+      console.error('에러 타입:', error.constructor.name)
+      console.error('에러 메시지:', error.message)
+      console.error('에러 응답:', error.response)
       setPaymentStatus('failed')
       alert('결제 승인 중 오류가 발생했습니다.')
     }
