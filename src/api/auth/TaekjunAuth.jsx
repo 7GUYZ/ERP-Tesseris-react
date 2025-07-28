@@ -42,6 +42,18 @@ export const signupApi = {
     checkDuplicate: ({ email, nickname }) => api.get('signin/check-duplicate', { params: { email, nickname } }),
 };
 
+// 패스워드 찾기 API
+export const passwordFindApi = {
+    // 패스워드 찾기 인증 메일 발송
+    sendPasswordFindAuthEmail: (data) => api.post('passwordfind/send-auth-email', data),
+    
+    // 패스워드 찾기 이메일 인증 코드 검증
+    verifyPasswordFindAuthEmail: (data) => api.post('passwordfind/verify-auth-email', data),
+    
+    // 패스워드 변경
+    changePassword: (data) => api.post('passwordfind/change-password', data),
+};
+
 // 고객 관리 API
 export const customerManagementApi = {
     // 내 가맹점 고객 목록 조회

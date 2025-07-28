@@ -76,9 +76,27 @@ export const Map = ({ stores = [] }) => {
             if (!document.getElementById("kakao-map-script")) {
                 const script = document.createElement("script");
                 script.id = "kakao-map-script";
-                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=d3847b4792faef3e7980502f1f8e30f2&autoload=false&libraries=services`;
+                const apiKey = process.env.REACT_APP_KAKAO_MAP_API_KEY;
+                
+                // 환경변수 디버깅
+                console.log('🔍 환경변수 확인:', {
+                    apiKey: apiKey ? '설정됨' : '설정되지 않음',
+                    apiKeyValue: apiKey ? `${apiKey.substring(0, 8)}...` : '없음',
+                    envVars: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_'))
+                });
+
+                if (!apiKey) {
+                    console.error('❌ 카카오 지도 API 키가 설정되지 않았습니다!');
+                    console.error('📝 .env 파일에 REACT_APP_KAKAO_MAP_API_KEY=d3847b4792faef3e7980502f1f8e30f2 를 추가하고 서버를 재시작해주세요.');
+                    return;
+                }
+
+                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
                 script.async = true;
                 script.onload = createMapAndMarkers;
+                script.onerror = () => {
+                    console.error('❌ 카카오 지도 스크립트 로드 실패');
+                };
                 document.head.appendChild(script);
             } else {
                 document.getElementById("kakao-map-script").addEventListener("load", createMapAndMarkers);

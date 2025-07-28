@@ -37,14 +37,27 @@ function AppContent() {
     // 새로고침 시 WebSocket 자동 재연결
     const userInfo = localStorage.getItem("user-info");
     const token = localStorage.getItem("access-token");
+    
+    // 로그인 상태 확인
     if (userInfo && token) {
-      const parsedUserInfo = JSON.parse(userInfo);
-      connectWebSocket(token, parsedUserInfo.user_index, (notification) => {
-        // 알림 토스트 사용
-        if (window.showNotificationToast) {
-          window.showNotificationToast('info', notification.message);
-        }
-      });
+      try {
+        const parsedUserInfo = JSON.parse(userInfo);
+        console.log('🔌 WebSocket 연결 시도:', { 
+          userIndex: parsedUserInfo.user_index, 
+          hasToken: !!token 
+        });
+        
+        connectWebSocket(token, parsedUserInfo.user_index, (notification) => {
+          // 알림 토스트 사용
+          if (window.showNotificationToast) {
+            window.showNotificationToast('info', notification.message);
+          }
+        });
+      } catch (error) {
+        console.error('WebSocket 연결 중 오류:', error);
+      }
+    } else {
+      console.log('🔌 WebSocket 연결 건너뜀: 로그인되지 않음');
     }
   }, [connectWebSocket]);
 

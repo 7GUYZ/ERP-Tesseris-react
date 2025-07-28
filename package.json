@@ -64,8 +64,10 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11"
   },
-  "homepage": "__PUBLIC_URL__"
+  "homepage": ""
 }
+
+
 
 
 
