@@ -5,6 +5,7 @@ import CustomerManagement from '../pages/taekjun/CustomerManagement.jsx';
 import CouponList from '../pages/taekjun/CouponList.jsx';
 import StoreList from '../pages/taekjun/StoreList.jsx';
 import StoreDetail from '../pages/taekjun/StoreDetail.jsx';
+import PaymentPage from '../pages/taekjun/PaymentPage.jsx';
 
 function TaekjunRoute() {
     return (
@@ -17,8 +18,9 @@ function TaekjunRoute() {
                 <Route path='' element={''} />
                 <Route path='/customer-management' element={<CustomerManagement/>} />
                 <Route path='/couponlist' element={<CouponList/>} />
-                <Route path='/store-list' element={<StoreList/>} />
+                <Route path='/userstoreList' element={<StoreList/>} />
                 <Route path='/store-detail/:storeIndex' element={<StoreDetail/>} />
+                <Route path='/payment' element={<PaymentPage/>} />
             </Route>
         </>
     );

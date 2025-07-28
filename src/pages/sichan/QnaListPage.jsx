@@ -7,21 +7,52 @@ const QnaListPage = () => {
     const [qnaList, setQnaList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [debugInfo, setDebugInfo] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchQnaList();
     }, []);
 
+    const testApiConnection = async () => {
+        try {
+            console.log('API 연결 테스트 시작');
+            
+            // 헬스체크 테스트
+            const healthResponse = await api.get('/sichan/qna/health');
+            console.log('헬스체크 응답:', healthResponse.data);
+            
+            // 데이터베이스 테스트
+            const dbResponse = await api.get('/sichan/qna/db-test');
+            console.log('DB 테스트 응답:', dbResponse.data);
+            
+            // 테스트 엔드포인트
+            const testResponse = await api.get('/sichan/qna/test');
+            console.log('테스트 응답:', testResponse.data);
+            
+            setDebugInfo(`헬스체크: ${JSON.stringify(healthResponse.data)}, DB테스트: ${JSON.stringify(dbResponse.data)}, 테스트: ${testResponse.data}`);
+            
+        } catch (error) {
+            console.error('API 연결 테스트 실패:', error);
+            setDebugInfo(`API 연결 테스트 실패: ${error.message}`);
+        }
+    };
+
     const fetchQnaList = async () => {
         try {
             setLoading(true);
             setError('');
 
+            // 먼저 API 연결 테스트
+            await testApiConnection();
+
+            console.log('QnA 목록 조회 시작');
             const response = await api.get('/sichan/qna/inquiry/list');
+            console.log('QnA 목록 응답:', response);
 
             if (response.data) {
                 setQnaList(response.data);
+                console.log('QnA 목록 설정 완료:', response.data);
             } else {
                 setError('문의 내역을 불러오는데 실패했습니다.');
             }
@@ -60,6 +91,12 @@ const QnaListPage = () => {
         return (
             <div className="qna-list-container">
                 <div className="loading">문의 내역을 불러오는 중...</div>
+                {debugInfo && (
+                    <div className="debug-info" style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
+                        <strong>디버그 정보:</strong><br />
+                        {debugInfo}
+                    </div>
+                )}
             </div>
         );
     }
@@ -68,6 +105,15 @@ const QnaListPage = () => {
         return (
             <div className="qna-list-container">
                 <div className="error">{error}</div>
+                {debugInfo && (
+                    <div className="debug-info" style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
+                        <strong>디버그 정보:</strong><br />
+                        {debugInfo}
+                    </div>
+                )}
+                <button onClick={fetchQnaList} style={{ marginTop: '10px', padding: '10px 20px' }}>
+                    다시 시도
+                </button>
             </div>
         );
     }
@@ -83,6 +129,13 @@ const QnaListPage = () => {
                     새 문의하기
                 </button>
             </div>
+
+            {debugInfo && (
+                <div className="debug-info" style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
+                    <strong>디버그 정보:</strong><br />
+                    {debugInfo}
+                </div>
+            )}
 
             {qnaList.length === 0 ? (
                 <div className="empty-state">

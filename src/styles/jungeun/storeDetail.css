@@ -232,6 +232,14 @@
 .detail-item.memo .detail-icon {
     color: #8b5cf6; /* 보라색 계열 */
 }
+
+.detail-item.temporary-closing .detail-icon {
+    color: #EF4444; /* 빨간색 - 임시 휴무 */
+}
+
+.detail-item.business-status .detail-icon {
+    color: #10B981; /* 초록색 - 영업 상태 */
+}
 /* CM 아이콘 */
 .detail-item.cm .detail-icon {
     color: #f97316; /* 주황색 계열 */

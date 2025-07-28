@@ -114,7 +114,7 @@ export const businessList = (business_grade_index) => {
 // 가맹점 카테고리 불러오는 api
 export const storeCategoryFilter = () => {
   const token = localStorage.getItem("access-token"); // 항상 최신 토큰
-  return api.get("/user/userStoreList", {
+  return api.get("/user/storeList", {
     headers: {
       Authorization: `${token}`
     }
@@ -124,7 +124,7 @@ export const storeCategoryFilter = () => {
 // 가맹점 카테고리 선택했을 때 가맹점 리스트 불러오는 api
 export const storeList = (user_index, store_category_index) => {
   const token = localStorage.getItem("access-token"); // 항상 최신 토큰
-  return api.get("/user/userStoreList/filtered", {
+  return api.get("/user/storeList/filtered", {
     params: {user_index, store_category_index},
     headers: {
       Authorization: `${token}`
@@ -135,7 +135,7 @@ export const storeList = (user_index, store_category_index) => {
 // 가맹점 상세보기
 export const storeDetail = (store_index) => {
   const token = localStorage.getItem("access-token"); // 항상 최신 토큰
-  return api.get("/user/userStoreList/detail", {
+  return api.get("/user/storeList/detail", {
     params: {store_index},
     headers: {
       Authorization: `${token}`
@@ -170,4 +170,33 @@ export const pinCheck = ({userIndex, userCmPincode}) =>
 
 export const giftTransfer = ({sendUserIndex, receiveUserIndex, giftAmount}) =>
   api.post("/user/giftCM/giftTransfer", {sendUserIndex, receiveUserIndex, giftAmount});
+
+// 사용자의 알림 설정 조회
+export const getUserAlarmSetting = (userIndex, alarmTypesId) => {
+  const token = localStorage.getItem("access-token");
+  return api.get("/alarms/user-alarm-setting", {
+    params: { userIndex, alarmTypesId },
+    headers: {
+      Authorization: `${token}`,
+    },
+  });
+};
+
+// 사용자의 알림 설정 업데이트
+export const updateUserAlarmSetting = (userIndex, alarmTypesId, isActive) => {
+  const token = localStorage.getItem("access-token");
+  return api.post("/alarms/update-user-alarm-setting", null, {
+    params: { userIndex, alarmTypesId, isActive },
+    headers: {
+      Authorization: `${token}`,
+    },
+  });
+};
+
+// 중개수수료 조회 API
+export const getBrokerageFee = (user_index) => {
+  return api.get("/user/brokerageFee", {
+    params: { user_index }
+  });
+};
 
