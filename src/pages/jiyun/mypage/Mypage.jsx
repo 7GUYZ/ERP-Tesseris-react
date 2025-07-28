@@ -269,7 +269,7 @@ export default function MobileMyPage() {
                 <ChevronRight className="menuIcon" />
               </Link>
               <div className="mypage-separator"></div>
-              <Link className="mypage-menuItem">
+              <Link to="/sichan/qna/list" className="mypage-menuItem">
                 <div className="mypage-menuLabel">
                   <HelpCircle className="menuIcon" />
                   <span>Q&A</span>
