@@ -193,3 +193,10 @@ export const updateUserAlarmSetting = (userIndex, alarmTypesId, isActive) => {
   });
 };
 
+// 중개수수료 조회 API
+export const getBrokerageFee = (userIndex) => {
+  return api.get("/user/brokerageFee", {
+    params: { userIndex }
+  });
+};
+
