@@ -1,4 +1,3 @@
-/* Popover Container */
 .notification-button {
   background: none;
   border: none;
@@ -15,7 +14,6 @@
   color: white;
 }
 
-/* Badge */
 .notification-popover-badge {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;

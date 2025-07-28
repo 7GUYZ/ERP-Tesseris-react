@@ -11,7 +11,7 @@ export default function PinComplete() {
   return (
     <div className="pinchange-container">
       <div className="pinchange-header">
-        <button className="back-button" onClick={handleConfirm}>
+        <button className="pinchange-back-button" onClick={handleConfirm}>
           &lt;
         </button>
         <h2>PIN 번호 변경</h2>

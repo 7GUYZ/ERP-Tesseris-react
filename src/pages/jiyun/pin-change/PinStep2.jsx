@@ -71,7 +71,7 @@ export default function PinStep2() {
   return (
     <div className="pinchange-container">
       <div className="pinchange-header">
-        <button className="back-button" onClick={() => navigate(-1)}>
+        <button className="pinchange-back-button" onClick={() => navigate(-1)}>
           &lt;
         </button>
         <h2>PIN 번호 확인</h2>

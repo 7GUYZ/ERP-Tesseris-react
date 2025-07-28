@@ -8,7 +8,7 @@ export default function AdInfoTermsPage() {
   return (
     <div className="terms-container">
       <div className="terms-header">
-        <button className="back-button" onClick={() => navigate("/terms")}>
+        <button className="adinfo-back-button" onClick={() => navigate("/terms")}>
           &lt;
         </button>
         <h2>광고성 정보 수신 동의</h2>
