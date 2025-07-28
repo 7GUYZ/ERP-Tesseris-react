@@ -24,8 +24,9 @@ const BrokerageFeeForm = () => {
       const userIndex = userInfo?.user_index;
 
       // API 호출
-      const response = await getBrokerageFee(userIndex)
-      const data = response.data
+      const response = await getBrokerageFee(userIndex);
+      console.log(response);
+      const data = response.data.data
       
       // 백엔드 응답 구조에 맞게 데이터 변환
       const formattedData = [
