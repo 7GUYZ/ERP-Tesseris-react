@@ -194,9 +194,9 @@ export const updateUserAlarmSetting = (userIndex, alarmTypesId, isActive) => {
 };
 
 // 중개수수료 조회 API
-export const getBrokerageFee = (userIndex) => {
+export const getBrokerageFee = (user_index) => {
   return api.get("/user/brokerageFee", {
-    params: { userIndex }
+    params: { user_index }
   });
 };
 
