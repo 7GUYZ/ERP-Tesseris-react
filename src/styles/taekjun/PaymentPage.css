@@ -1,0 +1,474 @@
+.payment-page-main {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #170F58 0%, #FDCD00 100%);
+  padding: 20px;
+}
+
+.payment-page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #F5F5F9;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(23, 15, 88, 0.2);
+}
+
+/* 헤더 */
+.payment-page-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #FDCD00;
+}
+
+.payment-page-back {
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.payment-page-arrow {
+  font-size: 24px;
+  color: #170F58;
+  font-weight: bold;
+}
+
+.payment-page-title {
+  color: #170F58;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* 결제 정보 */
+.payment-page-info {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.payment-page-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.payment-page-info-item:last-child {
+  border-bottom: none;
+}
+
+.payment-page-info-label {
+  color: #170F58;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.payment-page-info-value {
+  color: #FDCD00;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* 현재 보유 CM 강조 스타일 */
+.payment-page-info-item:last-child {
+  background: linear-gradient(135deg, rgba(253, 205, 0, 0.1) 0%, rgba(253, 205, 0, 0.05) 100%);
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-top: 15px;
+  border: 2px solid #FDCD00;
+  box-shadow: 0 4px 15px rgba(253, 205, 0, 0.2);
+}
+
+.payment-page-info-item:last-child .payment-page-info-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #170F58;
+}
+
+.payment-page-info-item:last-child .payment-page-info-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #FDCD00;
+  text-shadow: 0 0 10px rgba(253, 205, 0, 0.3);
+}
+
+/* 충전 섹션 */
+.payment-page-charge-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #FDCD00;
+  text-align: center;
+}
+
+.payment-page-charge-button {
+  background: linear-gradient(135deg, #FDCD00 0%, #f4d03f 100%);
+  color: #170F58;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(253, 205, 0, 0.3);
+}
+
+.payment-page-charge-button:hover {
+  background: linear-gradient(135deg, #170F58 0%, #2a1f7a 100%);
+  color: #FDCD00;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(23, 15, 88, 0.3);
+}
+
+/* 폼 */
+.payment-page-form {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.payment-page-form-group {
+  margin-bottom: 25px;
+}
+
+.payment-page-form-group label {
+  display: block;
+  color: #170F58;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.payment-page-form-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  background: #fafafa;
+}
+
+.payment-page-form-input:focus {
+  outline: none;
+  border-color: #FDCD00;
+  background: white;
+}
+
+/* 선택 컨테이너 */
+.payment-page-selection-container {
+  margin-bottom: 10px;
+}
+
+.payment-page-select-button {
+  width: 100%;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border: 2px dashed #ddd;
+  border-radius: 10px;
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payment-page-select-button:hover {
+  background: #e9ecef;
+  border-color: #FDCD00;
+  color: #170F58;
+}
+
+.payment-page-selected-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #e8f5e8;
+  border: 2px solid #4caf50;
+  border-radius: 10px;
+  color: #2e7d32;
+}
+
+.payment-page-selected-text {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.payment-page-remove-button {
+  background: #ff5722;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.payment-page-remove-button:hover {
+  background: #d32f2f;
+}
+
+/* 선택된 쿠폰 목록 */
+.payment-page-selected-coupons {
+  margin-top: 15px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.payment-page-selected-coupon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.payment-page-coupon-name {
+  font-weight: 600;
+  color: #170F58;
+  flex: 1;
+}
+
+.payment-page-coupon-price {
+  background: #FDCD00;
+  color: #170F58;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0 10px;
+}
+
+/* 최종 금액 */
+.payment-page-final-amount {
+  background: #170F58;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.payment-page-final-amount p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.payment-page-final-amount span {
+  color: #FDCD00;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* 메시지 */
+.payment-page-error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border-left: 4px solid #c62828;
+}
+
+.payment-page-success-message {
+  background: #e8f5e8;
+  color: #2e7d32;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border-left: 4px solid #2e7d32;
+}
+
+/* 결제 버튼 */
+.payment-page-button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #170F58 0%, #FDCD00 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.payment-page-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(23, 15, 88, 0.3);
+}
+
+.payment-page-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 핀번호 컨테이너 */
+.payment-page-pin-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 핀번호 표시 영역 */
+.payment-page-pin-display {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fafafa;
+  transition: border-color 0.3s ease;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.payment-page-pin-display:hover {
+  border-color: #FDCD00;
+}
+
+.payment-page-pin-masked {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  color: #170F58;
+  letter-spacing: 2px;
+}
+
+.payment-page-pin-placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.payment-page-pin-button {
+  background: #170F58;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-page-pin-button:hover {
+  background: #FDCD00;
+  color: #170F58;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(23, 15, 88, 0.2);
+}
+
+/* 잔액 정보 스타일 */
+.payment-page-balance-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #FDCD00;
+}
+
+.payment-page-balance-label {
+  font-size: 14px;
+  color: #170F58;
+  font-weight: 500;
+}
+
+.payment-page-balance-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.payment-page-balance-value.payment-page-sufficient {
+  color: #28a745;
+}
+
+.payment-page-balance-value.payment-page-insufficient {
+  color: #dc3545;
+}
+
+.payment-page-insufficient-notice {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #dc3545;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.payment-page-charge-link {
+  background: none;
+  border: none;
+  color: #FDCD00;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
+
+.payment-page-charge-link:hover {
+  color: #170F58;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .payment-page-container {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .payment-page-form {
+    padding: 20px;
+  }
+  
+  .payment-page-coupon-info {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .payment-page-search-container {
+    flex-direction: column;
+  }
+  
+  .payment-page-search-button {
+    width: 100%;
+  }
+  
+  .payment-page-pin-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .payment-page-pin-display {
+    width: 100%;
+  }
+  
+  .payment-page-pin-button {
+    width: 100%;
+  }
+} 

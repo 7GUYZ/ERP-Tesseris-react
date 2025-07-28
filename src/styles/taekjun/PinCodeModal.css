@@ -1,0 +1,203 @@
+/* 핀번호 모달 특별 스타일 */
+.pin-code-modal {
+  max-width: 400px;
+  width: 90vw;
+}
+
+/* 핀번호 표시 영역 */
+.pin-display {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.pin-input-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.pin-digit {
+  width: 40px;
+  height: 50px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #170F58;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.pin-digit.filled {
+  border-color: #FDCD00;
+  background: white;
+  box-shadow: 0 2px 8px rgba(253, 205, 0, 0.3);
+}
+
+.pin-toggle-button {
+  background: #170F58;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pin-toggle-button:hover {
+  background: #FDCD00;
+  color: #170F58;
+}
+
+/* 키패드 스타일 */
+.pin-keypad {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.keypad-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.pin-number-btn {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  background: white;
+  color: #170F58;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin-number-btn:hover {
+  border-color: #FDCD00;
+  background: #FDCD00;
+  color: #170F58;
+  transform: scale(1.05);
+}
+
+.pin-number-btn:active {
+  transform: scale(0.95);
+}
+
+.pin-delete-btn,
+.pin-cancel-btn {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  background: #f8f9fa;
+  color: #666;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin-delete-btn:hover {
+  border-color: #ff5722;
+  background: #ff5722;
+  color: white;
+  transform: scale(1.05);
+}
+
+.pin-cancel-btn:hover {
+  border-color: #666;
+  background: #666;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* 확인 버튼 */
+.pin-confirm-section {
+  text-align: center;
+}
+
+.pin-confirm-btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pin-confirm-btn.active {
+  background: linear-gradient(135deg, #170F58 0%, #FDCD00 100%);
+  color: white;
+}
+
+.pin-confirm-btn.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(23, 15, 88, 0.3);
+}
+
+.pin-confirm-btn.disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .pin-code-modal {
+    width: 95vw;
+    margin: 10px;
+  }
+  
+  .pin-digit {
+    width: 35px;
+    height: 45px;
+    font-size: 18px;
+  }
+  
+  .pin-number-btn,
+  .pin-delete-btn,
+  .pin-cancel-btn {
+    width: 55px;
+    height: 55px;
+    font-size: 18px;
+  }
+  
+  .pin-delete-btn,
+  .pin-cancel-btn {
+    font-size: 12px;
+  }
+}
+
+/* 애니메이션 효과 */
+@keyframes pinDigitFill {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pin-digit.filled {
+  animation: pinDigitFill 0.2s ease-out;
+} 

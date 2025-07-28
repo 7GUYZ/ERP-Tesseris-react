@@ -1,0 +1,321 @@
+/* 충전 모달 오버레이 */
+.charge-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* 충전 모달 컨테이너 */
+.charge-modal-container {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(23, 15, 88, 0.3);
+  animation: charge-modal-slide-in 0.3s ease-out;
+}
+
+@keyframes charge-modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 충전 모달 헤더 */
+.charge-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px 20px;
+  border-bottom: 2px solid #FDCD00;
+  background: linear-gradient(135deg, #170F58 0%, #2a1f7a 100%);
+  color: white;
+  border-radius: 20px 20px 0 0;
+}
+
+.charge-modal-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+.charge-modal-close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.charge-modal-close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 충전 모달 바디 */
+.charge-modal-body {
+  padding: 30px;
+}
+
+/* 충전 모달 정보 */
+.charge-modal-info {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 25px;
+  border-left: 4px solid #FDCD00;
+}
+
+.charge-modal-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 0;
+}
+
+.charge-modal-info-item:last-child {
+  margin-bottom: 0;
+}
+
+.charge-modal-info-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #170F58;
+}
+
+.charge-modal-info-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FDCD00;
+}
+
+.charge-modal-insufficient {
+  background: rgba(220, 53, 69, 0.1);
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-top: 10px;
+}
+
+.charge-modal-insufficient-value {
+  color: #dc3545 !important;
+}
+
+/* 충전 모달 폼 */
+.charge-modal-form-group {
+  margin-bottom: 25px;
+}
+
+.charge-modal-label {
+  display: block;
+  color: #170F58;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.charge-modal-input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  background: #fafafa;
+}
+
+.charge-modal-input:focus {
+  outline: none;
+  border-color: #FDCD00;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(253, 205, 0, 0.1);
+}
+
+/* 빠른 충전 */
+.charge-modal-quick-charge {
+  margin-bottom: 25px;
+}
+
+.charge-modal-quick-label {
+  display: block;
+  color: #170F58;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.charge-modal-quick-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.charge-modal-quick-button {
+  padding: 10px 20px;
+  border: 2px solid #FDCD00;
+  background: white;
+  color: #170F58;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 120px;
+}
+
+.charge-modal-quick-button:hover {
+  background: #FDCD00;
+  color: #170F58;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(253, 205, 0, 0.3);
+}
+
+.charge-modal-quick-button.charge-modal-suggested {
+  background: #FDCD00;
+  color: #170F58;
+  font-weight: 700;
+  border-width: 3px;
+}
+
+/* 오류 메시지 */
+.charge-modal-error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #dc3545;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 잔액 미리보기 */
+.charge-modal-balance-preview {
+  background: #d4edda;
+  color: #155724;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border-left: 4px solid #28a745;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.charge-modal-balance-label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.charge-modal-balance-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #28a745;
+}
+
+/* 충전 모달 푸터 */
+.charge-modal-footer {
+  display: flex;
+  gap: 15px;
+  padding: 20px 30px 30px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.charge-modal-cancel-button {
+  flex: 1;
+  padding: 15px;
+  border: 2px solid #6c757d;
+  background: white;
+  color: #6c757d;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.charge-modal-cancel-button:hover {
+  background: #6c757d;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.charge-modal-confirm-button {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  background: linear-gradient(135deg, #170F58 0%, #2a1f7a 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.charge-modal-confirm-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #FDCD00 0%, #f4d03f 100%);
+  color: #170F58;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(253, 205, 0, 0.3);
+}
+
+.charge-modal-confirm-button:disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .charge-modal-container {
+    margin: 10px;
+    max-width: calc(100% - 20px);
+  }
+  
+  .charge-modal-header {
+    padding: 20px 25px 15px;
+  }
+  
+  .charge-modal-body {
+    padding: 20px;
+  }
+  
+  .charge-modal-footer {
+    padding: 15px 25px 25px;
+    flex-direction: column;
+  }
+  
+  .charge-modal-quick-buttons {
+    flex-direction: column;
+  }
+  
+  .charge-modal-quick-button {
+    min-width: auto;
+  }
+} 
