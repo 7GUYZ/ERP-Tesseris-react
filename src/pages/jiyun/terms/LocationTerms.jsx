@@ -8,7 +8,7 @@ export default function LocationTermsPage() {
   return (
     <div className="terms-container">
       <div className="terms-header">
-        <button className="back-button" onClick={() => navigate("/terms")}>
+        <button className="location-terms-back-button" onClick={() => navigate("/terms")}>
           &lt;
         </button>
         <h2>위치기반서비스 이용약관 동의</h2>

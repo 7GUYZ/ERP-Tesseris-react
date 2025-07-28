@@ -24,34 +24,62 @@ const BrokerageFeeForm = () => {
       const userIndex = userInfo?.user_index;
 
       // API 호출
-      const response = await getBrokerageFee(userIndex)
-      const data = response.data
-      
-      // 백엔드 응답 구조에 맞게 데이터 변환
-      const formattedData = [
-        {
-          label: "CM수수료 총합",
-          amount: data.totalFee?.toLocaleString() || "0",
-          unit: "CM",
-        },
-        {
-          label: "수수료발생",
-          amount: data.pendingFee?.toLocaleString() || "0",
-          unit: "CM",
-        },
-        {
-          label: "입금 대기",
-          amount: data.waitingDeposit?.toLocaleString() || "0",
-          unit: "CM",
-        },
-        {
-          label: "입금 완료",
-          amount: data.completedDeposit?.toLocaleString() || "0",
-          unit: "CM",
-        },
-      ]
+      const response = await getBrokerageFee(userIndex);
+      if(response.data.resultCode === 200){
+        const apiData = response.data.data;
+        
+        // 백엔드 응답 구조에 맞게 데이터 변환
+        const formattedData = [
+          {
+            label: "CM수수료 총합",
+            amount: apiData.cmValueChargeSum?.toLocaleString() || "0",
+            unit: "CM",
+          },
+          {
+            label: "수수료발생",
+            amount: apiData.cmValueTotalSum?.toLocaleString() || "0",
+            unit: "CM",
+          },
+          {
+            label: "입금 대기",
+            amount: apiData.cmValueWaitSum?.toLocaleString() || "0",
+            unit: "CM",
+          },
+          {
+            label: "입금 완료",
+            amount: apiData.cmValueYesSum?.toLocaleString() || "0",
+            unit: "CM",
+          },
+        ]
 
-      setFeeData(formattedData)
+        setFeeData(formattedData)
+      }else{
+        showToast("error", "중개수수료율 조회 실패");
+        
+        // 에러 시 기본 데이터 표시
+        setFeeData([
+          {
+            label: "CM수수료 총합",
+            amount: "0",
+            unit: "CM",
+          },
+          {
+            label: "수수료발생",
+            amount: "0",
+            unit: "CM",
+          },
+          {
+            label: "입금 대기",
+            amount: "0",
+            unit: "CM",
+          },
+          {
+            label: "입금 완료",
+            amount: "0",
+            unit: "CM",
+          },
+        ])
+      }
     } catch (error) {
       console.error("중개수수료 데이터 로딩 실패:", error)
       showToast("error", "데이터를 불러오는데 실패했습니다")
