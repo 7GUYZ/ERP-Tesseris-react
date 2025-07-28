@@ -79,20 +79,44 @@ export const couponListApi = {
 // 가맹점 리스트 API
 export const storeListApi = {
     // 가맹점 카테고리 목록 조회
-    getStoreCategories: () => api.get('storelist'),
+    getStoreCategories: () => api.get('taekjun/storelist'),
     // 필터링된 가맹점 목록 조회
     getFilteredStoreList: (storeCategoryIndex) => {
         // 전체(0) 선택 시에는 카테고리 파라미터를 제거
         if (storeCategoryIndex === 0) {
-            return api.get('storelist/filtered');
+            return api.get('taekjun/storelist/filtered');
         } else {
-            return api.get('storelist/filtered', { 
+            return api.get('taekjun/storelist/filtered', { 
                 params: { store_category_index: storeCategoryIndex } 
             });
         }
     },
     // 가맹점 상세 정보 조회
-    getStoreDetail: (storeIndex) => api.get('storelist/detail', { 
+    getStoreDetail: (storeIndex) => api.get('taekjun/storelist/detail', { 
         params: { store_index: storeIndex } 
+    }),
+};
+
+// 결제 API
+export const paymentApi = {
+    // 결제 정보 조회 (월 한도, 사용량, 보유 CM)
+    getPaymentInfo: (userIndex) => api.get('payment/info', { 
+        params: { userIndex } 
+    }),
+    // 결제용 가맹점 목록 조회
+    getPaymentStoreList: () => api.get('payment/stores'),
+    // 사용자의 쿠폰 목록 조회
+    getUserCoupons: (userIndex, couponName) => api.get('payment/coupons', { 
+        params: { userIndex, couponName } 
+    }),
+    // 결제 실행
+    processPayment: (request, userIndex) => api.post('payment/process', request, { 
+        params: { userIndex } 
+    }),
+    // 결제 성공 시 내 CM 차감 및 가맹점 입금
+    processPaymentTransfer: (userIndex, storeUserIndex, amount) => api.post('payment/transfer', { 
+        userIndex, 
+        storeUserIndex, 
+        amount 
     }),
 };
