@@ -17,20 +17,36 @@ export const WebSocketProvider = ({ children }) => {
     }
     console.log('🔌 WebSocket 연결 시도...', { userIndex, accessToken: accessToken ? '있음' : '없음' });
     
-    // 상대 경로로 WebSocket URL 설정
-    // 개발환경: http://localhost:19091, 운영환경: 현재 도메인 사용
-    const wsBaseUrl = process.env.NODE_ENV === 'production' 
-      ? '' // 운영환경: 현재 도메인 사용 (https://kschost.ddns.net)
-      : 'http://localhost:19091'; // 개발환경: localhost 사용
-    const socket = new SockJS(`${wsBaseUrl}/springboot/ws/notifications`);
+    // Bearer 접두사 제거
+    const cleanToken = accessToken.startsWith('Bearer ') ? accessToken.substring(7) : accessToken;
+    
+    // WebSocket URL 설정 - 배포환경 최적화
+    const getWebSocketUrl = () => {
+      const currentHost = window.location.hostname;
+      const currentProtocol = window.location.protocol;
+      
+      // 개발 환경 (localhost)
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        return `${currentProtocol}//${currentHost}:19091/api/ws/notifications`;
+      }
+      
+      // 배포 환경 (kschost.ddns.net)
+      if (currentHost === 'kschost.ddns.net') {
+        return `${currentProtocol}//${currentHost}/springboot/api/ws/notifications`;
+      }
+      
+      // 기타 배포 환경
+      return `${currentProtocol}//${currentHost}/api/ws/notifications`;
+    };
+    
+    const socket = new SockJS(getWebSocketUrl());
     const stompClient = new StompClient({
       webSocketFactory: () => socket,
-      debug: (str) => console.log('🔧 STOMP Debug:', str),
       reconnectDelay: 5000,
       heartbeatIncoming: 30000,
       heartbeatOutgoing: 30000,
       connectHeaders: {
-        'Authorization': 'Bearer ' + accessToken
+        'Authorization': 'Bearer ' + cleanToken
       }
     });
     

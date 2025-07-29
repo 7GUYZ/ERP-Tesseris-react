@@ -1,4 +1,4 @@
-.notice-container {
+.notice-list-container {
   min-height: 100vh;
   background-color: #f5f5f9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -7,7 +7,7 @@
   align-items: center;
 }
 
-.notice-header {
+.notice-list-header {
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
@@ -24,7 +24,7 @@
   z-index: 10;
 }
 
-.back-button {
+.notice-list-back-button {
   position: absolute;
   left: 12px;
   font-size: 20px;
@@ -37,25 +37,25 @@
   transition: background 0.2s;
 }
 
-.back-button:hover {
+.notice-list-back-button:hover {
   background: #f5f5f9;
 }
 
-.notice-header h2 {
+.notice-list-header h2 {
   font-size: 18px;
   color: #170f58;
   font-weight: 700;
   margin: 0;
 }
 
-.notice-section {
+.notice-list-section {
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
   padding: 20px 20px 0 20px;
 }
 
-.notice-card {
+.notice-list-card {
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(23, 15, 88, 0.1);
@@ -63,11 +63,11 @@
   margin-bottom: 24px;
 }
 
-.notice-list {
+.notice-list-list {
   padding: 0;
 }
 
-.notice-item {
+.notice-list-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -77,15 +77,15 @@
   transition: all 0.2s ease;
 }
 
-.notice-item:last-child {
+.notice-list-item:last-child {
   border-bottom: none;
 }
 
-.notice-item:hover {
+.notice-list-item:hover {
   background-color: #f5f5f9;
 }
 
-.notice-item-title {
+.notice-list-item-title {
   font-size: 16px;
   color: #170f58;
   font-weight: 500;
@@ -94,14 +94,14 @@
   margin-right: 12px;
 }
 
-.notice-item-date {
+.notice-list-item-date {
   font-size: 14px;
   color: #999;
   flex-shrink: 0;
 }
 
 @media (max-width: 900px) {
-  .notice-section, .notice-header {
+  .notice-list-section, .notice-list-header {
     max-width: 98vw;
     padding-left: 2vw;
     padding-right: 2vw;
@@ -109,27 +109,27 @@
 }
 
 @media (max-width: 768px) {
-  .notice-section {
+  .notice-list-section {
     padding: 12px 6px 0 6px;
   }
-  .notice-card {
+  .notice-list-card {
     border-radius: 12px;
     margin-bottom: 16px;
   }
-  .notice-item {
+  .notice-list-item {
     padding: 14px 12px;
   }
-  .notice-item-title {
+  .notice-list-item-title {
     font-size: 15px;
   }
-  .notice-header {
+  .notice-list-header {
     font-size: 16px;
     height: 48px;
   }
-  .notice-header h2 {
+  .notice-list-header h2 {
     font-size: 16px;
   }
-  .back-button {
+  .notice-list-back-button {
     font-size: 18px;
     left: 6px;
     padding: 2px 6px;
@@ -137,7 +137,7 @@
 }
 
 @media (max-width: 600px) {
-  .notice-section, .notice-header {
+  .notice-list-section, .notice-list-header {
     max-width: 100vw;
     margin-left: 0;
     margin-right: 0;
