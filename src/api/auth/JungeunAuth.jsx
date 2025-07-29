@@ -200,3 +200,9 @@ export const getBrokerageFee = (user_index) => {
   });
 };
 
+// 이미지 불러오기 API
+export const getImage = (fileKey) => {
+  return api.get("/user/storeList/file", {
+    params: { fileKey }
+  });
+}
