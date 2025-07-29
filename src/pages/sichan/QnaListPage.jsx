@@ -7,7 +7,6 @@ const QnaListPage = () => {
     const [qnaList, setQnaList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [debugInfo, setDebugInfo] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,11 +29,14 @@ const QnaListPage = () => {
             const testResponse = await api.get('/sichan/qna/test');
             console.log('테스트 응답:', testResponse.data);
             
-            setDebugInfo(`헬스체크: ${JSON.stringify(healthResponse.data)}, DB테스트: ${JSON.stringify(dbResponse.data)}, 테스트: ${testResponse.data}`);
+            console.log('API 연결 테스트 완료:', {
+                헬스체크: healthResponse.data,
+                DB테스트: dbResponse.data,
+                테스트: testResponse.data
+            });
             
         } catch (error) {
             console.error('API 연결 테스트 실패:', error);
-            setDebugInfo(`API 연결 테스트 실패: ${error.message}`);
         }
     };
 
@@ -51,6 +53,21 @@ const QnaListPage = () => {
             console.log('QnA 목록 응답:', response);
 
             if (response.data) {
+                console.log('=== QnA 목록 API 응답 데이터 ===');
+                console.log('전체 응답:', response.data);
+                
+                // 각 QnA 항목의 날짜 데이터 확인
+                response.data.forEach((qna, index) => {
+                    console.log(`QnA ${index + 1}:`, {
+                        qnaIndex: qna.qnaIndex,
+                        qnaCreateTime: qna.qnaCreateTime,
+                        qnaCreateTimeType: typeof qna.qnaCreateTime,
+                        answerCreateTime: qna.answerCreateTime,
+                        answerCreateTimeType: typeof qna.answerCreateTime,
+                        isAnswered: qna.isAnswered
+                    });
+                });
+                
                 setQnaList(response.data);
                 console.log('QnA 목록 설정 완료:', response.data);
             } else {
@@ -72,15 +89,53 @@ const QnaListPage = () => {
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        if (!dateString) return '날짜 없음';
+        
+        try {
+            console.log('날짜 파싱 시도:', dateString, '타입:', typeof dateString);
+            
+            let date;
+            
+            // 문자열인 경우 다양한 형식 시도
+            if (typeof dateString === 'string') {
+                // ISO 형식 (2024-01-15T14:30:00)
+                if (dateString.includes('T')) {
+                    date = new Date(dateString);
+                }
+                // 한국 형식 (2024-01-15 14:30:00)
+                else if (dateString.includes('-') && dateString.includes(':')) {
+                    date = new Date(dateString.replace(' ', 'T'));
+                }
+                // 기타 형식
+                else {
+                    date = new Date(dateString);
+                }
+            } else {
+                date = new Date(dateString);
+            }
+            
+            // Invalid Date 체크
+            if (isNaN(date.getTime())) {
+                console.warn('Invalid date string:', dateString);
+                return '날짜 형식 오류';
+            }
+            
+            const formatted = date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            
+            console.log('날짜 파싱 성공:', dateString, '→', formatted);
+            return formatted;
+            
+        } catch (error) {
+            console.error('Date formatting error:', error, 'for dateString:', dateString);
+            return '날짜 형식 오류';
+        }
     };
 
     const handleQnaClick = (qnaIndex) => {
@@ -91,12 +146,6 @@ const QnaListPage = () => {
         return (
             <div className="qna-list-container">
                 <div className="loading">문의 내역을 불러오는 중...</div>
-                {debugInfo && (
-                    <div className="debug-info" style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
-                        <strong>디버그 정보:</strong><br />
-                        {debugInfo}
-                    </div>
-                )}
             </div>
         );
     }
@@ -105,12 +154,6 @@ const QnaListPage = () => {
         return (
             <div className="qna-list-container">
                 <div className="error">{error}</div>
-                {debugInfo && (
-                    <div className="debug-info" style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
-                        <strong>디버그 정보:</strong><br />
-                        {debugInfo}
-                    </div>
-                )}
                 <button onClick={fetchQnaList} style={{ marginTop: '10px', padding: '10px 20px' }}>
                     다시 시도
                 </button>
@@ -129,13 +172,6 @@ const QnaListPage = () => {
                     새 문의하기
                 </button>
             </div>
-
-            {debugInfo && (
-                <div className="debug-info" style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
-                    <strong>디버그 정보:</strong><br />
-                    {debugInfo}
-                </div>
-            )}
 
             {qnaList.length === 0 ? (
                 <div className="empty-state">
