@@ -228,6 +228,20 @@
   text-decoration: underline;
 }
 
+/* 가맹점 위치 지도 */
+.store-map-section {
+  margin-bottom: 20px;
+}
+
+.store-map-container {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 /* 가맹점 소개 */
 .store-introduction {
   margin-top: 24px;
@@ -340,6 +354,10 @@
   .info-value {
     text-align: left;
     margin-left: 0;
+  }
+  
+  .store-map-container {
+    height: 250px;
   }
   
   .gallery-grid {
