@@ -13,9 +13,18 @@
   backdrop-filter: blur(5px);
 }
 
+/* 모달 컨텐츠 */
+.modal-content {
+  background: white !important;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(23, 15, 88, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
 /* 모달 컨테이너 */
 .modal-container {
-  background: white;
+  background: white !important;
   border-radius: 20px;
   padding: 0;
   max-width: 90vw;
@@ -38,7 +47,7 @@
 
 /* 모달 헤더 */
 .modal-header {
-  background: linear-gradient(135deg, #170F58 0%, #FDCD00 100%);
+  background: #170F58;
   color: white;
   padding: 20px 30px;
   display: flex;
@@ -76,8 +85,7 @@
 /* 모달 바디 */
 .modal-body {
   padding: 30px;
-  max-height: 60vh;
-  overflow-y: auto;
+  background: white !important;
 }
 
 /* 검색 입력 */
@@ -89,7 +97,7 @@
   font-size: 16px;
   margin-bottom: 20px;
   transition: border-color 0.3s ease;
-  background: #fafafa;
+  background: white;
 }
 
 .modal-search-input:focus {
@@ -134,7 +142,7 @@
   overflow-y: auto;
   border: 1px solid #eee;
   border-radius: 10px;
-  background: #fafafa;
+  background: white;
 }
 
 /* 리스트 아이템 */
@@ -234,11 +242,122 @@
   border-left: 4px solid #c62828;
 }
 
+/* 쿠폰 그리드 */
+.coupon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 10px;
+  width: 100%;
+}
+
+/* 쿠폰 카드 */
+.coupon-card {
+  background: white;
+  border: 2px solid #E8E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.coupon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(23, 15, 88, 0.15);
+  border-color: #FDCD00;
+}
+
+.coupon-card-header {
+  background: white;
+  color: #170F58;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #E8E8F0;
+}
+
+.coupon-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-available {
+  background: #FDCD00;
+  color: #170F58;
+}
+
+.status-used {
+  background: #6B7280;
+  color: white;
+}
+
+.status-expired {
+  background: #EF4444;
+  color: white;
+}
+
+.status-unknown {
+  background: #9CA3AF;
+  color: white;
+}
+
+.coupon-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FDCD00;
+}
+
+/* 쿠폰 카드 바디 */
+.coupon-card-body {
+  padding: 16px;
+}
+
+.coupon-name {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #170F58;
+}
+
+.coupon-condition {
+  margin: 0 0 16px 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.coupon-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.coupon-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.detail-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #170F58;
+  font-weight: 600;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .modal-container {
     max-width: 95vw;
-    max-height: 95vh;
     margin: 10px;
   }
   
@@ -261,5 +380,23 @@
   .modal-item-details {
     flex-direction: column;
     gap: 5px;
+  }
+
+  .coupon-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .coupon-card-header {
+    padding: 12px 16px;
+  }
+  
+  .coupon-card-body {
+    padding: 16px;
+  }
+  
+  .coupon-name {
+    font-size: 16px;
   }
 } 

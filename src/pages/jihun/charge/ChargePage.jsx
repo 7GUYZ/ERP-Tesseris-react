@@ -5,11 +5,10 @@ import PaymentAmountForm from '../../../components/forms/jihun/charge/PaymentAmo
 import BalanceDisplay from '../../../components/ui/jihun/charge/BalanceDisplay';
 import PaymentDetails from '../../../components/ui/jihun/charge/PaymentDetails';
 import PaymentButton from '../../../components/ui/jihun/charge/PaymentButton';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const ChargePage = () => {
-  const { source } = useParams();
-  const userCurrentPoint = useLocation().state?.userCurrentPoint || 0;
+  const  userCurrentPoint  = useLocation().state?.userCurrentPoint || 0;
   const [loading, setLoading] = useState(false);
   
   const {
@@ -27,24 +26,6 @@ const ChargePage = () => {
     setLoading(true);
     try {
       await handleCardPayment();
-      
-      // 팝업으로 열렸는지 확인
-      const isPopup = window.opener && window.opener !== window;
-      
-      if (isPopup) {
-        // 팝업으로 열린 경우: 부모 페이지 새로고침 후 팝업 닫기
-        setTimeout(() => {
-          window.opener.location.reload(); // 부모 페이지 새로고침
-          window.close(); // 팝업 닫기
-        }, 2000); // 2초 후 실행
-      } else {
-        // 일반 페이지로 열린 경우: source에 따라 페이지 이동
-        if (source === 'payment' || source === 'user') {
-          setTimeout(() => {
-            window.location.href = '/payment';
-          }, 2000); // 2초 후 이동
-        }
-      }
     } finally {
       setLoading(false);
     }

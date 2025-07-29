@@ -1,0 +1,194 @@
+/* 쿠폰 선택 모달 전용 스타일 */
+.coupon-selection-modal {
+  max-width: 400px;
+  width: 80vw;
+  max-height: 70vh;
+  overflow: hidden;
+}
+
+/* 검색 컨테이너 */
+.search-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #E8E8F0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #FDCD00;
+  background: white;
+}
+
+.search-button {
+  padding: 14px 20px;
+  background: #170F58;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 60px;
+}
+
+.search-button:hover:not(:disabled) {
+  background: #120b45;
+}
+
+/* 로딩 컨테이너 */
+.loading-container {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #FDCD00;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 에러 메시지 */
+.error-message {
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+/* 쿠폰 목록 */
+.coupon-list {
+  max-height: 300px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 0;
+}
+
+/* 쿠폰 선택 모달 전용 쿠폰 아이템 */
+.coupon-selection-item {
+  background: white;
+  border: 2px solid #E8E8F0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.coupon-selection-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(23, 15, 88, 0.15);
+  border-color: #FDCD00;
+}
+
+/* 쿠폰 선택 모달 전용 헤더 */
+.coupon-selection-header {
+  background: #170F58;
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coupon-selection-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  flex: 1;
+}
+
+.coupon-selection-price {
+  background: #FDCD00;
+  color: #170F58;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* 쿠폰 선택 모달 전용 바디 */
+.coupon-selection-info {
+  padding: 12px 16px;
+}
+
+.coupon-selection-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.coupon-selection-store,
+.coupon-selection-limit {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+.coupon-arrow {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  color: #170F58;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* 빈 결과 */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
+  grid-column: 1 / -1;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .coupon-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .search-container {
+    flex-direction: column;
+  }
+  
+  .coupon-header {
+    padding: 12px 16px;
+  }
+  
+  .coupon-info {
+    padding: 16px;
+  }
+} 

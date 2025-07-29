@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { paymentApi } from '../../api/auth/TaekjunAuth';
 import StoreSelectionModal from '../../components/ui/taekjun/StoreSelectionModal';
 import CouponSelectionModal from '../../components/ui/taekjun/CouponSelectionModal';
@@ -6,6 +7,8 @@ import PinCodeModal from '../../components/ui/taekjun/PinCodeModal';
 import '../../styles/taekjun/PaymentPage.css';
 
 const PaymentPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [paymentInfo, setPaymentInfo] = useState(null);
   const [stores, setStores] = useState([]);
   const [coupons, setCoupons] = useState([]);
@@ -48,12 +51,18 @@ const PaymentPage = () => {
     if (!userIndex) return;
     
     try {
+      setLoading(true);
       const response = await paymentApi.getPaymentInfo(userIndex);
       if (response.data.resultCode === 200) {
         setPaymentInfo(response.data.data);
+      } else {
+        setError('결제 정보를 불러오는데 실패했습니다.');
       }
     } catch (err) {
       console.error('결제 정보 조회 오류:', err);
+      setError('결제 정보를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
     }
   }, [userIndex]);
   
@@ -64,9 +73,43 @@ const PaymentPage = () => {
     }
   }, [userIndex, fetchPaymentInfo]);
   
+  // 충전 페이지에서 돌아온 경우 결제 정보 복원
+  useEffect(() => {
+    const paymentData = location.state?.paymentData;
+    
+    if (paymentData) {
+      setAmount(paymentData.amount || '');
+      setSelectedStore(paymentData.selectedStore || null);
+      setSelectedCoupons(paymentData.selectedCoupons || []);
+      setPinCode(paymentData.pinCode || '');
+      console.log('결제 정보 복원됨:', paymentData);
+    }
+  }, [location.state]);
+  
   // 가맹점 선택
-  const handleStoreSelect = (store) => {
+  const handleStoreSelect = async (store) => {
     setSelectedStore(store);
+    setSelectedCoupons([]); // 가맹점 변경 시 선택된 쿠폰 초기화
+    setCoupons([]); // 쿠폰 목록 초기화
+    
+    // 선택된 가맹점의 쿠폰만 조회
+    if (userIndex && store.userIndex) {
+      try {
+        setLoading(true);
+        const response = await paymentApi.getStoreCoupons(userIndex, store.userIndex);
+        if (response.data.resultCode === 200) {
+          setCoupons(response.data.data);
+        } else {
+          console.error('가맹점 쿠폰 조회 실패:', response.data.resultMessage);
+          setCoupons([]);
+        }
+      } catch (err) {
+        console.error('가맹점 쿠폰 조회 오류:', err);
+        setCoupons([]);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
   
   // 쿠폰 선택
@@ -96,11 +139,23 @@ const PaymentPage = () => {
     const couponTotal = selectedCoupons.reduce((sum, coupon) => sum + coupon.couponPrice, 0);
     return inputAmount + couponTotal;
   };
-  
+
+  // 실제 차감되는 CM 금액 계산 (결제 금액 - 쿠폰 금액)
+  const calculateActualCmAmount = () => {
+    const inputAmount = parseInt(amount) || 0;
+    const couponTotal = selectedCoupons.reduce((sum, coupon) => sum + coupon.couponPrice, 0);
+    return Math.max(0, inputAmount - couponTotal); // 음수가 되지 않도록
+  };
+
+  // 쿠폰 총 금액 계산
+  const calculateCouponTotal = () => {
+    return selectedCoupons.reduce((sum, coupon) => sum + coupon.couponPrice, 0);
+  };
+
   // 핀번호 확인 처리
   const handlePinConfirm = (enteredPinCode) => {
     setPinCode(enteredPinCode);
-    // 핀번호만 설정하고 모달 닫기
+    setPinModalOpen(false);
   };
   
   // 실제 결제 실행
@@ -115,26 +170,34 @@ const PaymentPage = () => {
     setSuccess('');
     
     try {
+      const actualCmAmount = calculateActualCmAmount();
+      const couponTotal = calculateCouponTotal();
+      
       const request = {
         targetUserIndex: selectedStore.userIndex,
         amount: parseInt(amount),
+        actualCmAmount: actualCmAmount, // 실제 차감되는 CM 금액
         couponIndexes: selectedCoupons.map(c => c.couponIndex),
+        couponTotal: couponTotal, // 쿠폰 총 금액
         pinCode: pinCodeToUse
       };
-      
+    
       const response = await paymentApi.processPayment(request, userIndex);
       
       if (response.data.resultCode === 200 && response.data.data.success) {
-        setSuccess(`결제가 성공적으로 완료되었습니다. (내 CM ${calculateFinalAmount().toLocaleString()} 차감, 가맹점 ${calculateFinalAmount().toLocaleString()} 입금)`);
+        const successMessage = `결제가 성공적으로 완료되었습니다.\n\n내 CM 차감: ${actualCmAmount.toLocaleString()} CM\n쿠폰 사용: ${couponTotal.toLocaleString()} CM\n가맹점 입금: ${calculateFinalAmount().toLocaleString()} CM`;
+        setSuccess(successMessage);
+        
         // 폼 초기화
         setSelectedStore(null);
         setAmount('');
         setSelectedCoupons([]);
         setPinCode('');
+        setCoupons([]);
+        
         // 결제 정보 새로고침
         fetchPaymentInfo();
       } else {
-        // 핀번호 관련 오류 메시지 강조
         const errorMessage = response.data.resultMessage || '결제에 실패했습니다.';
         if (errorMessage.includes('핀번호')) {
           setError(`❌ ${errorMessage}`);
@@ -144,7 +207,6 @@ const PaymentPage = () => {
       }
     } catch (err) {
       console.error('결제 실행 오류:', err);
-      // API 응답에서 핀번호 오류 메시지 확인
       if (err.response && err.response.data && err.response.data.resultMessage) {
         const errorMessage = err.response.data.resultMessage;
         if (errorMessage.includes('핀번호')) {
@@ -157,24 +219,6 @@ const PaymentPage = () => {
       }
     } finally {
       setLoading(false);
-    }
-  };
-  
-  // 충전 페이지를 팝업으로 열기
-  const openChargePopup = () => {
-    const insufficientAmount = calculateFinalAmount() - (paymentInfo?.currentCm || 0);
-    const message = `보유 CM이 부족합니다.\n\n필요한 CM: ${calculateFinalAmount().toLocaleString()} CM\n보유 CM: ${paymentInfo?.currentCm.toLocaleString() || 0} CM\n부족한 CM: ${insufficientAmount.toLocaleString()} CM\n\n충전 페이지를 팝업으로 열까요?`;
-    
-    if (window.confirm(message)) {
-      // 충전 페이지를 팝업으로 열기
-      const popup = window.open('/charge/user', 'chargePopup', 'width=500,height=700,scrollbars=yes,resizable=yes');
-      
-      // 팝업이 차단되었는지 확인
-      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-        alert('팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.');
-        // 팝업이 차단된 경우 새 탭으로 열기
-        window.open('/charge/user', '_blank');
-      }
     }
   };
 
@@ -190,22 +234,69 @@ const PaymentPage = () => {
       return;
     }
 
+    // 월 한도 체크
+    const finalAmount = calculateFinalAmount();
+    const monthlyLimit = paymentInfo?.monthlyLimit || 0;
+    const monthlyUsed = paymentInfo?.monthlyUsed || 0;
+    const remainingLimit = monthlyLimit - monthlyUsed;
+    
+    console.log('월 한도 체크:', { 
+      finalAmount, 
+      monthlyLimit, 
+      monthlyUsed, 
+      remainingLimit, 
+      isOverLimit: finalAmount > remainingLimit 
+    });
+    
+    if (finalAmount > remainingLimit) {
+      console.log('월 한도 초과 감지');
+      setError(`월 한도를 초과합니다.\n\n월 한도: ${monthlyLimit.toLocaleString()} CM\n이번 달 사용: ${monthlyUsed.toLocaleString()} CM\n남은 한도: ${remainingLimit.toLocaleString()} CM\n결제 금액: ${finalAmount.toLocaleString()} CM`);
+      return;
+    }
+
     // CM 잔액 확인
-    if (paymentInfo && calculateFinalAmount() > paymentInfo.currentCm) {
-      setError('보유 CM이 부족합니다.');
-      // 3초 후 자동으로 충전 팝업 열기
+    const currentCm = paymentInfo?.currentCm || 0;
+    console.log('CM 잔액 확인:', { finalAmount, currentCm, isInsufficient: finalAmount > currentCm });
+    
+    if (finalAmount > currentCm) {
+      console.log('CM 부족 감지 - 충전 페이지로 이동');
+      setError('보유 CM이 부족합니다. 충전 페이지로 이동합니다.');
+      
       setTimeout(() => {
-        openChargePopup();
-      }, 3000);
+        console.log('충전 페이지로 이동 실행');
+        navigate('/charge/onlinepayment', {
+          state: {
+            fromPayment: true,
+            requiredAmount: finalAmount,
+            paymentData: {
+              amount: amount,
+              selectedStore: selectedStore,
+              selectedCoupons: selectedCoupons,
+              pinCode: pinCode
+            }
+          }
+        });
+      }, 1000);
       return;
     }
     
     // 실제 결제 실행
     await executePayment(pinCode);
   };
+
+  // 뒤로가기 처리
+  const handleBack = () => {
+    navigate(-1);
+  };
   
   if (!userIndex) {
-    return <div className="payment-page">사용자 정보를 불러오는 중...</div>;
+    return (
+      <div className="payment-page-main">
+        <div className="payment-page-container">
+          <div className="payment-page-loading">사용자 정보를 불러오는 중...</div>
+        </div>
+      </div>
+    );
   }
   
   return (
@@ -213,7 +304,7 @@ const PaymentPage = () => {
       <div className="payment-page-container">
         {/* 헤더 */}
         <div className="payment-page-header">
-          <div className="payment-page-back">
+          <div className="payment-page-back" onClick={handleBack}>
             <span className="payment-page-arrow">←</span>
           </div>
           <h1 className="payment-page-title">결제</h1>
@@ -229,6 +320,10 @@ const PaymentPage = () => {
             <div className="payment-page-info-item">
               <span className="payment-page-info-label">{paymentInfo.currentMonth} 사용 금액:</span>
               <span className="payment-page-info-value">{paymentInfo.monthlyUsed.toLocaleString()} CM</span>
+            </div>
+            <div className="payment-page-info-item">
+              <span className="payment-page-info-label">남은 한도:</span>
+              <span className="payment-page-info-value">{(paymentInfo.monthlyLimit - paymentInfo.monthlyUsed).toLocaleString()} CM</span>
             </div>
             <div className="payment-page-info-item">
               <span className="payment-page-info-label">보유 CM:</span>
@@ -248,7 +343,11 @@ const PaymentPage = () => {
                   <span className="payment-page-selected-text">{selectedStore.storeName}</span>
                   <button 
                     type="button" 
-                    onClick={() => setSelectedStore(null)}
+                    onClick={() => {
+                      setSelectedStore(null);
+                      setSelectedCoupons([]);
+                      setCoupons([]);
+                    }}
                     className="payment-page-remove-button"
                   >
                     ×
@@ -277,6 +376,7 @@ const PaymentPage = () => {
               required
               className="payment-page-form-input"
               min="1"
+              disabled={loading}
             />
           </div>
           
@@ -286,10 +386,17 @@ const PaymentPage = () => {
             <div className="payment-page-selection-container">
               <button 
                 type="button" 
-                onClick={() => setCouponModalOpen(true)}
+                onClick={() => {
+                  if (!selectedStore) {
+                    alert('먼저 가맹점을 선택해주세요.');
+                    return;
+                  }
+                  setCouponModalOpen(true);
+                }}
                 className="payment-page-select-button"
+                disabled={!selectedStore || loading}
               >
-                쿠폰 선택하기
+                {selectedStore ? '쿠폰 선택하기' : '가맹점을 먼저 선택해주세요'}
               </button>
             </div>
             
@@ -298,15 +405,23 @@ const PaymentPage = () => {
               <div className="payment-page-selected-coupons">
                 {selectedCoupons.map(coupon => (
                   <div key={coupon.couponIndex} className="payment-page-selected-coupon">
-                    <span className="payment-page-coupon-name">{coupon.couponName}</span>
-                    <span className="payment-page-coupon-price">{coupon.couponPrice.toLocaleString()} CM</span>
-                    <button 
-                      type="button" 
-                      onClick={() => handleCouponRemove(coupon.couponIndex)}
-                      className="payment-page-remove-button"
-                    >
-                      ×
-                    </button>
+                    <div className="payment-page-coupon-header">
+                      <span className="payment-page-coupon-name">{coupon.couponName}</span>
+                      <span className="payment-page-coupon-price">{coupon.couponPrice.toLocaleString()} CM</span>
+                    </div>
+                    <div className="payment-page-coupon-body">
+                      <div className="payment-page-coupon-info">
+                        <p className="payment-page-coupon-amount">{coupon.couponPrice.toLocaleString()} CM 할인</p>
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={() => handleCouponRemove(coupon.couponIndex)}
+                        className="payment-page-remove-button"
+                        disabled={loading}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -316,6 +431,12 @@ const PaymentPage = () => {
           {/* 최종 금액 */}
           <div className="payment-page-final-amount">
             <p>최종 수령 금액: <span>{calculateFinalAmount().toLocaleString()}</span> CM</p>
+            {selectedCoupons.length > 0 && (
+              <div className="payment-page-amount-breakdown">
+                <p>내 CM 차감: <span>{calculateActualCmAmount().toLocaleString()}</span> CM</p>
+                <p>쿠폰 사용: <span>{calculateCouponTotal().toLocaleString()}</span> CM</p>
+              </div>
+            )}
           </div>
           
           {/* 핀번호 표시 (읽기 전용) */}
@@ -337,6 +458,7 @@ const PaymentPage = () => {
                 type="button" 
                 onClick={() => setPinModalOpen(true)}
                 className="payment-page-pin-button"
+                disabled={loading}
               >
                 {pinCode ? '핀번호 변경' : '핀번호 확인'}
               </button>
@@ -351,9 +473,9 @@ const PaymentPage = () => {
           <button 
             type="submit" 
             className="payment-page-button"
-            disabled={loading}
+            disabled={loading || !selectedStore || !amount || !pinCode}
           >
-            {loading ? '처리 중...' : '확인'}
+            {loading ? '처리 중...' : '결제하기'}
           </button>
         </form>
         
@@ -369,6 +491,8 @@ const PaymentPage = () => {
           onClose={() => setCouponModalOpen(false)}
           onSelect={handleCouponSelect}
           userIndex={userIndex}
+          storeUserIndex={selectedStore?.userIndex}
+          paymentAmount={parseInt(amount) || 0}
         />
         
         <PinCodeModal
