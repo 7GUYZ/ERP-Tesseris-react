@@ -48,6 +48,57 @@ const SignupPage = () => {
     userGenderIndex: null
   });
 
+  // 추천인 검색
+  const [referralSearch, setReferralSearch] = useState({
+    searchValue: '',
+    searchResults: [],
+    isSearching: false,
+    selectedReferrer: null
+  });
+
+  const handleReferralSearch = async () => {
+    if (!referralSearch.searchValue.trim()) {
+      setError('추천인을 검색할 내용을 입력해주세요.');
+      return;
+    }
+
+    setReferralSearch(prev => ({ ...prev, isSearching: true }));
+    setError('');
+
+    try {
+      const response = await signupApi.searchUser(referralSearch.searchValue);
+      
+      if (response.data && response.data.found) {
+        setReferralSearch(prev => ({
+          ...prev,
+          searchResults: [response.data],
+          isSearching: false
+        }));
+      } else {
+        setReferralSearch(prev => ({
+          ...prev,
+          searchResults: [],
+          isSearching: false
+        }));
+        setError('해당하는 추천인을 찾을 수 없습니다.');
+      }
+    } catch (err) {
+      console.error('추천인 검색 오류:', err);
+      setError('추천인 검색 중 오류가 발생했습니다.');
+      setReferralSearch(prev => ({ ...prev, isSearching: false }));
+    }
+  };
+
+  const handleSelectReferrer = (referrer) => {
+    setReferralSearch(prev => ({
+      ...prev,
+      selectedReferrer: referrer,
+      searchValue: referrer.email,
+      searchResults: []
+    }));
+    setUserInfo(prev => ({ ...prev, referralId: referrer.email }));
+  };
+
 
   // 카카오 주소 API 스크립트 로드
   useEffect(() => {
@@ -319,33 +370,15 @@ const SignupPage = () => {
       const response = await signupApi.finalSignup(signupData);
 
       if (response.data.success) {
-        // 추천인이 있는 경우 추천 보상 지급
+        // 백엔드에서 자동으로 추천인 관계 생성 및 포인트 지급 처리
         if (userInfo.referralId) {
-          try {
-            const rewardData = {
-              newUserId: response.data.userIndex, // 새로 가입한 사용자 ID
-              referralId: userInfo.referralId, // 추천인 ID
-              rewardAmount: 10000 // 보상 금액
-            };
-            
-            const rewardResponse = await signupApi.giveReferralReward(rewardData);
-            
-            if (rewardResponse.data.success) {
-              alert('회원가입이 성공적으로 완료되었습니다!\n추천인과 함께 10,000cm를 받았습니다!');
-            } else {
-              alert('회원가입이 성공적으로 완료되었습니다!\n추천 보상 지급에 실패했습니다.');
-            }
-          } catch (rewardErr) {
-            console.error('추천 보상 지급 오류:', rewardErr);
-            alert('회원가입이 성공적으로 완료되었습니다!\n추천 보상 지급 중 오류가 발생했습니다.');
-          }
+          alert('회원가입이 성공적으로 완료되었습니다!\n추천인과 함께 10,000cm를 받았습니다!');
         } else {
-          // 추천인이 없는 경우
           alert('회원가입이 성공적으로 완료되었습니다!');
         }
         
         // 로그인 페이지로 이동
-        navigate('/login');
+        navigate('/');
       } else {
         setError(response.data.message || '회원가입에 실패했습니다.');
       }
@@ -667,12 +700,47 @@ const SignupPage = () => {
               
               <div className="input-group">
                 <label>추천인 (선택)</label>
-                <input
-                  type="text"
-                  value={userInfo.referralId}
-                  onChange={(e) => setUserInfo(prev => ({ ...prev, referralId: e.target.value }))}
-                  placeholder="추천인 이메일 또는 닉네임"
-                />
+                <div className="referral-search-group">
+                  <input
+                    type="text"
+                    value={referralSearch.searchValue}
+                    onChange={(e) => setReferralSearch(prev => ({ ...prev, searchValue: e.target.value }))}
+                    placeholder="추천인을 검색하세요"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleReferralSearch();
+                      }
+                    }}
+                  />
+                  <button 
+                    className="search-button"
+                    onClick={handleReferralSearch}
+                    disabled={loading || !referralSearch.searchValue}
+                  >
+                    {loading ? '검색 중...' : '검색'}
+                  </button>
+                </div>
+                {referralSearch.isSearching && (
+                  <div className="search-results">
+                    {referralSearch.searchResults.map((referrer, index) => (
+                      <div
+                        key={index}
+                        className="search-result-item"
+                        onClick={() => handleSelectReferrer(referrer)}
+                      >
+                        {referrer.email}
+                      </div>
+                    ))}
+                    {referralSearch.searchResults.length === 0 && (
+                      <div className="search-result-item">검색 결과가 없습니다.</div>
+                    )}
+                  </div>
+                )}
+                {referralSearch.selectedReferrer && (
+                  <div className="selected-referrer">
+                    선택된 추천인: {referralSearch.selectedReferrer.email}
+                  </div>
+                )}
               </div>
               
               <div className="input-group">

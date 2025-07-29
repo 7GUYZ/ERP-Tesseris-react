@@ -85,30 +85,7 @@ const CouponList = () => {
     fetchCoupons();
   };
 
-  // 쿠폰 사용 처리
-  const handleUseCoupon = async (couponIndex) => {
-    if (!window.confirm('이 쿠폰을 사용하시겠습니까?')) {
-      return;
-    }
 
-    setLoading(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      // 쿠폰 사용 API 호출 (백엔드에 추가 필요)
-      // const response = await couponListApi.useCoupon(couponIndex);
-      
-      // 임시로 성공 처리
-      setSuccess('쿠폰이 성공적으로 사용되었습니다.');
-      fetchCoupons(); // 목록 새로고침
-    } catch (err) {
-      console.error('쿠폰 사용 오류:', err);
-      setError('쿠폰 사용 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // 쿠폰 상태에 따른 필터링
   const getFilteredCoupons = () => {
@@ -172,10 +149,10 @@ const CouponList = () => {
   const filteredCoupons = getFilteredCoupons();
 
   return (
-    <div className="coupon-list">
-      <div className="coupon-list-container">
+    <div className="coupon-list" style={{ minHeight: '100vh', background: '#F5F5F9', padding: 0, width: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div className="coupon-list-container" style={{ width: '100%', height: '100vh', margin: 0, background: 'white', borderRadius: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {/* 헤더 */}
-        <div className="coupon-list-header">
+        <div className="coupon-list-header" style={{ background: '#170F58', color: 'white', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
           <div className="header-back">
             <span className="back-arrow">←</span>
           </div>
@@ -270,23 +247,7 @@ const CouponList = () => {
                     </div>
                   </div>
                   
-                  <div className="coupon-card-footer">
-                    {coupon.couponProvidedStatusIndex === 1 && (
-                      <button
-                        onClick={() => handleUseCoupon(coupon.couponIndex)}
-                        className="use-coupon-button"
-                        disabled={loading}
-                      >
-                        쿠폰 사용
-                      </button>
-                    )}
-                    {coupon.couponProvidedStatusIndex === 2 && (
-                      <div className="used-badge">사용 완료</div>
-                    )}
-                    {coupon.couponProvidedStatusIndex === 5 && (
-                      <div className="expired-badge">기한 경과</div>
-                    )}
-                  </div>
+
                 </div>
               ))}
             </div>

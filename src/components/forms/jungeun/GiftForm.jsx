@@ -96,7 +96,7 @@ export default function GiftForm() {
     }
 
     const formatNumber = (num) => {
-        if (!num || isNaN(num)) return "";
+        if (!num || isNaN(num)) return "0";
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     }
 
