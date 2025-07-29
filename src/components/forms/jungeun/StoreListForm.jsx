@@ -1,70 +1,11 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import "../../../styles/jungeun/storeList.css";
-import { getImage, storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
+import { storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
 import { Image } from "lucide-react";
 
 const MAIN_COLOR = "#170F58";
 const POINT_COLOR = "#FDCD00";
-
-// 이미지 로딩 상태 관리를 위한 커스텀 훅
-const useImageLoader = (imageUrl) => {
-    const [imageState, setImageState] = useState({
-        loading: false,
-        loaded: false,
-        error: false,
-        data: null
-    });
-
-    useEffect(() => {
-        if (!imageUrl) {
-            setImageState({ loading: false, loaded: false, error: true, data: null });
-            return;
-        }
-
-        setImageState({ loading: true, loaded: false, error: false, data: null });
-
-        // 이미지 API 호출 함수
-        const loadImage = async () => {
-            try {
-                const response = await getImage(imageUrl); // imageUrl이 fileKey
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const blob = await response.blob();
-                const objectUrl = URL.createObjectURL(blob);
-                
-                setImageState({
-                    loading: false,
-                    loaded: true,
-                    error: false,
-                    data: objectUrl
-                });
-            } catch (error) {
-                console.error('이미지 로딩 실패:', error);
-                setImageState({
-                    loading: false,
-                    loaded: false,
-                    error: true,
-                    data: null
-                });
-            }
-        };
-
-        loadImage();
-
-        // cleanup: object URL 해제
-        return () => {
-            if (imageState.data) {
-                URL.revokeObjectURL(imageState.data);
-            }
-        };
-    }, [imageUrl]);
-
-    return imageState;
-};
 
 // 지도 컴포넌트
 export const Map = ({ stores = [] }) => {
@@ -175,30 +116,46 @@ const StoreListForm = () => {
     const location = useLocation();
     const navigate = useNavigate();
     // category 쿼리 없으면 "0"(전체)로
-    const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "0");
+    const [selectedCategory, setSelectedCategory] = useState(searchParams.get("store_category_index") ?? "0");
     const [stores, setStores] = useState([]);
     const [categories, setCategories] = useState([]);
     const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "list"); // "list" 또는 "map"
     const [searchKeyword, setSearchKeyword] = useState('');
     const [filteredStores, setFilteredStores] = useState([]);
     const [loading, setLoading] = useState(false);
+    
+    // URL 파라미터에서 user_index 가져오기, 없으면 로그인한 유저의 user_index 사용
+    const urlUserIndex = searchParams.get("user_index");
+    const [currentUserIndex, setCurrentUserIndex] = useState(
+        urlUserIndex ? Number(urlUserIndex) : Number(JSON.parse(localStorage.getItem("user-info"))?.user_index)
+    );
 
     // 쿼리스트링이 바뀔 때마다 state 동기화
     useEffect(() => {
-        let category = searchParams.get("category");
+        let category = searchParams.get("store_category_index");
         if (!category) category = "0";
         const tab = searchParams.get("tab") || "list";
         setSelectedCategory(category);
         setActiveTab(tab);
+        
+        // user_index도 업데이트
+        const newUrlUserIndex = searchParams.get("user_index");
+        if (newUrlUserIndex) {
+            setCurrentUserIndex(Number(newUrlUserIndex));
+        }
     }, [searchParams]);
 
     // 카테고리/탭 변경 시 쿼리스트링 동기화
     useEffect(() => {
         const params = {};
-        if (selectedCategory) params.category = selectedCategory;
+        if (selectedCategory) params.store_category_index = selectedCategory;
         if (activeTab) params.tab = activeTab;
+        // user_index도 유지
+        if (currentUserIndex !== Number(JSON.parse(localStorage.getItem("user-info"))?.user_index)) {
+            params.user_index = currentUserIndex;
+        }
         setSearchParams(params, { replace: true });
-    }, [selectedCategory, activeTab, setSearchParams]);
+    }, [selectedCategory, activeTab, currentUserIndex, setSearchParams]);
 
     // 카테고리 목록 가져오기
     useEffect(() => {
@@ -227,7 +184,14 @@ const StoreListForm = () => {
 
     // 카테고리가 바뀔 때마다 백엔드에서 데이터 받아오기
     useEffect(() => {
-        const user_index = Number(JSON.parse(localStorage.getItem("user-info"))?.user_index);
+        console.log('🔍 URL 파라미터 디버깅:', {
+            urlUserIndex: urlUserIndex,
+            parsedUrlUserIndex: urlUserIndex ? Number(urlUserIndex) : null,
+            localStorageUserIndex: Number(JSON.parse(localStorage.getItem("user-info"))?.user_index),
+            currentUserIndex: currentUserIndex,
+            selectedCategory: selectedCategory
+        });
+        
         const fetchStores = async () => {
             if (selectedCategory === null || selectedCategory === undefined) {
                 setStores([]);
@@ -235,19 +199,22 @@ const StoreListForm = () => {
             }
             try {
                 const categoryIndex = selectedCategory ? Number(selectedCategory) : 0;
-                const res = await storeList(user_index, categoryIndex);
+                console.log('📞 API 호출:', { user_index: currentUserIndex, categoryIndex });
+                const res = await storeList(currentUserIndex, categoryIndex);
              
                 if (res.data.resultCode === 200) {
+                    console.log('📦 받아온 스토어 데이터:', res.data.data);
+                    console.log('📦 첫 번째 스토어 이미지 정보:', res.data.data[0]?.storeImage);
                     setStores(res.data.data);
                  
                 }
             } catch (e) {
-                
+                console.error('❌ 스토어 데이터 로딩 오류:', e);
                 setStores([]);
             }
         };
         fetchStores();
-    }, [selectedCategory]);
+    }, [selectedCategory, currentUserIndex]);
 
     // 이미지가 없을 때 표시할 컴포넌트
     const NoImageComponent = ({ show = false }) => (
@@ -257,39 +224,38 @@ const StoreListForm = () => {
         </div>
     );
 
-    // 이미지 로딩 중 표시할 컴포넌트
-    const LoadingImageComponent = () => (
-        <div className="store-list-loading-image-container">
-            <div className="loading-spinner"></div>
-            <p className="store-list-loading-text">이미지 로딩 중...</p>
-        </div>
-    );
-
     const StoreCard = ({ store }) => {
-        // 이미지 로딩 상태 관리
-        const imageState = useImageLoader(store.storeImage);
+        console.log('🖼️ 스토어 이미지 정보:', {
+            storeIndex: store.storeIndex,
+            storeName: store.storeName,
+            storeImage: store.storeImage,
+            storeImageType: typeof store.storeImage,
+            storeImageLength: store.storeImage?.length
+        });
 
         return (
             <div className="business-partner-card" style={{ padding: 0 }}>
                 {/* 이미지 영역 */}
                 <div className="store-list-image-container">
-                    {imageState.loading ? (
-                        // 로딩 중
-                        <LoadingImageComponent />
-                    ) : imageState.loaded ? (
-                        // 이미지 로딩 성공
-                        <>
-                            <img
-                                src={imageState.data}
-                                alt="가맹점 이미지"
-                                className="store-list-image"
-                            />
-                            <NoImageComponent show={false} />
-                        </>
-                    ) : (
-                        // 이미지 로딩 실패 또는 이미지 없음
-                        <NoImageComponent show={true} />
-                    )}
+                    {store.storeImage ? (
+                        // 이미지가 있으면 바로 표시
+                        <img
+                            src={store.storeImage}
+                            alt="가맹점 이미지"
+                            className="store-list-image"
+                            onError={(e) => {
+                                console.error('❌ 이미지 로드 실패:', store.storeImage);
+                                // 이미지 로드 실패 시 기본 이미지 표시
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                            }}
+                            onLoad={() => {
+                                console.log('✅ 이미지 로드 성공:', store.storeImage);
+                            }}
+                        />
+                    ) : null}
+                    {/* 이미지가 없거나 로드 실패 시 표시할 컴포넌트 */}
+                    <NoImageComponent show={!store.storeImage} />
                 </div>
                 <div className="card-header" style={{ padding: "1.2rem 1.5rem 0.5rem 1.5rem" }}>
                     <div
