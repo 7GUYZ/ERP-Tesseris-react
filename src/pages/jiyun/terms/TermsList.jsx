@@ -19,7 +19,7 @@ export default function TermsList() {
   return (
     <div className="terms-container">
       <div className="terms-header">
-        <button className="back-button" onClick={() => navigate("/mypage")}>
+        <button className="terms-list-back-button" onClick={() => navigate("/mypage")}>
           &lt;
         </button>
         <h2>약관 및 이용 동의</h2>

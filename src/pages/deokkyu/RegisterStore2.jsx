@@ -68,6 +68,11 @@ export default function RegisterStore2() {
   const createFormData = useCallback(() => {
     const formData = new FormData()
     
+    console.log("📦 === FormData 생성 시작 ===")
+    console.log("userInfo:", userInfo)
+    console.log("businessInfo:", businessInfo)
+    console.log("storeInfo:", storeInfo)
+    
     // 신청자 정보
     formData.append('userName', userInfo.name || '')
     formData.append('userPhone', userInfo.phone || '')
@@ -77,7 +82,14 @@ export default function RegisterStore2() {
     formData.append('storeCorporateName', businessInfo.storeCorporateName || '')
     formData.append('storeBossName', businessInfo.storeBossName || '')
     formData.append('storeTypeTaxation', businessInfo.storeTypeTaxation || '')
-    formData.append('storeBusinessLicensePhoto', businessInfo.storeBusinessLicensePhoto || '')
+    
+    // 사업자 등록증 사진 - File 객체가 있을 때만 추가
+    if (businessInfo.storeBusinessLicensePhoto && businessInfo.storeBusinessLicensePhoto instanceof File) {
+      formData.append('storeBusinessLicensePhoto', businessInfo.storeBusinessLicensePhoto)
+      console.log("✅ 사업자 등록증 사진 추가:", businessInfo.storeBusinessLicensePhoto.name, businessInfo.storeBusinessLicensePhoto.size + "bytes")
+    } else {
+      console.log("❌ 사업자 등록증 사진 없음:", businessInfo.storeBusinessLicensePhoto)
+    }
     
     // 가맹점 등록 정보
     formData.append('storeName', storeInfo.store_name || '')
@@ -86,8 +98,22 @@ export default function RegisterStore2() {
     formData.append('storeAddress', storeInfo.store_address || '')
     formData.append('storeDetailAddress', storeInfo.store_detail_address || '')
     formData.append('storeSite', storeInfo.storeSite || '')
-    formData.append('storeSignPhoto', storeInfo.storeSignPhoto || '')
-    formData.append('storeFrontPhoto', storeInfo.storeFrontPhoto || '')
+    
+    // 간판 사진 - File 객체가 있을 때만 추가
+    if (storeInfo.storeSignPhoto && storeInfo.storeSignPhoto instanceof File) {
+      formData.append('storeSignPhoto', storeInfo.storeSignPhoto)
+      console.log("✅ 간판 사진 추가:", storeInfo.storeSignPhoto.name, storeInfo.storeSignPhoto.size + "bytes")
+    } else {
+      console.log("❌ 간판 사진 없음:", storeInfo.storeSignPhoto)
+    }
+    
+    // 매장 정면 사진 - File 객체가 있을 때만 추가
+    if (storeInfo.storeFrontPhoto && storeInfo.storeFrontPhoto instanceof File) {
+      formData.append('storeFrontPhoto', storeInfo.storeFrontPhoto)
+      console.log("✅ 매장 정면 사진 추가:", storeInfo.storeFrontPhoto.name, storeInfo.storeFrontPhoto.size + "bytes")
+    } else {
+      console.log("❌ 매장 정면 사진 없음:", storeInfo.storeFrontPhoto)
+    }
     formData.append('hasManager', storeInfo.hasManager || '')
     formData.append('managerId', storeInfo.managerId || '')
     
@@ -106,6 +132,18 @@ export default function RegisterStore2() {
         console.error('약관 동의 데이터 파싱 오류:', error)
       }
     }
+    
+    // FormData 내용 확인 (디버깅)
+    console.log("📦 === FormData 생성 완료 ===")
+    console.log("FormData 항목 수:", Array.from(formData.entries()).length)
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`${key}: [File] ${value.name} (${value.size} bytes, ${value.type})`)
+      } else {
+        console.log(`${key}: ${value}`)
+      }
+    }
+    console.log("📦 === FormData 생성 완료 ===")
     
     return formData
   }, [userInfo, businessInfo, storeInfo])
@@ -148,14 +186,14 @@ export default function RegisterStore2() {
 
   // 비정상 종료 시 localStorage 정리
   useEffect(() => {
-    const cleanupLocalStorage = () => {
-      console.log('🧹 RegisterStore2: 비정상 종료 감지 - localStorage 정리')
-      localStorage.removeItem('register-store-temp')
-      localStorage.removeItem('register-store-agreements')
-      if (window.tempFormData) {
-        delete window.tempFormData
+          const cleanupLocalStorage = () => {
+        console.log('🧹 RegisterStore2: 비정상 종료 감지 - localStorage 정리')
+        localStorage.removeItem('register-store-temp')
+        localStorage.removeItem('register-store-agreements')
+        if (window.tempFormData) {
+          delete window.tempFormData
+        }
       }
-    }
 
     const handleBeforeUnload = (event) => {
       cleanupLocalStorage()

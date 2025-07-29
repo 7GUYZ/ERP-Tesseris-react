@@ -1,4 +1,4 @@
-.modal-overlay {
+.check-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -12,7 +12,7 @@
   backdrop-filter: blur(2px);
 }
 
-.modal-box {
+.check-modal-box {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(34, 46, 60, 0.15);
@@ -20,10 +20,10 @@
   max-width: 90vw;
   margin: 20px;
   overflow: hidden;
-  animation: modalSlideIn 0.2s ease-out;
+  animation: checkModalSlideIn 0.2s ease-out;
 }
 
-@keyframes modalSlideIn {
+@keyframes checkModalSlideIn {
   from {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
@@ -34,7 +34,7 @@
   }
 }
 
-.modal-header {
+.check-modal-header {
   padding: 24px 24px 16px 24px;
   border-bottom: 1px solid #e8ecf0;
   background: #fafbfc;
@@ -45,7 +45,7 @@
   letter-spacing: -0.02em;
 }
 
-.modal-body {
+.check-modal-body {
   padding: 32px 24px;
   font-size: 16px;
   color: #222e3c;
@@ -53,13 +53,13 @@
   line-height: 1.5;
 }
 
-.modal-footer {
+.check-modal-footer {
   padding: 16px 24px 24px 24px;
   display: flex;
   justify-content: center;
 }
 
-.modal-button {
+.check-modal-button {
   height: 44px;
   padding: 0 32px;
   border: none;
@@ -75,39 +75,39 @@
   border: 1px solid #170f58;
 }
 
-.modal-button:hover {
+.check-modal-button:hover {
   background: #170f58;
   border-color: #170f58;
   box-shadow: 0 2px 4px rgba(59, 125, 221, 0.2);
 }
 
-.modal-button:active {
+.check-modal-button:active {
   background: #170f58;
   transform: translateY(1px);
 }
 
 /* 반응형 디자인 */
 @media (max-width: 480px) {
-  .modal-box {
+  .check-modal-box {
     margin: 16px;
     max-width: none;
   }
 
-  .modal-header {
+  .check-modal-header {
     padding: 20px 20px 14px 20px;
     font-size: 17px;
   }
 
-  .modal-body {
+  .check-modal-body {
     padding: 24px 20px;
     font-size: 15px;
   }
 
-  .modal-footer {
+  .check-modal-footer {
     padding: 14px 20px 20px 20px;
   }
 
-  .modal-button {
+  .check-modal-button {
     width: 100%;
   }
 } 
