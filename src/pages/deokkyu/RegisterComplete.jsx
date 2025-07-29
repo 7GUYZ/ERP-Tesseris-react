@@ -124,6 +124,8 @@ export default function RegisterComplete() {
           localStorage.removeItem('register-store-agreements')
           localStorage.removeItem('temp-formdata-entries')
           localStorage.removeItem('temp-payment-info')
+          localStorage.removeItem('@tosspayments/client-id')
+          localStorage.removeItem('@tosspayments/merchant-browser-id')
           
           console.log("✅ 가맹점 신청 완료! 모든 처리가 성공적으로 완료되었습니다.");
           setIsDataSaved(true)
