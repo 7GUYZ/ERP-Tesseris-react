@@ -1,11 +1,70 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import "../../../styles/jungeun/storeList.css";
-import { storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
+import { getImage, storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
 import { Image } from "lucide-react";
 
 const MAIN_COLOR = "#170F58";
 const POINT_COLOR = "#FDCD00";
+
+// 이미지 로딩 상태 관리를 위한 커스텀 훅
+const useImageLoader = (imageUrl) => {
+    const [imageState, setImageState] = useState({
+        loading: false,
+        loaded: false,
+        error: false,
+        data: null
+    });
+
+    useEffect(() => {
+        if (!imageUrl) {
+            setImageState({ loading: false, loaded: false, error: true, data: null });
+            return;
+        }
+
+        setImageState({ loading: true, loaded: false, error: false, data: null });
+
+        // 이미지 API 호출 함수
+        const loadImage = async () => {
+            try {
+                const response = await getImage(imageUrl); // imageUrl이 fileKey
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                
+                setImageState({
+                    loading: false,
+                    loaded: true,
+                    error: false,
+                    data: objectUrl
+                });
+            } catch (error) {
+                console.error('이미지 로딩 실패:', error);
+                setImageState({
+                    loading: false,
+                    loaded: false,
+                    error: true,
+                    data: null
+                });
+            }
+        };
+
+        loadImage();
+
+        // cleanup: object URL 해제
+        return () => {
+            if (imageState.data) {
+                URL.revokeObjectURL(imageState.data);
+            }
+        };
+    }, [imageUrl]);
+
+    return imageState;
+};
 
 // 지도 컴포넌트
 export const Map = ({ stores = [] }) => {
@@ -198,29 +257,37 @@ const StoreListForm = () => {
         </div>
     );
 
+    // 이미지 로딩 중 표시할 컴포넌트
+    const LoadingImageComponent = () => (
+        <div className="store-list-loading-image-container">
+            <div className="loading-spinner"></div>
+            <p className="store-list-loading-text">이미지 로딩 중...</p>
+        </div>
+    );
+
     const StoreCard = ({ store }) => {
+        // 이미지 로딩 상태 관리
+        const imageState = useImageLoader(store.storeImage);
+
         return (
             <div className="business-partner-card" style={{ padding: 0 }}>
                 {/* 이미지 영역 */}
                 <div className="store-list-image-container">
-                    {/* 이미지가 있을 때만 표시 */}
-                    {store.storeImage ? (
+                    {imageState.loading ? (
+                        // 로딩 중
+                        <LoadingImageComponent />
+                    ) : imageState.loaded ? (
+                        // 이미지 로딩 성공
                         <>
                             <img
-                                src={store.storeImage}
+                                src={imageState.data}
                                 alt="가맹점 이미지"
                                 className="store-list-image"
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    const noImageContainer = e.target.nextSibling;
-                                    if (noImageContainer) {
-                                        noImageContainer.classList.add('show');
-                                    }
-                                }}
                             />
                             <NoImageComponent show={false} />
                         </>
                     ) : (
+                        // 이미지 로딩 실패 또는 이미지 없음
                         <NoImageComponent show={true} />
                     )}
                 </div>
