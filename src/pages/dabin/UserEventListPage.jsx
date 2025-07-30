@@ -62,113 +62,74 @@ const UserEventListPage = () => {
         return address;
     };
 
+    if (loading) {
+        return (
+            <div className="user-event-list-page">
+                <div className="user-event-list-loading">이벤트 목록을 불러오는 중...</div>
+            </div>
+        );
+    }
+
     return (
         <div className="user-event-list-page">
             {/* Header */}
-            <div className="user-event-list-header-h">
-                <header className="user-event-list-header-wrap">
-                    <button className="event-list-back-btn" onClick={() => window.history.back()}>
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <p className="user-event-list-header-title">쿠폰 이벤트</p>
-                </header>
+            <div className="user-event-list-header">
+                <button className="user-event-list-back-btn" onClick={() => window.history.back()}>
+                    <ArrowLeft className="w-6 h-6" />
+                </button>
+                <h1 className="user-event-list-header-title">쿠폰 이벤트</h1>
+                <div className="user-event-list-header-spacer"></div>
             </div>
 
-            {/* Tab Menu */}
-            <div className="user-event-list-tab-menu" style={{ margin: '0px' }}>
-                <a 
-                    className={`user-event-list-tab-item${activeTab === 'continue' ? ' user-event-list-tab-item-active' : ''}`} 
-                    style={{ width: '50%' }}
+            {/* Tabs */}
+            <div className="user-event-list-tabs">
+                <button 
+                    className={`user-event-list-tab${activeTab === 'continue' ? ' active' : ''}`}
                     onClick={() => setActiveTab('continue')}
                 >
-                    <p style={{ width: '100%', textAlign: 'center', fontSize: '1.25rem' }}>
-                        진행중
-                    </p>
-                </a>
-                <a 
-                    className={`user-event-list-tab-item${activeTab === 'end' ? ' user-event-list-tab-item-active' : ''}`} 
-                    style={{ width: '50%', textAlign: 'center' }}
+                    진행중
+                </button>
+                <button 
+                    className={`user-event-list-tab${activeTab === 'end' ? ' active' : ''}`}
                     onClick={() => setActiveTab('end')}
                 >
-                    <p style={{ width: '100%', textAlign: 'center', fontSize: '1.25rem' }}>
-                        종료
-                    </p>
-                </a>
+                    종료
+                </button>
             </div>
 
-            {/* Loading */}
-            {loading && (
-                <div className="user-event-list-loading">
-                    <div className="user-event-list-loading-circle"></div>
-                    <div className="user-event-list-loading-text">로딩 중</div>
-                </div>
-            )}
-
-            {/* Active Events */}
-            {activeTab === 'continue' && !loading && (
-                <div>
-                    {activeEvents.map((event) => (
-                        <div 
-                            key={event.eventMasterIndex}
-                            className="user-event-list-event-card" 
-                            style={{ width: '100%', cursor: 'pointer' }}
-                            onClick={() => handleEventClick(event.eventMasterIndex)}
-                        >
-                            <div className="user-event-list-event-card-content" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                                <div style={{ width: '230px' }}>
-                                    <p style={{ fontWeight: 'bold', fontSize: '17px', color: 'purple' }}>
-                                        {event.eventMasterName}
-                                    </p>
-                                    <p>{event.eventMasterCondition}</p>
-                                    <p>잔여 쿠폰 &emsp; {formatNumber(event.totalCouponPrice)} CM</p>
-                                </div>
-                                <div style={{ textAlign: 'center', width: '150px' }}>
-                                    <p>{formatAddress(event.storeAddress)}</p>
-                                    <p style={{ fontWeight: 'bold' }}>{event.storeName}</p>
-                                    <p>참여 가능 횟수: {event.remainingDownloads || 0}</p>
-                                </div>
+            {/* Event List */}
+            <div className="user-event-list-event-list">
+                {(activeTab === 'continue' ? activeEvents : endedEvents).map((event) => (
+                    <div 
+                        key={event.eventMasterIndex}
+                        className="user-event-list-event-card"
+                        onClick={() => handleEventClick(event.eventMasterIndex)}
+                    >
+                        <div className="user-event-list-event-content">
+                            <div className="user-event-list-event-info">
+                                <h3 className="user-event-list-event-title">{event.eventMasterName}</h3>
+                                <p className="user-event-list-event-condition">{event.eventMasterCondition}</p>
+                                <p className="user-event-list-event-remaining">
+                                    잔여 쿠폰 &emsp; {formatNumber(event.totalCouponPrice)} CM
+                                </p>
+                                <p className="user-event-list-event-downloads">
+                                    {activeTab === 'continue' ? '참여 가능 횟수' : '다운로드 가능'}: {event.remainingDownloads || 0}
+                                </p>
+                            </div>
+                            <div className="user-event-list-event-location">
+                                <p className="user-event-list-location-text">{formatAddress(event.storeAddress)}</p>
+                                <p className="user-event-list-store-name">{event.storeName}</p>
                             </div>
                         </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Ended Events */}
-            {activeTab === 'end' && !loading && (
-                <div>
-                    {endedEvents.map((event) => (
-                        <div 
-                            key={event.eventMasterIndex}
-                            className="user-event-list-event-card" 
-                            style={{ width: '100%' }}
-                        >
-                            <div className="user-event-list-event-card-content" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                                <div style={{ width: '230px' }}>
-                                    <p style={{ fontWeight: 'bold', fontSize: '17px', color: 'purple' }}>
-                                        {event.eventMasterName}
-                                    </p>
-                                    <p>{event.eventMasterCondition}</p>
-                                    <p>잔여 쿠폰 &emsp; {formatNumber(event.totalCouponPrice)} CM</p>
-                                </div>
-                                <div style={{ textAlign: 'center', width: '150px' }}>
-                                    <p>{formatAddress(event.storeAddress)}</p>
-                                    <p style={{ fontWeight: 'bold' }}>{event.storeName}</p>
-                                    <p>다운로드 가능: {event.remainingDownloads || 0}</p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* No Events */}
-            {!loading && 
-             ((activeTab === 'continue' && activeEvents.length === 0) || 
-              (activeTab === 'end' && endedEvents.length === 0)) && (
-                <div className="user-event-list-no-events">
-                    <p>표시할 이벤트가 없습니다.</p>
-                </div>
-            )}
+                    </div>
+                ))}
+                
+                {(activeTab === 'continue' ? activeEvents : endedEvents).length === 0 && (
+                    <div className="user-event-list-no-events">
+                        <p>{activeTab === 'continue' ? '진행중인 이벤트가 없습니다.' : '종료된 이벤트가 없습니다.'}</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

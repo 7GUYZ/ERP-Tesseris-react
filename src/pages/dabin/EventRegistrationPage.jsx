@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import { ArrowLeft, Check, X } from "lucide-react"
 import { getAvailableCoupons, registerEvent } from "../../api/auth/DabinAuth"
+import Toast from "../../components/ui/jungeun/Toast"
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material'
 import "../../styles/dabin/EventRegistrationPage.css"
 
 export default function EventRegistrationPage() {
@@ -18,6 +20,20 @@ export default function EventRegistrationPage() {
   const [selectedCouponDetail, setSelectedCouponDetail] = useState(null)
   const [couponDetailLoading, setCouponDetailLoading] = useState(false)
 
+  // Toast states
+  const [toastMessage, setToastMessage] = useState('')
+  const [toastType, setToastType] = useState('info')
+  const [showToast, setShowToast] = useState(false)
+
+  const showToastMessage = (message, type = 'info') => {
+    setToastMessage(message)
+    setToastType(type)
+    setShowToast(true)
+  }
+
+  const closeToast = () => {
+    setShowToast(false)
+  }
 
   // 쿠폰 목록 조회
   useEffect(() => {
@@ -186,12 +202,34 @@ export default function EventRegistrationPage() {
     try {
       // 유효성 검사
       if (!formData.eventName || formData.eventName.trim() === '') {
-        alert("이벤트 이름을 입력해주세요.");
+        showToastMessage("이벤트 이름을 입력해주세요.", "error");
+        return;
+      }
+      
+      if (!formData.targetCondition || formData.targetCondition.trim() === '') {
+        showToastMessage("적용할 조건을 입력해주세요.", "error");
+        return;
+      }
+      
+      if (!formData.downloadCode || formData.downloadCode.trim() === '') {
+        showToastMessage("1인당 다운로드 제한을 입력해주세요.", "error");
+        return;
+      }
+      
+      const downloadCount = parseInt(formData.downloadCode);
+      if (isNaN(downloadCount) || downloadCount < 1) {
+        showToastMessage("1인당 다운로드 제한은 1 이상이어야 합니다.", "error");
         return;
       }
       
       if (selectedCoupons.length === 0) {
-        alert("쿠폰을 선택해주세요.");
+        showToastMessage("쿠폰을 선택해주세요.", "error");
+        return;
+      }
+      
+      // 1인당 다운로드 제한이 선택한 쿠폰 개수보다 많은지 체크
+      if (downloadCount > selectedCoupons.length) {
+        showToastMessage(`다운로드 제한이 쿠폰 수를 초과합니다.`, "error");
         return;
       }
       
@@ -210,7 +248,7 @@ export default function EventRegistrationPage() {
       const response = await registerEvent(requestData)
       
       if (response.data.resultCode === 200) {
-        alert("이벤트가 등록되었습니다!")
+        showToastMessage("이벤트가 등록되었습니다!", "success")
         
         // 폼 초기화 (쿠폰 종류도 전체로 초기화)
         setFormData({
@@ -231,13 +269,13 @@ export default function EventRegistrationPage() {
           if (response.data.resultMessage.includes("Duplicate entry") || 
               response.data.resultMessage.includes("중복") ||
               response.data.resultMessage.includes("이미 존재")) {
-            errorMessage = "이미 존재하는 이벤트 이름입니다. 다른 이름을 사용해주세요."
+            errorMessage = "이미 존재하는 이벤트 이름입니다."
           } else {
             errorMessage = response.data.resultMessage
           }
         }
         
-        alert(errorMessage)
+        showToastMessage(errorMessage, "error")
       }
     } catch (error) {
       console.error('이벤트 등록 오류:', error)
@@ -252,7 +290,7 @@ export default function EventRegistrationPage() {
           if (responseData.resultMessage.includes("Duplicate entry") || 
               responseData.resultMessage.includes("중복") ||
               responseData.resultMessage.includes("이미 존재")) {
-            errorMessage = "이미 존재하는 이벤트 이름입니다. 다른 이름을 사용해주세요."
+            errorMessage = "이미 존재하는 이벤트 이름입니다."
           } else {
             errorMessage = responseData.resultMessage
           }
@@ -262,7 +300,7 @@ export default function EventRegistrationPage() {
         errorMessage = "네트워크 연결을 확인해주세요."
       }
       
-      alert(errorMessage)
+      showToastMessage(errorMessage, "error")
     } finally {
       setLoading(false)
     }
@@ -291,17 +329,35 @@ export default function EventRegistrationPage() {
       <div className="event-reg-form-section">
         <div className="event-reg-form-group">
           <label>쿠폰 종류</label>
-          <select
-            value={formData.couponType}
-            onChange={(e) => handleInputChange("couponType", e.target.value)}
-            className="event-reg-form-select"
-          >
-            <option value="전체">전체</option>
-            <option value="1000">1,000원</option>
-            <option value="5000">5,000원</option>
-            <option value="10000">10,000원</option>
-            <option value="50000">50,000원</option>
-          </select>
+          <FormControl fullWidth className="event-reg-form-select">
+            <Select
+              value={formData.couponType}
+              onChange={(e) => handleInputChange("couponType", e.target.value)}
+              displayEmpty
+              sx={{
+                '& .MuiSelect-select': {
+                  textAlign: 'left',
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  border: '2px solid #e5e7eb',
+                  '&:hover': {
+                    borderColor: '#170f58',
+                  },
+                  '&.Mui-focused': {
+                    borderColor: '#170f58',
+                    boxShadow: '0 0 0 4px rgba(23, 15, 88, 0.1)',
+                  },
+                },
+              }}
+            >
+              <MenuItem value="전체" sx={{ textAlign: 'center' }}>전체</MenuItem>
+              <MenuItem value="1000" sx={{ textAlign: 'center' }}>1,000원</MenuItem>
+              <MenuItem value="5000" sx={{ textAlign: 'center' }}>5,000원</MenuItem>
+              <MenuItem value="10000" sx={{ textAlign: 'center' }}>10,000원</MenuItem>
+              <MenuItem value="50000" sx={{ textAlign: 'center' }}>50,000원</MenuItem>
+            </Select>
+          </FormControl>
         </div>
 
         <div className="event-reg-form-group">
@@ -313,6 +369,10 @@ export default function EventRegistrationPage() {
             className="event-reg-form-input"
             placeholder="15글자 이내"
             maxLength={15}
+            inputMode="text"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
           />
         </div>
 
@@ -324,17 +384,26 @@ export default function EventRegistrationPage() {
             onChange={(e) => handleInputChange("targetCondition", e.target.value)}
             className="event-reg-form-input"
             placeholder="적용할 조건을 입력하세요"
+            inputMode="text"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
           />
         </div>
 
         <div className="event-reg-form-group">
-          <label>다운로드 회수</label>
+          <label>1인당 다운로드 제한</label>
           <input
-            type="text"
+            type="number"
             value={formData.downloadCode}
             onChange={(e) => handleInputChange("downloadCode", e.target.value)}
             className="event-reg-form-input"
-            placeholder="다운로드 회수를 입력하세요"
+            placeholder="사용자 1명당 다운로드 가능한 횟수를 입력하세요"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            min="0"
+            max="999"
+            autoComplete="off"
           />
         </div>
       </div>
@@ -532,6 +601,15 @@ export default function EventRegistrationPage() {
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Toast Component */}
+      {showToast && (
+        <Toast
+          type={toastType}
+          message={toastMessage}
+          onClose={closeToast}
+        />
       )}
     </div>
   )

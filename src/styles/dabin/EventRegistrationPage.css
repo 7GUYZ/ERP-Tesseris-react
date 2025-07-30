@@ -61,6 +61,8 @@
 
 .event-reg-form-group {
   margin-bottom: 2rem;
+  position: relative;
+  width: 100%;
 }
 
 .event-reg-form-group:last-child {
@@ -75,8 +77,7 @@
   margin-bottom: 0.75rem;
 }
 
-.event-reg-form-input,
-.event-reg-form-select {
+.event-reg-form-input {
   width: 100%;
   padding: 1rem;
   border: 2px solid #e5e7eb;
@@ -84,13 +85,47 @@
   font-size: 0.875rem;
   background-color: white;
   transition: all 0.2s ease;
+  position: relative;
 }
 
-.event-reg-form-input:focus,
-.event-reg-form-select:focus {
+/* Material-UI Select 스타일링 */
+.event-reg-form-select .MuiFormControl-root {
+  width: 100%;
+}
+
+.event-reg-form-select .MuiOutlinedInput-root {
+  border-radius: 12px;
+  font-size: 0.875rem;
+  background-color: white;
+}
+
+.event-reg-form-select .MuiSelect-select {
+  text-align: left;
+  padding: 1rem;
+}
+
+.event-reg-form-input:focus {
   outline: none;
   border-color: #170f58;
   box-shadow: 0 0 0 4px rgba(23, 15, 88, 0.1);
+}
+
+/* 드롭다운 옵션 스타일링 */
+.event-reg-form-select option {
+  text-align: center;
+  padding: 8px;
+}
+
+/* Material-UI Select 드롭다운 메뉴 스타일링 */
+.MuiMenu-paper {
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.MuiMenuItem-root {
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 0.875rem;
 }
 
 .event-reg-form-input::placeholder {
@@ -622,4 +657,309 @@
   .event-reg-coupon-content {
     max-width: calc(100% - 140px);
   }
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+  .event-reg-coupon-event-register {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .event-reg-header {
+    padding: 12px 16px;
+  }
+
+  .event-reg-header-title {
+    font-size: 16px;
+  }
+
+  .event-reg-back-btn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 18px;
+  }
+
+  .event-reg-form-section {
+    padding: 1rem;
+  }
+
+  .event-reg-form-group {
+    margin-bottom: 1rem;
+  }
+
+  .event-reg-form-group label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .event-reg-form-input {
+    min-height: 44px;
+    font-size: 16px; /* iOS 줌 방지 */
+    padding: 12px 16px;
+    position: relative;
+  }
+
+  .event-reg-form-select .MuiSelect-select {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 12px 16px;
+    text-align: left;
+  }
+
+  .event-reg-action-buttons {
+    padding: 0 1rem 1rem;
+    gap: 12px;
+  }
+
+  .event-reg-select-all-btn,
+  .event-reg-register-btn {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 12px 20px;
+  }
+
+  .event-reg-coupons-container {
+    padding: 0 1rem 1rem;
+  }
+
+  .event-reg-coupon-card {
+    margin-bottom: 1rem;
+  }
+
+  .event-reg-coupon-background {
+    height: 160px;
+  }
+
+  .event-reg-badge-circle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .event-reg-badge-amount {
+    font-size: 1.2rem;
+  }
+
+  .event-reg-coupon-info-box {
+    min-width: 140px;
+    padding: 0.8rem 1rem;
+  }
+
+  .event-reg-coupon-name {
+    font-size: 14px;
+  }
+
+  .event-reg-coupon-status {
+    font-size: 12px;
+  }
+
+  .event-reg-coupon-period {
+    font-size: 12px;
+  }
+
+  .event-reg-coupon-content {
+    max-width: calc(100% - 100px);
+  }
+
+  .event-reg-modal-content {
+    width: 90%;
+    max-width: 400px;
+    margin: 20px auto;
+  }
+}
+
+/* 작은 모바일 최적화 */
+@media (max-width: 360px) {
+  .event-reg-form-section {
+    padding: 0.8rem;
+  }
+
+  .event-reg-form-input {
+    font-size: 16px;
+    padding: 10px 12px;
+    position: relative;
+  }
+
+  .event-reg-form-select .MuiSelect-select {
+    font-size: 16px;
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  .event-reg-action-buttons {
+    padding: 0 0.8rem 0.8rem;
+  }
+
+  .event-reg-select-all-btn,
+  .event-reg-register-btn {
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+
+  .event-reg-coupons-container {
+    padding: 0 0.8rem 0.8rem;
+  }
+
+  .event-reg-coupon-background {
+    height: 140px;
+  }
+
+  .event-reg-badge-circle {
+    width: 70px;
+    height: 70px;
+  }
+
+  .event-reg-badge-amount {
+    font-size: 1rem;
+  }
+
+  .event-reg-coupon-info-box {
+    min-width: 120px;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .event-reg-coupon-name {
+    font-size: 13px;
+  }
+
+  .event-reg-coupon-status,
+  .event-reg-coupon-period {
+    font-size: 11px;
+  }
+
+  .event-reg-coupon-content {
+    max-width: calc(100% - 80px);
+  }
+
+  .event-reg-modal-content {
+    width: 95%;
+    margin: 10px auto;
+  }
+}
+
+/* 매우 작은 모바일 */
+@media (max-width: 320px) {
+  .event-reg-form-section {
+    padding: 0.6rem;
+  }
+
+  .event-reg-form-input {
+    padding: 8px 10px;
+    font-size: 16px;
+    position: relative;
+  }
+
+  .event-reg-form-select .MuiSelect-select {
+    padding: 8px 10px;
+    font-size: 16px;
+    text-align: left;
+  }
+
+  .event-reg-action-buttons {
+    padding: 0 0.6rem 0.6rem;
+  }
+
+  .event-reg-select-all-btn,
+  .event-reg-register-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .event-reg-coupons-container {
+    padding: 0 0.6rem 0.6rem;
+  }
+
+  .event-reg-coupon-background {
+    height: 120px;
+  }
+
+  .event-reg-badge-circle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .event-reg-badge-amount {
+    font-size: 0.9rem;
+  }
+
+  .event-reg-coupon-info-box {
+    min-width: 100px;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .event-reg-coupon-name {
+    font-size: 12px;
+  }
+
+  .event-reg-coupon-status,
+  .event-reg-coupon-period {
+    font-size: 10px;
+  }
+
+  .event-reg-coupon-content {
+    max-width: calc(100% - 70px);
+  }
+}
+
+/* 터치 디바이스 최적화 */
+@media (hover: none) and (pointer: coarse) {
+  .event-reg-back-btn:hover,
+  .event-reg-select-all-btn:hover,
+  .event-reg-register-btn:hover,
+  .event-reg-coupon-card:hover,
+  .event-reg-coupon-detail-btn:hover,
+  .event-reg-modal-close:hover {
+    background-color: transparent;
+    transform: none;
+  }
+
+  .event-reg-back-btn:active,
+  .event-reg-select-all-btn:active,
+  .event-reg-register-btn:active,
+  .event-reg-coupon-card:active,
+  .event-reg-coupon-detail-btn:active,
+  .event-reg-modal-close:active {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(0.98);
+  }
+
+  .event-reg-form-input:focus,
+  .event-reg-form-select:focus {
+    outline: 2px solid #170F58;
+    outline-offset: 2px;
+  }
+}
+
+/* EventRegistrationPage.css에서 사용하는 토스트 스타일 통일 */
+.event-reg-coupon-event-register .user-toast {
+  background-color: #170F58 !important;
+  color: #ffffff !important;
+  border: 1px solid #170F58 !important;
+}
+
+.event-reg-coupon-event-register .user-toast-success {
+  background-color: #170F58 !important;
+  color: #ffffff !important;
+  border: 1px solid #170F58 !important;
+}
+
+.event-reg-coupon-event-register .user-toast-error {
+  background-color: #170F58 !important;
+  color: #ffffff !important;
+  border: 1px solid #170F58 !important;
+}
+
+.event-reg-coupon-event-register .user-toast-info {
+  background-color: #170F58 !important;
+  color: #ffffff !important;
+  border: 1px solid #170F58 !important;
+}
+
+.event-reg-coupon-event-register .user-toast-close {
+  color: #ffffff !important;
+}
+
+.event-reg-coupon-event-register .user-toast-close:hover {
+  color: #ffffff !important;
+  opacity: 0.8 !important;
 } 

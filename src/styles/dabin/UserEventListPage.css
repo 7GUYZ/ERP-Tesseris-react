@@ -1,177 +1,238 @@
 .user-event-list-page {
-    background-color: #f5f5f5;
-    min-height: 100vh;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
-/* Header Styles */
-.user-event-list-header-h {
-    background-color: #fff;
-    border-bottom: 1px solid #e0e0e0;
+/* Header */
+.user-event-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.user-event-list-header-wrap {
-    display: flex;
-    align-items: center;
-    padding: 15px 20px;
-    position: relative;
+.user-event-list-back-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #333;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.user-event-list-back-btn:hover {
+  background-color: #f0f0f0;
 }
 
 .user-event-list-header-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  flex: 1;
+  text-align: center;
 }
 
-/* Tab Menu Styles */
-.user-event-list-ui-secondary-pointing-menu {
-    background-color: #fff;
-    border-bottom: 1px solid #e0e0e0;
+.user-event-list-header-spacer {
+  width: 40px;
 }
 
-.user-event-list-ui-secondary-pointing-menu .user-event-list-item {
-    color: #666;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
+/* Tabs */
+.user-event-list-tabs {
+  display: flex;
+  background: white;
+  border-radius: 0px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.user-event-list-ui-secondary-pointing-menu .user-event-list-item.user-event-list-active {
-    color: #1749C2;
-    border-bottom-color: #1749C2;
-    font-weight: bold;
+.user-event-list-tab {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  position: relative;
 }
 
-.user-event-list-ui-secondary-pointing-menu .user-event-list-item:hover {
-    background-color: #f8f9fa;
+.user-event-list-tab.active {
+  background: #fff !important;
+  color: #170F58 !important;
+  border-bottom: 2px solid #170F58 !important;
+  font-weight: 700;
 }
 
-/* Event Card Styles */
+.user-event-list-tab:hover {
+  background-color: #f5f5f5;
+}
+
+/* Event List */
+.user-event-list-event-list {
+  padding: 16px;
+}
+
 .user-event-list-event-card {
-    margin: 10px 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: white;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
 }
 
 .user-event-list-event-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
-.user-event-list-event-card .user-event-list-content {
-    padding: 20px;
+.user-event-list-event-content {
+  display: flex;
+  padding: 20px;
+  align-items: center;
 }
 
-.user-event-list-event-card p {
-    margin: 5px 0;
-    line-height: 1.4;
+.user-event-list-event-info {
+  flex: 1;
+  min-width: 0;
 }
 
-/* Loading Styles */
+.user-event-list-event-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #170F58;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.user-event-list-event-condition {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.user-event-list-event-remaining {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.user-event-list-event-downloads {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.user-event-list-event-location {
+  text-align: center;
+  min-width: 120px;
+  margin-left: 16px;
+}
+
+.user-event-list-location-text {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 4px 0;
+}
+
+.user-event-list-store-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+/* Loading */
 .user-event-list-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 50px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-size: 16px;
 }
 
-.user-event-list-loading-circle {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #1749C2;
-    border-radius: 50%;
-    animation: user-event-list-spin 1s linear infinite;
-    margin-bottom: 15px;
-}
-
-.user-event-list-loading-text {
-    color: #666;
-    font-size: 14px;
-}
-
-@keyframes user-event-list-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* No Events Styles */
+/* No Events */
 .user-event-list-no-events {
-    text-align: center;
-    padding: 50px 20px;
-    color: #666;
-}
-
-.user-event-list-no-events p {
-    font-size: 16px;
-    margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-size: 16px;
+  text-align: center;
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-    .user-event-list-event-card {
-        margin: 10px 15px;
-    }
-    
-    .user-event-list-event-card .user-event-list-content {
-        padding: 15px;
-    }
-    
-    .user-event-list-header-wrap {
-        padding: 12px 15px;
-    }
-    
-    .user-event-list-header-title {
-        font-size: 16px;
-    }
-}
-
-/* Additional Styles for better mobile experience */
 @media (max-width: 480px) {
-    .user-event-list-event-card .user-event-list-content {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .user-event-list-event-card .user-event-list-content > div {
-        width: 100% !important;
-        margin-bottom: 10px;
-    }
-} 
-
-.user-event-list-tab-menu {
-  display: flex;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.user-event-list-tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 16px 0;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  color: #666;
-  font-size: 1rem;
-  transition: all 0.3s;
-}
-
-.user-event-list-tab-item-active {
-  color: #1749C2;
-  border-bottom: 2px solid #1749C2;
-  font-weight: bold;
-  background: #f8f9fa;
-}
-
-.user-event-list-tab-item:hover {
-  background: #f8f9fa;
-}
-
-.user-event-list-event-card-content {
-  display: flex;
-  justify-content: center;
-  width: 100%;
+  .user-event-list-header {
+    padding: 12px 16px;
+  }
+  
+  .user-event-list-header-title {
+    font-size: 16px;
+  }
+  
+  .user-event-list-tabs {
+    padding: 0 16px;
+  }
+  
+  .user-event-list-tab {
+    font-size: 15px;
+    padding: 14px 0;
+  }
+  
+  .user-event-list-event-list {
+    padding: 12px;
+  }
+  
+  .user-event-list-event-content {
+    padding: 16px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .user-event-list-event-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .user-event-list-event-location {
+    margin-left: 0;
+    margin-top: 0;
+    text-align: right;
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+  
+  .user-event-list-event-title {
+    font-size: 16px;
+  }
+  
+  .user-event-list-location-text {
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+  
+  .user-event-list-store-name {
+    font-size: 13px;
+  }
 } 
