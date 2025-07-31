@@ -91,14 +91,14 @@ export default function Popup({ onClose }) {
         return currentImage?.adPhoto || "https://www.mcdonalds.co.kr/upload/bbs/promotion/1753925277701.jpg";
     };
 
-    // 이미지 클릭 핸들러
+        // 이미지 클릭 핸들러
     const handleImageClick = () => {
         if (popupImages.length === 0) {
             return; // 기본 이미지인 경우 클릭 무시
         }
-
+        
         const currentImage = popupImages[currentPage - 1];
-        if (currentImage?.adUrl) {
+        if (currentImage?.adUrl && currentImage.adUrl.trim() !== '') {
             console.log('광고 URL로 이동:', currentImage.adUrl);
             window.open(currentImage.adUrl, '_blank'); // 새 탭에서 열기
         }
@@ -109,7 +109,7 @@ export default function Popup({ onClose }) {
             {/* Header */}
             <div className="popup-header">
                 <div className="popup-header-left">
-                    <span className="popup-header-title">Ads</span>
+                    <span className="popup-header-title">중요공지</span>
                 </div>
                 <div className="popup-header-right">
                     <button className="popup-close-btn" onClick={onClose}>
@@ -137,7 +137,12 @@ export default function Popup({ onClose }) {
                             alt="프로모션 이미지"
                             className="popup-image"
                             onClick={handleImageClick}
-                            style={{ cursor: 'pointer' }}
+                            style={{ 
+                                cursor: popupImages.length > 0 && 
+                                       popupImages[currentPage - 1]?.adUrl && 
+                                       popupImages[currentPage - 1].adUrl.trim() !== '' 
+                                       ? 'pointer' : 'default' 
+                            }}
                         />
                     </div>
                 )}
