@@ -47,6 +47,9 @@ const StoreList = () => {
         response.data.data.forEach((store, index) => {
           console.log(`가맹점 ${index + 1}:`, {
             storeName: store.storeName,
+            storeImage: store.storeImage,
+            storeImageType: typeof store.storeImage,
+            storeImageLength: store.storeImage?.length,
             storeBusinessDate: store.storeBusinessDate,
             storeBusinessHour: store.storeBusinessHour,
             storeRestHour: store.storeRestHour,
@@ -210,12 +213,23 @@ const StoreList = () => {
                 {/* 가맹점 이미지 */}
                 <div className="store-image">
                   {store.storeImage ? (
-                    <img src={store.storeImage} alt={store.storeName} />
-                  ) : (
-                    <div className="store-image-placeholder">
-                      <span>1</span>
-                    </div>
-                  )}
+                    <img 
+                      src={store.storeImage} 
+                      alt={store.storeName}
+                      onLoad={() => console.log('✅ 이미지 로드 성공:', store.storeImage)}
+                      onError={(e) => {
+                        console.error('❌ 이미지 로드 실패:', store.storeImage);
+                        e.target.style.display = 'none';
+                        const placeholder = e.target.nextSibling;
+                        if (placeholder) {
+                          placeholder.style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div className="store-image-placeholder" style={{ display: store.storeImage ? 'none' : 'flex' }}>
+                    <span>🏪</span>
+                  </div>
                 </div>
 
                 {/* 가맹점 정보 */}
