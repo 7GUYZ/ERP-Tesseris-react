@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, Phone, MapPin, X } from 'lucide-react';
 import { getUserEventDetail, downloadUserCoupon, getMyStoreImages, getPresignedUrl } from '../../api/auth/DabinAuth';
+import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/EventDetailPage.css';
+import '../../styles/dabin/dabinStoreDetail.css';
 
 const UserEventDetailPage = () => {
     const { eventMasterIndex } = useParams();
@@ -11,6 +13,21 @@ const UserEventDetailPage = () => {
     const [storeImages, setStoreImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [downloading, setDownloading] = useState(false);
+
+    // Toast states
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('info');
+    const [showToast, setShowToast] = useState(false);
+
+    const showToastMessage = (message, type = 'info') => {
+        setToastMessage(message);
+        setToastType(type);
+        setShowToast(true);
+    };
+
+    const closeToast = () => {
+        setShowToast(false);
+    };
 
     useEffect(() => {
         if (eventMasterIndex) {
@@ -66,45 +83,60 @@ const UserEventDetailPage = () => {
                     setStoreImages([]);
                 }
             } else {
-                alert('이벤트 정보를 불러오는데 실패했습니다.');
-                navigate('/user-event-list');
+                showToastMessage('이벤트 정보를 불러오는데 실패했습니다.', 'error');
+                setTimeout(() => {
+                    navigate('/user-event-list');
+                }, 1500);
             }
         } catch (error) {
             console.error('이벤트 상세 조회 오류:', error);
-            alert('이벤트 정보를 불러오는데 실패했습니다.');
-            navigate('/user-event-list');
+            showToastMessage('이벤트 정보를 불러오는데 실패했습니다.', 'error');
+            setTimeout(() => {
+                navigate('/user-event-list');
+            }, 1500);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleCouponDownload = async (couponIndex) => {
-        if (!window.confirm('쿠폰을 받으시겠습니까?')) {
-            return;
-        }
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
+    const [selectedCouponForDownload, setSelectedCouponForDownload] = useState(null);
 
-        console.log('쿠폰 다운로드 버튼 클릭 - couponIndex:', couponIndex, 'eventMasterIndex:', eventMasterIndex);
+    const handleCouponDownload = async (couponIndex) => {
+        setSelectedCouponForDownload(couponIndex);
+        setShowDownloadModal(true);
+    };
+
+    const confirmDownload = async () => {
+        if (!selectedCouponForDownload) return;
+
+        console.log('쿠폰 다운로드 버튼 클릭 - couponIndex:', selectedCouponForDownload, 'eventMasterIndex:', eventMasterIndex);
         
         setDownloading(true);
         try {
-            const response = await downloadUserCoupon(parseInt(eventMasterIndex), couponIndex);
+            const response = await downloadUserCoupon(parseInt(eventMasterIndex), selectedCouponForDownload);
             console.log('쿠폰 다운로드 응답:', response);
 
             if (response.data.resultCode === 200) {
                 console.log('쿠폰 다운로드 성공:', response.data.resultMessage);
-                alert(response.data.resultMessage);
+                showToastMessage(response.data.resultMessage, 'success');
                 // PHP와 동일하게 성공 후 이벤트 목록 페이지로 이동
-                navigate('/user-event-list');
+                setTimeout(() => {
+                    navigate('/user-event-list');
+                }, 1500);
             } else {
                 console.log('쿠폰 다운로드 실패:', response.data.resultMessage);
-                alert(response.data.resultMessage);
+                showToastMessage(response.data.resultMessage, 'error');
             }
         } catch (error) {
             console.error('쿠폰 다운로드 오류:', error);
             console.error('오류 상세:', error.response?.data);
-            alert('쿠폰 다운로드 중 오류가 발생했습니다.');
+            showToastMessage('쿠폰 다운로드 중 오류가 발생했습니다.', 'error');
         } finally {
             setDownloading(false);
+            // 성공/실패와 관계없이 모달 닫기
+            setShowDownloadModal(false);
+            setSelectedCouponForDownload(null);
         }
     };
 
@@ -112,9 +144,33 @@ const UserEventDetailPage = () => {
         navigate('/user-event-list');
     };
 
+    const handlePhoneClick = (phone) => {
+        if (phone && phone.trim() !== '') {
+            // 전화번호 형식 정리 (하이픈 제거)
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            if (cleanPhone.length >= 10) {
+                window.location.href = `tel:${cleanPhone}`;
+            } else {
+                showToastMessage('유효하지 않은 전화번호입니다.', 'error');
+            }
+        } else {
+            showToastMessage('전화번호가 없습니다.', 'error');
+        }
+    };
 
+    // 지도 클릭 처리
+    const handleMapClick = () => {
+        if (eventDetail?.storeAddress) {
+            // 카카오맵으로 주소 검색
+            const address = encodeURIComponent(eventDetail.storeAddress);
+            window.open(`https://map.kakao.com/?q=${address}`, '_blank');
+        } else {
+            showToastMessage('주소 정보가 없습니다.', 'error');
+        }
+    };
 
     const getCouponType = (price) => {
+        if (!price) return "main";  // price가 없으면 기본값 반환
         if (price >= 50000) return "price-50000"      // ₩50,000 - 신사임당 - 노란색
         if (price >= 10000) return "price-10000"      // ₩10,000 - 세종대왕 - 초록색
         if (price >= 5000) return "price-5000"        // ₩5,000 - 율곡 이이 - 주황색
@@ -139,133 +195,159 @@ const UserEventDetailPage = () => {
     }
 
     return (
-        <div className="event-detail-page">
-            {/* Header */}
-            <div className="event-detail-header">
-                <button className="event-detail-back-btn" onClick={() => window.history.back()}>
-                    <ArrowLeft className="w-6 h-6" />
+        <div className="dabin-store-detail">
+            {/* 헤더 */}
+            <div className="dabin-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <button className="dabin-back-button" onClick={() => window.history.back()}>
+                    <ArrowLeft size={24} />
                 </button>
-                <h1 className="event-detail-header-title">쿠폰 이벤트</h1>
-                <div className="event-detail-header-spacer"></div>
+                <div style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: 20, color: '#170F58' }}>
+                    쿠폰 이벤트
+                </div>
             </div>
 
-            {/* Store Information */}
-            <div className="event-detail-store-section">
-                <div className="event-detail-store-card">
-                    <div className="event-detail-store-image">
-                        {storeImages.length > 0 ? (
-                            <img 
-                                src={storeImages[0].presignedUrl || storeImages[0].storeImage} 
-                                alt={eventDetail.storeName}
+            {/* 이미지 슬라이드 */}
+            <div className="dabin-image-slider">
+                <div className="dabin-slider-container">
+                    {storeImages.length > 0 ? (
+                        <>
+                            <img
+                                src={storeImages[0].presignedUrl || storeImages[0].storeImage}
+                                alt={`${eventDetail.storeName} 이미지`}
+                                className="dabin-slider-image"
                                 onError={(e) => {
                                     e.target.style.display = 'none';
-                                    const noImageDiv = e.target.nextSibling;
-                                    if (noImageDiv) {
-                                        noImageDiv.style.display = 'flex';
+                                    const noImageContainer = e.target.nextSibling;
+                                    if (noImageContainer) {
+                                        noImageContainer.classList.add('show');
                                     }
                                 }}
                             />
-                        ) : null}
-                        <div className="event-detail-no-image" style={{ display: storeImages.length > 0 ? 'none' : 'flex' }}>
-                            <span>{eventDetail.storeName ? eventDetail.storeName.charAt(0) : 'S'}</span>
-                        </div>
-                    </div>
-                    <div className="event-detail-store-info">
-                        <div className="event-detail-store-header">
-                            <h2 className="event-detail-store-name">{eventDetail.storeName}</h2>
-                        </div>
-                        <p className="event-detail-store-address">{eventDetail.storeAddress}</p>
-                        <div className="event-detail-store-actions">
-                            <span className="event-detail-store-category">{eventDetail.storeCategoryName}</span>
-                            <div className="event-detail-action-buttons">
-                                <button 
-                                    className="event-detail-action-btn event-detail-phone-btn"
-                                    onClick={() => window.location.href = `tel:${eventDetail.storePhone}`}
-                                >
-                                    📞
-                                </button>
-
+                            <div className="dabin-store-detail-no-image-container" style={{ display: 'none' }}>
+                                <span>등록된 이미지가 없습니다</span>
                             </div>
+                        </>
+                    ) : (
+                        <div className="dabin-store-detail-no-image-container" style={{ display: 'flex' }}>
+                            <span>등록된 이미지가 없습니다</span>
                         </div>
-                    </div>
+                    )}
                 </div>
+            </div>
+
+            {/* 가게 정보 */}
+            <div className="dabin-store-info">
+                <div className="dabin-store-header">
+                    <h2 className="dabin-store-name">{eventDetail.storeName}</h2>
+                    <div className="position-badge">{eventDetail.storeCategoryName}</div>
+                </div>
+            </div>
+
+            {/* 액션 버튼 */}
+            <div className="dabin-action-buttons">
+                <button className="dabin-action-button phone" onClick={() => handlePhoneClick(eventDetail.storePhone)}>
+                    <Phone size={20} />
+                    <span>전화하기</span>
+                </button>
+                <button className="dabin-action-button map" onClick={handleMapClick}>
+                    <MapPin size={20} />
+                    <span>지도보기</span>
+                </button>
             </div>
 
             {/* Coupon Section */}
             <div className="event-reg-coupons-container">
-                {eventDetail.coupons && eventDetail.coupons.map((coupon, index) => (
-                    <div key={coupon.couponIndex} className="event-reg-coupon-card selected">
-                        <div className={`event-reg-coupon-background ${getCouponType(coupon.couponPrice)}`}>
-                            {/* Checkbox */}
-                            <div className="event-reg-coupon-checkbox">
-                                <input
-                                    type="checkbox"
-                                    id={`user-event-detail-coupon-checkbox-${coupon.couponIndex}`}
-                                    checked={true}
-                                    readOnly
-                                    className="event-reg-checkbox-input"
-                                />
-                                <label htmlFor={`user-event-detail-coupon-checkbox-${coupon.couponIndex}`} className="event-reg-checkbox-label"></label>
+                {eventDetail.coupons && eventDetail.coupons.length > 0 ? (
+                    eventDetail.coupons.map((coupon, index) => (
+                        <div key={coupon.couponIndex} className="event-detail-coupon-card">
+                            <div className="event-reg-coupon-header">
+                                <div className="event-reg-coupon-price">
+                                    {(coupon.couponPrice || 0).toLocaleString()}원
+                                </div>
                             </div>
-
-                            <div className="event-reg-coupon-brand">
-                                <div className="event-reg-brand-logo">Tesseris</div>
-                                <div className="event-reg-brand-decoration"></div>
-                            </div>
-
-                            <div className="event-reg-coupon-content">
-                                <div className="event-reg-coupon-info-box">
-                                    <div className="event-reg-coupon-name">{coupon.couponName}</div>
-                                    <div className="event-reg-coupon-status">{coupon.couponIssuanceStatus}</div>
-                                    <div className="event-reg-coupon-period">
-                                        {coupon.couponLimitTime 
-                                            ? new Date(coupon.couponLimitTime).toLocaleDateString() 
-                                            : (coupon.couponLimit ? `${coupon.couponLimit}일` : '')}
+                            
+                            <div className="event-reg-coupon-body">
+                                <h3 className="event-reg-coupon-name">{coupon.couponName}</h3>
+                                <div className="event-reg-coupon-store">
+                                    발급 가맹점: {coupon.storeName || '가맹점 정보 없음'}
+                                </div>
+                                
+                                <div className="event-reg-coupon-details">
+                                    <div className="event-reg-coupon-detail-item">
+                                        <span className="event-reg-detail-label">사용 기간:</span>
+                                        <span className="event-reg-detail-value">
+                                            {coupon.couponLimit ? `${coupon.couponLimit}일` : '기간 정보 없음'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="event-reg-coupon-badge">
-                                <div className="event-reg-badge-circle">
-                                    <div className="event-reg-badge-text">TESSERIS KOREA INC.</div>
-                                    <div className="event-reg-badge-dots">••••••••••••</div>
-                                    <div className="event-reg-badge-amount">{coupon.couponPrice.toLocaleString()}</div>
-                                    <div className="event-reg-badge-dots">••••••••••••</div>
-                                </div>
-                            </div>
-
-                            <div className="event-reg-coupon-decoration">
-                                <div className="event-reg-decoration-lines"></div>
-                                <div className="event-reg-decoration-elements">
-                                    <div className="event-reg-decoration-leaf"></div>
-                                </div>
-                            </div>
-
-                            <div className="event-reg-selection-overlay">
-                                <div className="event-reg-selection-check">
-                                    <Check className="w-8 h-8" />
-                                </div>
+                            {/* 쿠폰 받기 기능 유지 */}
+                            <div className="event-reg-coupon-footer">
+                                {coupon.couponIssuanceStatus === '보유중' ? (
+                                    <button
+                                        className="user-event-detail-download-button"
+                                        onClick={() => handleCouponDownload(coupon.couponIndex)}
+                                        disabled={downloading}
+                                    >
+                                        {downloading ? '다운로드 중...' : '쿠폰 받기'}
+                                    </button>
+                                ) : (
+                                    <button className="event-reg-coupon-detail-btn">
+                                        쿠폰 상세보기
+                                    </button>
+                                )}
                             </div>
                         </div>
-
-                        <div className="event-reg-coupon-footer">
-                            {coupon.couponIssuanceStatus === '보유중' ? (
-                                <button
-                                    className="user-event-detail-download-button"
-                                    onClick={() => handleCouponDownload(coupon.couponIndex)}
-                                    disabled={downloading}
-                                >
-                                    {downloading ? '다운로드 중...' : '쿠폰 받기'}
-                                </button>
-                            ) : (
-                                <button className="event-reg-coupon-detail-btn">
-                                    쿠폰 상세보기
-                                </button>
-                            )}
+                    ))
+                ) : (
+                    <div className="event-detail-error">쿠폰 정보가 없습니다.</div>
+                )}
+            </div>
+            
+            {/* Download Confirmation Modal */}
+            {showDownloadModal && (
+                <div className="user-event-detail-modal-overlay" onClick={() => setShowDownloadModal(false)}>
+                    <div className="user-event-detail-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="user-event-detail-modal-header">
+                            <h2>쿠폰 받기</h2>
+                            <button 
+                                className="user-event-detail-modal-close" 
+                                onClick={() => setShowDownloadModal(false)}
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <div className="user-event-detail-modal-body">
+                            <p>쿠폰을 받으시겠습니까?</p>
+                        </div>
+                        <div className="user-event-detail-modal-actions">
+                            <button 
+                                className="user-event-detail-modal-cancel"
+                                onClick={() => setShowDownloadModal(false)}
+                            >
+                                취소
+                            </button>
+                            <button 
+                                className="user-event-detail-modal-confirm"
+                                onClick={confirmDownload}
+                                disabled={downloading}
+                            >
+                                {downloading ? '다운로드 중...' : '받기'}
+                            </button>
                         </div>
                     </div>
-                ))}
-            </div>
+                </div>
+            )}
+            
+            {/* Toast Component */}
+            {showToast && (
+                <Toast
+                    type={toastType}
+                    message={toastMessage}
+                    onClose={closeToast}
+                />
+            )}
         </div>
     );
 };
