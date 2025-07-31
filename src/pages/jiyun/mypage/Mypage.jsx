@@ -144,13 +144,15 @@ export default function MobileMyPage() {
                   {maskPhoneNumber(userInfo?.phone) || "로딩 중..."}
                 </span>
               </div>
+              <Link to="/user_update" className="mypage-infoButton">
               <button className="mypage-infoButton">
                 <div className="mypage-infoLabel">
                   <User className="menuIcon" />
-                  <span>계좌정보 변경</span>
+                  <span>계정정보 변경</span>
                 </div>
                 <ChevronRight className="menuIcon" />
               </button>
+              </Link>
             </div>
           </div>
         </div>

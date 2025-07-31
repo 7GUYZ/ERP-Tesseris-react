@@ -428,6 +428,7 @@ const PaymentPage = () => {
             disabled={loading}
           >
             {loading ? '처리 중...' : '확인'}
+            
           </button>
         </form>
         

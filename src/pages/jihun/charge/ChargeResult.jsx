@@ -20,8 +20,15 @@ const ChargeResult = () => {
       try {
         const response = await confirmPayment(paymentKey, orderId, amount, params.get('source'));
         if (response.data.success) {
-          showToast('success', `✅ 결제 성공!\n주문번호: ${orderId}\n결제금액: ${amount}원`);
-          navigate('/main'); // 홈으로 이동
+          switch (params.get('source')) {
+            case 'onlinepayment':
+              navigate('/payment');
+              break;
+            case 'user':
+              showToast('success', `✅ 결제 성공!\n주문번호: ${orderId}\n결제금액: ${amount}원`);
+              navigate('/main');
+              break;
+          }
         }
       } catch (error) {
         showToast('error', `❌ 결제 실패!\n사유: ${failMessage || '결제 중단됨'}`);
