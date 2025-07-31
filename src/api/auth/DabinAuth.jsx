@@ -193,6 +193,27 @@ export const downloadUserCoupon = async (eventMasterIndex, couponIndex) => {
     }
 };
 
+// 이벤트에 해당하는 매장 이미지 조회 (사용자용)
+export const getEventStoreImages = async (eventMasterIndex) => {
+    try {
+        const response = await api.get(`/user/event-list/detail/${eventMasterIndex}`);
+        if (response.data.resultCode === 200) {
+            const eventDetail = response.data.data;
+            // 이벤트 상세 정보에서 매장 이미지 정보 추출
+            if (eventDetail.storeImage) {
+                return [{
+                    storeImage: eventDetail.storeImage,
+                    storeMainImageStatus: 'T' // 대표 이미지로 설정
+                }];
+            }
+        }
+        return [];
+    } catch (error) {
+        console.error('이벤트 매장 이미지 조회 오류:', error);
+        return [];
+    }
+};
+
 // 가맹점 지도 관련 API 함수들
 // 특정 가맹점 정보 조회
 export const getFranchiseInfo = async (storeIndex) => {
