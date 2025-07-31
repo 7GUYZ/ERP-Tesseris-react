@@ -8,6 +8,7 @@ import StoreList from '../pages/taekjun/StoreList.jsx';
 import StoreDetail from '../pages/taekjun/StoreDetail.jsx';
 import PaymentPage from '../pages/taekjun/PaymentPage.jsx';
 import UserLogPage from '../pages/taekjun/UserLogPage.jsx';
+import UserUpdatePage from '../pages/taekjun/UserUpdatePage.jsx';
 
 
 function TaekjunRoute() {
@@ -25,6 +26,7 @@ function TaekjunRoute() {
             <Route path='/store-detail/:storeIndex' element={<StoreDetail/>} />
             <Route path='/payment' element={<PaymentPage/>} />
             <Route path='/user-log' element={<UserLogPage/>} />
+            <Route path='/user_update' element={<UserUpdatePage/>} />
         </Route>
     ];
 }

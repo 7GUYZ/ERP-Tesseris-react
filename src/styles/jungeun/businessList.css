@@ -4,7 +4,7 @@
   --sub-color: #F5F5F9;
 }
 
-.business-partner-page {
+.businesslist-business-partner-page {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
@@ -12,19 +12,19 @@
     background: var(--sub-color);
 }
 
-.page-header {
+.businesslist-page-header {
     text-align: center;
     margin-bottom: 3rem;
 }
 
-.page-title {
+.businesslist-page-title {
     font-size: 2.5rem;
     font-weight: 700;
     color: var(--main-color);
     margin-bottom: 0.5rem;
 }
 
-.page-subtitle {
+.businesslist-page-subtitle {
     font-size: 1.1rem;
     color: var(--main-color);
     opacity: 0.7;
@@ -32,7 +32,7 @@
 }
 
 /* Grade Selector */
-.grade-selector {
+.businesslist-grade-selector {
     background: #fff;
     border-radius: 16px;
     padding: 2rem;
@@ -40,7 +40,7 @@
     margin-bottom: 2rem;
 }
 
-.selector-title {
+.businesslist-selector-title {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--main-color);
@@ -48,13 +48,13 @@
     text-align: center;
 }
 
-.grade-buttons {
+.businesslist-grade-buttons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
 }
 
-.grade-button {
+.businesslist-grade-button {
     padding: 1rem 1.5rem;
     border: 2px solid var(--main-color);
     border-radius: 12px;
@@ -68,15 +68,15 @@
     color: var(--main-color);
 }
 
-.grade-button:hover,
-.grade-button.active {
+.businesslist-grade-button:hover,
+.businesslist-grade-button.active {
     background: var(--main-color);
     color: #fff;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(23, 15, 88, 0.15);
 }
 
-.grade-button::before {
+.businesslist-grade-button::before {
     content: "";
     position: absolute;
     top: 0;
@@ -87,17 +87,17 @@
     transition: left 0.5s;
 }
 
-.grade-button:hover::before {
+.businesslist-grade-button:hover::before {
     left: 100%;
 }
 
-.grade-name {
+.businesslist-grade-name {
     position: relative;
     z-index: 1;
 }
 
 /* Business Partner List */
-.business-partner-list {
+.businesslist-business-partner-list {
     background: #fff;
     border-radius: 16px;
     padding: 2rem;
@@ -105,7 +105,7 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.list-header {
+.businesslist-list-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -114,18 +114,18 @@
     border-bottom: 2px solid #f1f5f9;
 }
 
-.list-title-section {
+.businesslist-list-title-section {
     flex: 1;
 }
 
-.list-title {
+.businesslist-list-title {
     font-size: 1.75rem;
     font-weight: 700;
     margin-bottom: 0.75rem;
     color: var(--main-color);
 }
 
-.total-count {
+.businesslist-total-count {
     background: var(--main-color);
     color: #fff;
     padding: 0.75rem 1.5rem;
@@ -135,32 +135,32 @@
     white-space: nowrap;
 }
 
-.partner-grid {
+.businesslist-partner-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 1.5rem;
 }
 
-.empty-state {
+.businesslist-empty-state {
     text-align: center;
     padding: 4rem 2rem;
     color: var(--main-color);
     opacity: 0.6;
 }
 
-.empty-icon {
+.businesslist-empty-icon {
     font-size: 4rem;
     margin-bottom: 1rem;
     opacity: 0.5;
 }
 
-.empty-state p {
+.businesslist-empty-state p {
     font-size: 1.1rem;
     font-weight: 500;
 }
 
 /* Business Partner Card */
-.business-partner-card {
+.businesslist-business-partner-card {
     background: #fff;
     border: 1px solid var(--sub-color);
     border-radius: 12px;
@@ -170,7 +170,7 @@
     overflow: hidden;
 }
 
-.business-partner-card::before {
+.businesslist-business-partner-card::before {
     content: "";
     position: absolute;
     top: 0;
@@ -182,28 +182,28 @@
     transition: opacity 0.3s ease;
 }
 
-.business-partner-card:hover {
+.businesslist-business-partner-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(23, 15, 88, 0.15);
     border-color: var(--main-color);
 }
 
-.business-partner-card:hover::before {
+.businesslist-business-partner-card:hover::before {
     opacity: 1;
 }
 
-.card-header {
+.businesslist-card-header {
     margin-bottom: 1.25rem;
 }
 
-.company-info {
+.businesslist-company-info {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
 }
 
-.company-name {
+.businesslist-company-name {
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--main-color);
@@ -211,7 +211,7 @@
     flex: 1;
 }
 
-.position-badge {
+.businesslist-position-badge {
     padding: 0.375rem 0.75rem;
     border-radius: 20px;
     font-size: 0.875rem;
@@ -222,11 +222,11 @@
     border: 1px solid var(--point-color);
 }
 
-.card-content {
+.businesslist-card-content {
     margin-bottom: 1.5rem;
 }
 
-.info-row {
+.businesslist-info-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -235,11 +235,11 @@
     gap: 1rem;
 }
 
-.info-row:last-child {
+.businesslist-info-row:last-child {
     border-bottom: none;
 }
 
-.info-label {
+.businesslist-info-label {
     font-weight: 600;
     color: var(--main-color);
     opacity: 0.7;
@@ -248,19 +248,19 @@
     flex-shrink: 0;
 }
 
-.info-value {
+.businesslist-info-value {
     color: var(--main-color);
     font-size: 0.875rem;
     text-align: right;
     word-break: break-all;
 }
 
-.card-actions {
+.businesslist-card-actions {
     display: flex;
     gap: 0.75rem;
 }
 
-.action-button {
+.businesslist-action-button {
     width: 100%;
     padding: 0.75rem 1rem;
     border: none;
@@ -271,24 +271,24 @@
     transition: all 0.2s ease;
 }
 
-.action-button.primary {
+.businesslist-action-button.primary {
     background: var(--main-color);
     color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.action-button.primary:hover {
+.businesslist-action-button.primary:hover {
     background: var(--point-color);
     color: var(--main-color);
 }
 
-.action-button.secondary {
+.businesslist-action-button.secondary {
     background: var(--sub-color);
     color: var(--main-color);
     border: 1px solid var(--main-color);
 }
 
-.action-button.secondary:hover {
+.businesslist-action-button.secondary:hover {
     background: var(--point-color);
     color: var(--main-color);
     border-color: var(--point-color);
@@ -296,81 +296,81 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .business-partner-page {
+    .businesslist-business-partner-page {
         padding: 1rem;
     }
 
-    .page-title {
+    .businesslist-page-title {
         font-size: 2rem;
     }
 
-    .page-subtitle {
+    .businesslist-page-subtitle {
         font-size: 1rem;
     }
 
-    .grade-selector {
+    .businesslist-grade-selector {
         padding: 1.5rem;
     }
 
-    .grade-buttons {
-        grid-template-columns: 1fr;
+    .businesslist-grade-buttons {
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
     }
 
-    .grade-button {
+    .businesslist-grade-button {
         padding: 0.875rem 1.25rem;
         font-size: 1rem;
     }
 
-    .business-partner-list {
+    .businesslist-business-partner-list {
         padding: 1.5rem;
     }
 
-    .list-header {
+    .businesslist-list-header {
         flex-direction: column;
         gap: 1rem;
         align-items: stretch;
     }
 
-    .list-title {
+    .businesslist-list-title {
         font-size: 1.5rem;
     }
 
-    .total-count {
+    .businesslist-total-count {
         text-align: center;
     }
 
-    .partner-grid {
+    .businesslist-partner-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
 }
 
 @media (max-width: 480px) {
-    .business-partner-card {
+    .businesslist-business-partner-card {
         padding: 1.25rem;
     }
 
-    .company-info {
+    .businesslist-company-info {
         flex-direction: column;
         gap: 0.75rem;
     }
 
-    .company-name {
+    .businesslist-company-name {
         font-size: 1.125rem;
     }
 
-    .info-row {
+    .businesslist-info-row {
         flex-direction: column;
         gap: 0.25rem;
         align-items: flex-start;
     }
 
-    .info-value {
+    .businesslist-info-value {
         text-align: left;
     }
 
-    .card-actions {
+    .businesslist-card-actions {
         flex-direction: column;
         gap: 0.5rem;
     }

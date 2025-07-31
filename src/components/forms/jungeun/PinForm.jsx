@@ -125,10 +125,10 @@ export default function PinForm(){
             console.log(response);
 
             if (response.data.resultCode === 200) {
-              // 성공 시 완료 페이지로 이동
+              // 성공 시 현재 페이지에 머물고 폼 초기화
               showToast(`${giftInfo.recipientUser.userEmail} 님에게 성공적으로 선물하였습니다.`, "success");
               setTimeout(() => {
-                  navigate('/main');
+                  navigate('/gift');
               }, 1500);
             }else{
               showToast("선물 전송에 실패하였습니다.", "error");

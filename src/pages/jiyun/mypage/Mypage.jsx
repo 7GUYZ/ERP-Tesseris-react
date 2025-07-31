@@ -113,6 +113,13 @@ export default function MobileMyPage() {
     setCurrentPage(pageNumber);
   };
 
+  // 역할별 조건부 렌더링 함수들
+  const isUser = () => userInfo?.user_role_index === "1";
+  const isAdmin = () => userInfo?.user_role_index === "2";
+  const isBusiness = () => userInfo?.user_role_index === "3";
+  const showReferralSection = () => isUser() || isBusiness();
+  const showBusinessInfo = () => isBusiness();
+
   return (
     <div className="mypage-container">
       {toastVisible && (
@@ -144,93 +151,120 @@ export default function MobileMyPage() {
                   {maskPhoneNumber(userInfo?.phone) || "로딩 중..."}
                 </span>
               </div>
-              <button className="mypage-infoButton">
+              {/* 사업자 등록 정보 */}
+              {showBusinessInfo() && (
+                <button className="mypage-infoButton">
+                  <div className="mypage-infoLabel">
+                    <User className="menuIcon" />
+                    <span>사업자 등록 정보</span>
+                  </div>
+                  <ChevronRight className="menuIcon" />
+                </button>
+              )}
+              {/* 가맹점 정보  */}
+              {showBusinessInfo() && (
+                <button className="mypage-infoButton">
+                  <div className="mypage-infoLabel">
+                    <User className="menuIcon" />
+                    <span>가맹점 정보</span>
+                  </div>
+                  <ChevronRight className="menuIcon" />
+                </button>
+              )}
+              {/* 계좌정보 변경  */}
+              <Link to="/account/edit" className="mypage-infoButton">
                 <div className="mypage-infoLabel">
                   <User className="menuIcon" />
-                  <span>계좌정보 변경</span>
+                  <span>계정정보 변경</span>
                 </div>
                 <ChevronRight className="menuIcon" />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
-        <div className="mypage-section">
-          <div className="mypage-card">
-            <div className="mypage-cardHeader">
-              <h3 className="mypage-cardTitle">추천 코드</h3>
-            </div>
-            <div className="mypage-referralContent">
-              <span className="mypage-referralCode">{userInfo?.email}</span>
-              <button className="mypage-copyButton" onClick={handleCopyUserId}>
-                코드 복사
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="mypage-section">
-          <div className="mypage-card">
-            <div className="mypage-cardHeader">
-              <h3 className="mypage-cardTitle">추천인 목록</h3>
-              <div className="mypage-headerButtons">
-                <button
-                  className="mypage-toggleButton"
-                  onClick={toggleSuggestion}
-                >
-                  {isSuggestionOpen ? "닫기" : "열기"}
+        {/* 추천 코드 */}
+        {showReferralSection() && (
+          <div className="mypage-section">
+            <div className="mypage-card">
+              <div className="mypage-cardHeader">
+                <h3 className="mypage-cardTitle">추천 코드</h3>
+              </div>
+              <div className="mypage-referralContent">
+                <span className="mypage-referralCode">{userInfo?.email}</span>
+                <button className="mypage-copyButton" onClick={handleCopyUserId}>
+                  코드 복사
                 </button>
               </div>
             </div>
-            {isSuggestionOpen && (
-              <>
-                <div className="mypage-tableContainer">
-                  <table className="mypage-table">
-                    <thead>
-                      <tr className="mypage-headerRow">
-                        <th>No</th>
-                        <th>아이디</th>
-                        <th>이름</th>
-                        <th>등급</th>
-                        <th>가입일</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentItems.map((item, index) => (
-                        <tr
-                          key={indexOfFirstItem + index}
-                          className="mypage-dataRow"
-                        >
-                          <td>{indexOfFirstItem + index + 1}</td>
-                          <td className="mypage-idCell">
-                            {item.suggestionUserEmail || "-"}
-                          </td>
-                          <td>{item.suggestionUserName || "-"}</td>
-                          <td>{item.suggestionUserRole || "-"}</td>
-                          <td>{item.joinDate || "-"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {totalPages > 1 && (
-                  <div className="mypage-pagination">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (page) => (
-                        <button
-                          key={page}
-                          className={`mypage-pageNumber${currentPage === page ? " active" : ""
-                            }`}
-                          onClick={() => handlePageChange(page)}
-                        >
-                          {page}
-                        </button>
-                      )
-                    )}
-                  </div>
-                )}
-              </>
-            )}
           </div>
-        </div>
+        )}
+        {/* 추천인 목록 */}
+        {showReferralSection() && (
+          <div className="mypage-section">
+            <div className="mypage-card">
+              <div className="mypage-cardHeader">
+                <h3 className="mypage-cardTitle">추천인 목록</h3>
+                <div className="mypage-headerButtons">
+                  <button
+                    className="mypage-toggleButton"
+                    onClick={toggleSuggestion}
+                  >
+                    {isSuggestionOpen ? "닫기" : "열기"}
+                  </button>
+                </div>
+              </div>
+              {isSuggestionOpen && (
+                <>
+                  <div className="mypage-tableContainer">
+                    <table className="mypage-table">
+                      <thead>
+                        <tr className="mypage-headerRow">
+                          <th>No</th>
+                          <th>아이디</th>
+                          <th>이름</th>
+                          <th>등급</th>
+                          <th>가입일</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentItems.map((item, index) => (
+                          <tr
+                            key={indexOfFirstItem + index}
+                            className="mypage-dataRow"
+                          >
+                            <td>{indexOfFirstItem + index + 1}</td>
+                            <td className="mypage-idCell">
+                              {item.suggestionUserEmail || "-"}
+                            </td>
+                            <td>{item.suggestionUserName || "-"}</td>
+                            <td>{item.suggestionUserRole || "-"}</td>
+                            <td>{item.joinDate || "-"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {totalPages > 1 && (
+                    <div className="mypage-pagination">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => (
+                          <button
+                            key={page}
+                            className={`mypage-pageNumber${currentPage === page ? " active" : ""
+                              }`}
+                            onClick={() => handlePageChange(page)}
+                          >
+                            {page}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
         <div className="mypage-section">
           <div className="mypage-card">
             <div className="mypage-cardHeader">

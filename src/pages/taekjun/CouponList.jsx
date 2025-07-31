@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { couponListApi } from '../../api/auth/TaekjunAuth';
 import '../../styles/taekjun/CouponList.css';
+import { useNavigate } from 'react-router-dom';
 
 const CouponList = () => {
+  const navigate = useNavigate();
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -85,7 +87,9 @@ const CouponList = () => {
     fetchCoupons();
   };
 
-
+  const handleBackClick = () => {
+    navigate(-1);
+  };
 
   // 쿠폰 상태에 따른 필터링
   const getFilteredCoupons = () => {
@@ -149,11 +153,11 @@ const CouponList = () => {
   const filteredCoupons = getFilteredCoupons();
 
   return (
-    <div className="coupon-list" style={{ minHeight: '100vh', background: '#F5F5F9', padding: 0, width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div className="coupon-list-container" style={{ width: '100%', height: '100vh', margin: 0, background: 'white', borderRadius: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div className="coupon-list">
+      <div className="coupon-list-container">
         {/* 헤더 */}
-        <div className="coupon-list-header" style={{ background: '#170F58', color: 'white', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-          <div className="header-back">
+        <div className="coupon-list-header">
+          <div className="header-back" onClick={handleBackClick}>
             <span className="back-arrow">←</span>
           </div>
           <h1 className="header-title">쿠폰 보관함</h1>
