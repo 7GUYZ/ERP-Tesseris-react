@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowBack, 
@@ -26,11 +26,8 @@ import {
   DialogContent,
   DialogActions
 } from '@mui/material';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { format, parse } from 'date-fns';
 import { getStoreOperationInfo, updateStoreOperationInfo } from '../../api/auth/DabinAuth';
+import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/StoreOperationEditPage.css';
 
 const StoreOperationEditPage = () => {
@@ -46,12 +43,77 @@ const StoreOperationEditPage = () => {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [currentTimeField, setCurrentTimeField] = useState(null);
-  const [currentTimeValue, setCurrentTimeValue] = useState('00:00');
+
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('info');
+  const [showToast, setShowToast] = useState(false);
 
   const weekOptions = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
   const intervalOptions = ['매주', '격주'];
+
+  // 시간 옵션 생성 (1분 단위)
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute++) {
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        options.push(timeString);
+      }
+    }
+    return options;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  // 시간과 분 옵션 생성
+  const generateHourOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      options.push(hour.toString().padStart(2, '0'));
+    }
+    return options;
+  };
+
+  const generateMinuteOptions = () => {
+    const options = [];
+    for (let minute = 0; minute < 60; minute++) {
+      options.push(minute.toString().padStart(2, '0'));
+    }
+    return options;
+  };
+
+  const generateEndHourOptions = () => {
+    const options = [];
+    for (let hour = 0; hour <= 24; hour++) { // 00~24 포함
+      options.push(hour.toString().padStart(2, '0'));
+    }
+    return options;
+  };
+
+  const generateEndMinuteOptions = () => {
+    const options = [];
+    for (let minute = 0; minute < 60; minute++) {
+      options.push(minute.toString().padStart(2, '0'));
+    }
+    return options;
+  };
+
+  const hourOptions = generateHourOptions();
+  const minuteOptions = generateMinuteOptions();
+  const endHourOptions = generateEndHourOptions();
+  const endMinuteOptions = generateEndMinuteOptions();
+
+  const showToastMessage = (message, type = 'info') => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+  };
+
+  const closeToast = () => {
+    setShowToast(false);
+  };
+
+
 
   useEffect(() => {
     fetchOperationInfo();
@@ -69,6 +131,16 @@ const StoreOperationEditPage = () => {
       if (response.data.success) {
         console.log('✅ [React] EditPage success: true, 데이터 설정');
         const data = response.data.data;
+        
+        // 기존 데이터에서 00:00을 00:01로 변환
+        if (data.businessHours) {
+          data.businessHours = data.businessHours.map(hours => ({
+            ...hours,
+            workEndTime: hours.workEndTime === '00:00' ? '00:01' : hours.workEndTime,
+            restEndTime: hours.restEndTime === '00:00' ? '00:01' : hours.restEndTime
+          }));
+        }
+        
         // removeList 필드가 없으면 빈 배열로 초기화
         setOperationInfo({
           ...data,
@@ -91,17 +163,17 @@ const StoreOperationEditPage = () => {
 
   const addBusinessHours = () => {
     if (operationInfo.businessHours.length >= 7) {
-      alert('영업 시간은 최대 7개까지 설정 가능합니다.');
+      showToastMessage('영업 시간은 최대 7개까지 설정 가능합니다.', 'error');
       return;
     }
 
     const newBusinessHours = {
       storeBusinessHoursIndex: null,
       workStartTime: '00:00',
-      workEndTime: '00:00',
+      workEndTime: '00:01',
       restTime: 'N',
       restStartTime: '00:00',
-      restEndTime: '00:00',
+      restEndTime: '00:01',
       businessDays: []
     };
 
@@ -141,9 +213,19 @@ const StoreOperationEditPage = () => {
     let restStart = convertToMinutes(restStartTime);
     let restEnd = convertToMinutes(restEndTime);
     
-    // 자정(00:00)을 넘어가는 경우 처리
+    // 자정을 넘어가는 경우 처리
     if (workEnd === 0) workEnd = 24 * 60; // 00:00을 24:00으로 변환
     if (restEnd === 0) restEnd = 24 * 60; // 00:00을 24:00으로 변환
+    
+    // 영업시간이 자정을 넘어가는 경우 (예: 16:00~04:01)
+    if (workStart > workEnd) {
+      workEnd += 24 * 60; // 종료시간에 24시간 추가
+    }
+    
+    // 휴게시간이 자정을 넘어가는 경우
+    if (restStart > restEnd) {
+      restEnd += 24 * 60; // 종료시간에 24시간 추가
+    }
     
     console.log('검증:', {
       workStart: workStartTime, workEnd: workEndTime,
@@ -156,12 +238,37 @@ const StoreOperationEditPage = () => {
     return restStart >= workStart && restEnd <= workEnd && restStart < restEnd;
   };
 
-  const updateBusinessHours = (index, field, value) => {
+    const updateBusinessHours = (index, field, value) => {
     setOperationInfo(prev => ({
       ...prev,
-      businessHours: prev.businessHours.map((hours, i) => 
-        i === index ? { ...hours, [field]: value } : hours
-      )
+      businessHours: prev.businessHours.map((hours, i) => {
+        if (i === index) {
+          // 종료시간이 23:59를 넘지 않도록 체크
+          if (field === 'workEndTime') {
+            const [hour, minute] = value.split(':');
+            if (hour === '23' && parseInt(minute) > 59) {
+              showToastMessage('종료시간은 23:59를 넘을 수 없습니다.', 'error');
+              return hours; // 기존 값 유지
+            }
+          }
+
+          // 00:00으로 설정된 경우 00:01로 자동 변환
+          let newValue = value;
+          if ((field === 'workEndTime' || field === 'restEndTime') && value === '00:00') {
+            newValue = '00:01';
+          }
+          // 기존 데이터에서 00:00인 경우도 00:01로 변환
+          const updatedHours = { ...hours, [field]: newValue };
+          if (field === 'workEndTime' && updatedHours.workEndTime === '00:00') {
+            updatedHours.workEndTime = '00:01';
+          }
+          if (field === 'restEndTime' && updatedHours.restEndTime === '00:00') {
+            updatedHours.restEndTime = '00:01';
+          }
+          return updatedHours;
+        }
+        return hours;
+      })
     }));
   };
 
@@ -170,7 +277,7 @@ const StoreOperationEditPage = () => {
       ...prev,
       businessHours: prev.businessHours.map((hours, i) => {
         if (i === hoursIndex) {
-          const days = hours.businessDays || [];
+          const days = (hours.businessDays || []).filter(d => d !== ''); // 빈 문자열 제거
           const newDays = days.includes(day)
             ? days.filter(d => d !== day)
             : [...days, day];
@@ -181,44 +288,50 @@ const StoreOperationEditPage = () => {
     }));
   };
 
-  const openTimePicker = (field, value) => {
-    setCurrentTimeField(field);
-    setCurrentTimeValue(value);
-    setShowTimePicker(true);
-  };
 
-  const handleTimeChange = (time) => {
-    if (time && currentTimeField) {
-      const timeString = format(time, 'HH:mm');
-      setCurrentTimeValue(timeString);
-    }
-  };
-
-  const confirmTimeChange = () => {
-    if (currentTimeField) {
-      // 현재 편집 중인 영업시간 찾기
-      const hoursIndex = parseInt(currentTimeField.split('_')[0]);
-      const field = currentTimeField.split('_')[1];
-      
-      // 휴식시간 변경인 경우 유효성 검증
-      if (field === 'restStartTime' || field === 'restEndTime') {
-        const hours = operationInfo.businessHours[hoursIndex];
-        const newRestStart = field === 'restStartTime' ? currentTimeValue : hours.restStartTime;
-        const newRestEnd = field === 'restEndTime' ? currentTimeValue : hours.restEndTime;
-        
-        if (!validateRestTime(hours.workStartTime, hours.workEndTime, newRestStart, newRestEnd)) {
-          alert('휴식시간은 운영시간 안으로만 설정 가능합니다.');
-          setShowTimePicker(false);
-          return;
-        }
-      }
-      
-      updateBusinessHours(hoursIndex, field, currentTimeValue);
-    }
-    setShowTimePicker(false);
-  };
 
   const handleSave = async () => {
+    // 영업시간 시작시간과 종료시간이 같은지 체크
+    const sameStartEndTimes = operationInfo.businessHours.filter(hours => {
+      return hours.workStartTime && hours.workEndTime && hours.workStartTime === hours.workEndTime;
+    });
+    
+    if (sameStartEndTimes.length > 0) {
+      showToastMessage('영업시간의 시작과 종료시간이 같을 수 없습니다.', 'error');
+      return;
+    }
+
+    // 휴게시간 시작시간과 종료시간이 같은지 체크
+    const sameRestStartEndTimes = operationInfo.businessHours.filter(hours => {
+      return hours.restTime === 'Y' && hours.restStartTime && hours.restEndTime && hours.restStartTime === hours.restEndTime;
+    });
+    
+    if (sameRestStartEndTimes.length > 0) {
+      showToastMessage('휴게시간의 시작과 종료시간이 같을 수 없습니다.', 'error');
+      return;
+    }
+
+    // 영업요일 설정 확인
+    const emptyBusinessDays = operationInfo.businessHours.filter(hours => {
+      return !hours.businessDays || 
+             hours.businessDays.length === 0 || 
+             (hours.businessDays.length === 1 && hours.businessDays[0] === '');
+    });
+    
+    if (emptyBusinessDays.length > 0) {
+      showToastMessage('각 영업시간별로 영업요일을 설정해주세요.', 'error');
+      return;
+    }
+
+    // 영업요일 중복 확인
+    const allBusinessDays = operationInfo.businessHours.flatMap(hours => hours.businessDays || []);
+    const duplicateDays = allBusinessDays.filter((day, index) => allBusinessDays.indexOf(day) !== index);
+    
+    if (duplicateDays.length > 0) {
+      showToastMessage('요일이 겹치지 않도록 설정해주세요.', 'error');
+      return;
+    }
+
     // 휴식시간 유효성 검증
     const invalidRestTimes = operationInfo.businessHours.filter(hours => {
       if (hours.restTime === 'Y') {
@@ -233,7 +346,7 @@ const StoreOperationEditPage = () => {
     });
     
     if (invalidRestTimes.length > 0) {
-      alert('휴식시간이 운영시간을 벗어나는 설정이 있습니다. 확인해주세요.');
+      showToastMessage('휴게시간은 영업시간 내에 설정해주세요.', 'error');
       return;
     }
     
@@ -249,15 +362,17 @@ const StoreOperationEditPage = () => {
       console.log('✅ [React] EditPage 저장 응답:', response.data);
       
       if (response.data.success) {
-        alert('운영정보가 성공적으로 저장되었습니다.');
-        navigate('/store/operation');
+        showToastMessage('운영정보가 성공적으로 저장되었습니다.', 'success');
+        setTimeout(() => {
+          navigate('/store/operation');
+        }, 1500);
       } else {
-        alert('저장 실패: ' + response.data.message);
+        showToastMessage('저장 실패: ' + response.data.message, 'error');
       }
     } catch (error) {
       console.error('❌ [React] EditPage 저장 실패');
       console.error('❌ [React] EditPage 저장 에러:', error);
-      alert('저장 중 오류가 발생했습니다.');
+      showToastMessage('저장 중 오류가 발생했습니다.', 'error');
     } finally {
       setSaving(false);
     }
@@ -281,236 +396,418 @@ const StoreOperationEditPage = () => {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div className="store-operation-edit-page">
-        {/* Header */}
-        <div className="store-operation-edit-header">
-          <button
-            onClick={() => navigate(-1)}
-            className="store-operation-edit-back-button"
-            aria-label="뒤로가기"
-            style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', marginRight: '16px' }}
-          >
-            {'<'}
-          </button>
-          <span className="store-operation-edit-title" style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '20px' }}>매장 관리</span>
-        </div>
+    <div className="store-operation-edit-page">
+      {/* Header */}
+      <div className="store-operation-edit-header" style={{ borderBottom: '1px solid #e0e0e0', background: '#fff', marginBottom: 0 }}>
+        <button
+          onClick={() => navigate(-1)}
+          className="store-operation-edit-back-button"
+          aria-label="뒤로가기"
+          style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', marginRight: '16px' }}
+        >
+          {'<'}
+        </button>
+        <span className="store-operation-edit-title" style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '20px' }}>매장 관리</span>
+      </div>
 
-        {/* Navigation Tabs */}
-        <Box className="store-operation-edit-tabs">
-          <Typography 
-            variant="body1" 
-            className="store-operation-edit-tab store-operation-edit-tab.inactive"
-            onClick={() => navigate('/store')}
-            sx={{ color: '#170F58', background: '#fff', fontWeight: 700 }}
-          >
-            기본 정보
-          </Typography>
-          <Typography variant="body1" className="store-operation-edit-tab store-operation-edit-tab.active" sx={{ color: '#170F58', borderBottom: '2px solid #170F58', background: '#fff', fontWeight: 700 }}>
-            운영정보
-          </Typography>
-        </Box>
+      {/* Navigation Tabs */}
+      <Box className="store-operation-edit-tabs">
+        <Typography 
+          variant="body1" 
+          className="store-operation-edit-tab store-operation-edit-inactive"
+          onClick={() => navigate('/store')}
+          sx={{ color: '#170F58', background: '#fff', fontWeight: 700 }}
+        >
+          기본 정보
+        </Typography>
+        <Typography 
+          variant="body1" 
+          className="store-operation-edit-tab store-operation-edit-active"
+          sx={{ color: '#170F58', borderBottom: '2px solid #170F58', background: '#fff', fontWeight: 700 }}
+        >
+          운영정보
+        </Typography>
+      </Box>
 
-        {/* Business Information Section */}
-        <Card className="store-operation-edit-section-card">
-          <CardContent>
-            <Box className="store-operation-edit-section-header">
-              <Box className="store-operation-edit-section-icon store-operation-edit-business-icon" sx={{ background: '#170F58' }} />
-              <Typography variant="h6" className="store-operation-edit-section-title">
-                영업 정보
-              </Typography>
-            </Box>
+      {/* Business Information Section */}
+      <Card className="store-operation-edit-section-card">
+        <CardContent>
+          <Box className="store-operation-edit-section-header">
+            <Box className="store-operation-edit-section-icon store-operation-edit-business-icon" sx={{ background: '#170F58' }} />
+            <Typography variant="h6" className="store-operation-edit-section-title">
+              영업 정보
+            </Typography>
+          </Box>
 
-            {operationInfo.businessHours.map((hours, index) => (
-              <Box key={index} className="store-operation-edit-business-hours-edit-item" style={{ border: '1px solid #170F58', borderRadius: '10px', marginBottom: '24px', padding: '16px' }}>
-                <Box className="store-operation-edit-hours-header">
-                  <Typography variant="subtitle1" className="store-operation-edit-hours-title">
-                    영업 시간 {index + 1}
-                  </Typography>
-                  <IconButton 
-                    onClick={() => removeBusinessHours(index)}
-                    className="store-operation-edit-remove-button"
-                  >
-                    <Close />
-                  </IconButton>
+          {operationInfo.businessHours.map((hours, index) => (
+            <Box key={index} className="store-operation-edit-business-hours-edit-item" style={{ border: '1px solid #170F58', borderRadius: '10px', marginBottom: '24px', padding: '16px' }}>
+              <Box className="store-operation-edit-hours-header">
+                <Box
+                  sx={{
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    backgroundColor: '#170F58',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {index + 1}
                 </Box>
+                <IconButton 
+                  onClick={() => removeBusinessHours(index)}
+                  className="store-operation-edit-remove-button"
+                >
+                  <Close />
+                </IconButton>
+              </Box>
 
-                {/* Business Hours */}
-                <Box className="store-operation-edit-time-input-group">
-                  <Typography variant="body2" className="store-operation-edit-time-label">영업 시간</Typography>
-                  <Box className="store-operation-edit-time-inputs">
-                    <Box 
-                      className="store-operation-edit-time-input"
-                      onClick={() => openTimePicker(`${index}_workStartTime`, hours.workStartTime)}
-                    >
-                      <Typography variant="body1">{hours.workStartTime}</Typography>
-                      <KeyboardArrowDown />
-                    </Box>
-                    <Typography variant="body1" className="store-operation-edit-time-separator">~</Typography>
-                    <Box 
-                      className="store-operation-edit-time-input"
-                      onClick={() => openTimePicker(`${index}_workEndTime`, hours.workEndTime)}
-                    >
-                      <Typography variant="body1">{hours.workEndTime}</Typography>
-                      <KeyboardArrowDown />
-                    </Box>
+              {/* Business Hours */}
+              <Box className="store-operation-edit-time-input-group">
+                <Typography variant="body2" className="store-operation-edit-time-label">영업 시간</Typography>
+                <Box className="store-operation-edit-time-inputs">
+                  <Box className="store-operation-edit-time-select-group">
+                    <FormControl size="small" className="store-operation-edit-time-select">
+                      <Select
+                        value={hours.workStartTime ? hours.workStartTime.split(':')[0] : '00'}
+                        onChange={(e) => {
+                          const currentMinute = hours.workStartTime ? hours.workStartTime.split(':')[1] : '00';
+                          updateBusinessHours(index, 'workStartTime', `${e.target.value}:${currentMinute}`);
+                        }}
+                        displayEmpty
+                      >
+                        {hourOptions.map((hour) => (
+                          <MenuItem key={hour} value={hour}>{hour}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <Typography variant="body1" className="store-operation-edit-time-colon">:</Typography>
+                    <FormControl size="small" className="store-operation-edit-time-select">
+                      <Select
+                        value={hours.workStartTime ? hours.workStartTime.split(':')[1] : '00'}
+                        onChange={(e) => {
+                          const currentHour = hours.workStartTime ? hours.workStartTime.split(':')[0] : '00';
+                          updateBusinessHours(index, 'workStartTime', `${currentHour}:${e.target.value}`);
+                        }}
+                        displayEmpty
+                      >
+                        {minuteOptions.map((minute) => (
+                          <MenuItem key={minute} value={minute}>{minute}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                  <Typography variant="body1" className="store-operation-edit-time-separator">~</Typography>
+                  <Box className="store-operation-edit-time-select-group">
+                                            <FormControl size="small" className="store-operation-edit-time-select">
+                          <Select
+                            value={hours.workEndTime ? hours.workEndTime.split(':')[0] : '00'}
+                            onChange={(e) => {
+                              const currentMinute = hours.workEndTime ? hours.workEndTime.split(':')[1] : '00';
+                              const newHour = e.target.value;
+                              let newMinute = currentMinute;
+                              // 00시로 변경할 때는 00분이 아닌 다른 분으로 설정
+                              if (newHour === '00' && currentMinute === '00') {
+                                newMinute = '01';
+                              }
+                              // 24시로 변경할 때는 00분으로 설정
+                              if (newHour === '24') {
+                                newMinute = '00';
+                              }
+                              updateBusinessHours(index, 'workEndTime', `${newHour}:${newMinute}`);
+                            }}
+                            displayEmpty
+                          >
+                            {endHourOptions.map((hour) => (
+                              <MenuItem key={hour} value={hour}>{hour}</MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                    <Typography variant="body1" className="store-operation-edit-time-colon">:</Typography>
+                                            <FormControl size="small" className="store-operation-edit-time-select">
+                          <Select
+                            value={(() => {
+                              const currentHour = hours.workEndTime ? hours.workEndTime.split(':')[0] : '00';
+                              const currentMinute = hours.workEndTime ? hours.workEndTime.split(':')[1] : '01';
+                              // 00시이고 00분이면 01분으로 변경
+                              if (currentHour === '00' && currentMinute === '00') {
+                                return '01';
+                              }
+                              return currentMinute;
+                            })()}
+                            onChange={(e) => {
+                              const currentHour = hours.workEndTime ? hours.workEndTime.split(':')[0] : '00';
+                              updateBusinessHours(index, 'workEndTime', `${currentHour}:${e.target.value}`);
+                            }}
+                            displayEmpty
+                          >
+                            {endMinuteOptions
+                              .filter(minute => {
+                                const currentHour = hours.workEndTime ? hours.workEndTime.split(':')[0] : '00';
+                                // 00시일 때는 00분 제외
+                                if (currentHour === '00') {
+                                  return minute !== '00';
+                                }
+                                // 24시일 때는 00분만 허용
+                                if (currentHour === '24') {
+                                  return minute === '00';
+                                }
+                                return true;
+                              })
+                              .map((minute) => (
+                                <MenuItem key={minute} value={minute}>{minute}</MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
                   </Box>
                 </Box>
+              </Box>
+              
 
-                {/* Rest Time */}
-                <Box className="store-operation-edit-rest-time-section">
-                  <Box className="store-operation-edit-rest-time-header">
-                    <Typography variant="body2" className="store-operation-edit-time-label">휴게 시간</Typography>
-                    <Switch
-                      checked={hours.restTime === 'Y'}
-                      onChange={(e) => updateBusinessHours(index, 'restTime', e.target.checked ? 'Y' : 'N')}
-                      className="store-operation-edit-rest-switch"
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#170F58',
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#170F58',
-                        },
-                      }}
-                    />
-                  </Box>
-                  
-                  {hours.restTime === 'Y' && (
-                    <Box className="store-operation-edit-time-input-group">
-                      <Box className="store-operation-edit-time-inputs">
-                        <Box 
-                          className="store-operation-edit-time-input"
-                          onClick={() => openTimePicker(`${index}_restStartTime`, hours.restStartTime)}
-                        >
-                          <Typography variant="body1">{hours.restStartTime}</Typography>
-                          <KeyboardArrowDown />
-                        </Box>
-                        <Typography variant="body1" className="store-operation-edit-time-separator">~</Typography>
-                        <Box 
-                          className="store-operation-edit-time-input"
-                          onClick={() => openTimePicker(`${index}_restEndTime`, hours.restEndTime)}
-                        >
-                          <Typography variant="body1">{hours.restEndTime}</Typography>
-                          <KeyboardArrowDown />
-                        </Box>
+
+              {/* Rest Time */}
+              <Box className="store-operation-edit-rest-time-section">
+                <Box className="store-operation-edit-rest-time-header">
+                  <Typography variant="body2" className="store-operation-edit-time-label">휴게 시간</Typography>
+                  <Switch
+                    checked={hours.restTime === 'Y'}
+                    onChange={(e) => updateBusinessHours(index, 'restTime', e.target.checked ? 'Y' : 'N')}
+                    className="store-operation-edit-rest-switch"
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#170F58',
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#170F58',
+                      },
+                    }}
+                  />
+                </Box>
+                
+                {hours.restTime === 'Y' && (
+                  <Box className="store-operation-edit-time-input-group">
+                    <Box className="store-operation-edit-time-inputs">
+                      <Box className="store-operation-edit-time-select-group">
+                        <FormControl size="small" className="store-operation-edit-time-select">
+                          <Select
+                            value={hours.restStartTime ? hours.restStartTime.split(':')[0] : '00'}
+                            onChange={(e) => {
+                              const currentMinute = hours.restStartTime ? hours.restStartTime.split(':')[1] : '00';
+                              updateBusinessHours(index, 'restStartTime', `${e.target.value}:${currentMinute}`);
+                            }}
+                            displayEmpty
+                          >
+                            {hourOptions.map((hour) => (
+                              <MenuItem key={hour} value={hour}>{hour}</MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <Typography variant="body1" className="store-operation-edit-time-colon">:</Typography>
+                        <FormControl size="small" className="store-operation-edit-time-select">
+                          <Select
+                            value={hours.restStartTime ? hours.restStartTime.split(':')[1] : '00'}
+                            onChange={(e) => {
+                              const currentHour = hours.restStartTime ? hours.restStartTime.split(':')[0] : '00';
+                              updateBusinessHours(index, 'restStartTime', `${currentHour}:${e.target.value}`);
+                            }}
+                            displayEmpty
+                          >
+                            {minuteOptions.map((minute) => (
+                              <MenuItem key={minute} value={minute}>{minute}</MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Box>
+                      <Typography variant="body1" className="store-operation-edit-time-separator">~</Typography>
+                      <Box className="store-operation-edit-time-select-group">
+                        <FormControl size="small" className="store-operation-edit-time-select">
+                          <Select
+                            value={hours.restEndTime ? hours.restEndTime.split(':')[0] : '00'}
+                            onChange={(e) => {
+                              const currentMinute = hours.restEndTime ? hours.restEndTime.split(':')[1] : '01';
+                              const newHour = e.target.value;
+                              // 00시로 변경할 때는 00분이 아닌 다른 분으로 설정
+                              let newMinute = currentMinute;
+                              if (newHour === '00' && currentMinute === '00') {
+                                newMinute = '01';
+                              }
+                              updateBusinessHours(index, 'restEndTime', `${newHour}:${newMinute}`);
+                            }}
+                            displayEmpty
+                          >
+                            {endHourOptions.map((hour) => (
+                              <MenuItem key={hour} value={hour}>{hour}</MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <Typography variant="body1" className="store-operation-edit-time-colon">:</Typography>
+                        <FormControl size="small" className="store-operation-edit-time-select">
+                          <Select
+                            value={(() => {
+                              const currentHour = hours.restEndTime ? hours.restEndTime.split(':')[0] : '00';
+                              const currentMinute = hours.restEndTime ? hours.restEndTime.split(':')[1] : '01';
+                              // 00시이고 00분이면 01분으로 변경
+                              if (currentHour === '00' && currentMinute === '00') {
+                                return '01';
+                              }
+                              return currentMinute;
+                            })()}
+                            onChange={(e) => {
+                              const currentHour = hours.restEndTime ? hours.restEndTime.split(':')[0] : '00';
+                              updateBusinessHours(index, 'restEndTime', `${currentHour}:${e.target.value}`);
+                            }}
+                            displayEmpty
+                          >
+                            {endMinuteOptions
+                              .filter(minute => {
+                                const currentHour = hours.restEndTime ? hours.restEndTime.split(':')[0] : '00';
+                                // 00시일 때는 00분 제외
+                                if (currentHour === '00') {
+                                  return minute !== '00';
+                                }
+                                // 24시일 때는 00분만 허용
+                                if (currentHour === '24') {
+                                  return minute === '00';
+                                }
+                                return true;
+                              })
+                              .map((minute) => (
+                                <MenuItem key={minute} value={minute}>{minute}</MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
                       </Box>
                     </Box>
-                  )}
-                  
-                  <Typography variant="caption" className="store-operation-edit-rest-time-note" style={{ color: '#ffc107' }}>
-                    * 휴게시간은 운영시간 안으로만 설정가능합니다.
-                  </Typography>
-                </Box>
-
-                {/* Business Days */}
-                <Box className="store-operation-edit-business-days-section">
-                  <Typography variant="body2" className="store-operation-edit-time-label">영업 요일</Typography>
-                  <Box className="store-operation-edit-day-buttons">
-                    {['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].map((day) => (
-                      <Button
-                        key={day}
-                        variant={hours.businessDays?.includes(day) ? "contained" : "outlined"}
-                        className={`store-operation-edit-day-button${hours.businessDays?.includes(day) ? ' selected' : ''}`}
-                        onClick={() => toggleBusinessDay(index, day)}
-                        size="small"
-                        sx={hours.businessDays?.includes(day) ? { background: '#170F58', color: '#fff', borderColor: '#170F58' } : { borderColor: '#170F58', color: '#170F58', background: '#fff' }}
-                      >
-                        {getDayName(day)}
-                      </Button>
-                    ))}
                   </Box>
+                )}
+                
+                <Typography variant="caption" className="store-operation-edit-rest-time-note" style={{ color: '#ffc107' }}>
+                  * 휴게시간은 운영시간 안으로만 설정가능합니다.
+                </Typography>
+              </Box>
+
+              {/* Business Days */}
+              <Box className="store-operation-edit-business-days-section">
+                <Typography variant="body2" className="store-operation-edit-time-label">영업 요일</Typography>
+                <Box className="store-operation-edit-day-buttons">
+                  {['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].map((day) => (
+                    <Button
+                      key={day}
+                      variant={hours.businessDays?.filter(d => d !== '').includes(day) ? "contained" : "outlined"}
+                      className={`store-operation-edit-day-button${hours.businessDays?.filter(d => d !== '').includes(day) ? ' selected' : ''}`}
+                      onClick={() => toggleBusinessDay(index, day)}
+                      size="small"
+                      sx={hours.businessDays?.filter(d => d !== '').includes(day) ? { background: '#170F58', color: '#fff', borderColor: '#170F58' } : { borderColor: '#170F58', color: '#170F58', background: '#fff' }}
+                    >
+                      {getDayName(day)}
+                    </Button>
+                  ))}
                 </Box>
               </Box>
-            ))}
-
-            {/* Add Business Hours Button */}
-            <Button
-              variant="outlined"
-              startIcon={<Add sx={{ color: '#ffc107' }} />}
-              onClick={addBusinessHours}
-              className="store-operation-edit-add-hours-button"
-              fullWidth
-              sx={{ borderColor: '#ffc107', color: '#ffc107' }}
-            >
-              영업시간 추가
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Other Settings Section */}
-        <Card className="store-operation-edit-section-card">
-          <CardContent>
-            <Box className="store-operation-edit-section-header">
-              <Box className="store-operation-edit-section-icon store-operation-edit-settings-icon" sx={{ background: '#170F58' }} />
-              <Typography variant="h6" className="store-operation-edit-section-title">
-                기타 설정
-              </Typography>
             </Box>
+          ))}
 
-            {/* Holiday Status */}
-            <Box className="store-operation-edit-setting-item">
-              <Typography variant="body1" className="store-operation-edit-setting-label">
-                공휴일 / 국경일 휴무
-              </Typography>
-              <Switch
-                checked={operationInfo.holidayStatus === 'Y'}
-                onChange={(e) => setOperationInfo(prev => ({
-                  ...prev,
-                  holidayStatus: e.target.checked ? 'Y' : 'N'
-                }))}
-                sx={{
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#170F58',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#170F58',
-                  },
-                }}
-              />
+          {/* Add Business Hours Button */}
+          <Button
+            variant="outlined"
+            startIcon={<Add sx={{ color: '#ffffff' }} />}
+            onClick={addBusinessHours}
+            className="store-operation-edit-add-hours-button"
+            fullWidth
+            sx={{ 
+              borderColor: '#FDCD00 !important', 
+              color: '#ffffff !important',
+              backgroundColor: '#FDCD00 !important',
+              '&:hover': {
+                backgroundColor: '#FDCD00 !important',
+                borderColor: '#FDCD00 !important',
+                color: '#ffffff !important'
+              }
+            }}
+          >
+            영업시간 추가
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Other Settings Section */}
+      <Card className="store-operation-edit-section-card">
+        <CardContent>
+          <Box className="store-operation-edit-section-header">
+            <Box className="store-operation-edit-section-icon store-operation-edit-settings-icon" sx={{ background: '#170F58' }} />
+            <Typography variant="h6" className="store-operation-edit-section-title">
+              기타 설정
+            </Typography>
+          </Box>
+
+          {/* Holiday Status */}
+          <Box className="store-operation-edit-setting-item">
+            <Typography variant="body1" className="store-operation-edit-setting-label">
+              공휴일 / 국경일 휴무
+            </Typography>
+            <Switch
+              checked={operationInfo.holidayStatus === 'Y'}
+              onChange={(e) => setOperationInfo(prev => ({
+                ...prev,
+                holidayStatus: e.target.checked ? 'Y' : 'N'
+              }))}
+              sx={{
+                '& .MuiSwitch-switchBase.Mui-checked': {
+                  color: '#170F58',
+                },
+                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                  backgroundColor: '#170F58',
+                },
+              }}
+            />
+          </Box>
+
+          {/* Regular Closing */}
+          <Box className="store-operation-edit-setting-item">
+            <Typography variant="body1" className="store-operation-edit-setting-label">
+              정기 휴무
+            </Typography>
+            <Box className="store-operation-edit-regular-closing-inputs">
+              <FormControl size="small" className="store-operation-edit-select-field">
+                <Select
+                  value={operationInfo.regularClosingInterval}
+                  onChange={(e) => setOperationInfo(prev => ({
+                    ...prev,
+                    regularClosingInterval: e.target.value
+                  }))}
+                >
+                  {intervalOptions.map(option => (
+                    <MenuItem key={option} value={option}>{option}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
+              <FormControl size="small" className="store-operation-edit-select-field">
+                <Select
+                  value={operationInfo.regularClosingWeek}
+                  onChange={(e) => setOperationInfo(prev => ({
+                    ...prev,
+                    regularClosingWeek: e.target.value
+                  }))}
+                >
+                  {weekOptions.map(option => (
+                    <MenuItem key={option} value={option}>{option}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
+          </Box>
 
-            {/* Regular Closing */}
-            <Box className="store-operation-edit-setting-item">
-              <Typography variant="body1" className="store-operation-edit-setting-label">
-                정기 휴무
-              </Typography>
-              <Box className="store-operation-edit-regular-closing-inputs">
-                <FormControl size="small" className="store-operation-edit-select-field">
-                  <Select
-                    value={operationInfo.regularClosingInterval}
-                    onChange={(e) => setOperationInfo(prev => ({
-                      ...prev,
-                      regularClosingInterval: e.target.value
-                    }))}
-                  >
-                    {intervalOptions.map(option => (
-                      <MenuItem key={option} value={option}>{option}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                
-                <FormControl size="small" className="store-operation-edit-select-field">
-                  <Select
-                    value={operationInfo.regularClosingWeek}
-                    onChange={(e) => setOperationInfo(prev => ({
-                      ...prev,
-                      regularClosingWeek: e.target.value
-                    }))}
-                  >
-                    {weekOptions.map(option => (
-                      <MenuItem key={option} value={option}>{option}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            </Box>
-
-            {/* Temporary Closing */}
-            <Box className="store-operation-edit-setting-item">
-              <Typography variant="body1" className="store-operation-edit-setting-label">
-                임시 휴무
-              </Typography>
+          {/* Temporary Closing */}
+          <Box className="store-operation-edit-setting-item">
+            <Typography variant="body1" className="store-operation-edit-setting-label">
+              임시 휴무
+            </Typography>
+            <Box sx={{ display: 'flex', gap: '12px', flexDirection: { xs: 'column', sm: 'row' } }}>
               <TextField
                 type="date"
                 value={operationInfo.temporaryClosingDate}
@@ -519,7 +816,7 @@ const StoreOperationEditPage = () => {
                   temporaryClosingDate: e.target.value
                 }))}
                 size="small"
-                fullWidth
+                sx={{ flex: { xs: 1, sm: '0 0 40%' } }}
                 className="store-operation-edit-date-input"
               />
               <TextField
@@ -530,102 +827,61 @@ const StoreOperationEditPage = () => {
                   temporaryClosingComment: e.target.value
                 }))}
                 size="small"
-                fullWidth
+                sx={{ flex: { xs: 1, sm: '0 0 60%' } }}
                 className="store-operation-edit-comment-input"
                 inputProps={{ maxLength: 25 }}
               />
             </Box>
-          </CardContent>
-        </Card>
+          </Box>
+        </CardContent>
+      </Card>
 
-        {/* Bottom Actions */}
-        <div className="store-operation-edit-bottom-actions" style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate(-1)}
-            className="store-operation-edit-cancel-button"
-            sx={{
-              backgroundColor: '#6c757d',
-              color: '#fff',
-              fontSize: '20px',
-              borderRadius: '10px',
-              padding: '16px',
-              flex: 1,
-              border: 'none',
-              '&:hover': { backgroundColor: '#495057' }
-            }}
-          >
-            취소
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSave}
-            disabled={saving}
-            className="store-operation-edit-save-button"
-            sx={{
-              backgroundColor: '#170F58',
-              color: '#fff',
-              fontSize: '20px',
-              borderRadius: '10px',
-              padding: '16px',
-              flex: 1,
-              '&:hover': { backgroundColor: '#120a40' }
-            }}
-          >
-            {saving ? '저장 중...' : '저장'}
-          </Button>
-        </div>
-
-        {/* Time Picker Dialog */}
-        <Dialog 
-          open={showTimePicker} 
-          onClose={() => setShowTimePicker(false)}
-          PaperProps={{
-            sx: {
-              '& .MuiDialogTitle-root': {
-                backgroundColor: '#170F58 !important',
-                color: '#fff !important'
-              },
-              '& .MuiDialog-paper': {
-                '& .MuiDialogTitle-root': {
-                  backgroundColor: '#170F58 !important',
-                  color: '#fff !important'
-                }
-              }
-            }
+      {/* Bottom Actions */}
+      <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+        <button
+          style={{
+            flex: 1,
+            background: '#ffffff',
+            color: '#333333',
+            padding: '16px',
+            border: '1px solid #e0e0e0',
+            borderRadius: '10px',
+            fontSize: '20px',
+            cursor: 'pointer'
           }}
+          onClick={() => navigate(-1)}
         >
-          <DialogTitle style={{ backgroundColor: '#170F58', color: '#fff' }}>
-            시간 선택
-          </DialogTitle>
-          <DialogContent>
-            <TimePicker
-              value={currentTimeValue ? parse(currentTimeValue, 'HH:mm', new Date()) : null}
-              onChange={handleTimeChange}
-              format="HH:mm"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button 
-              onClick={() => setShowTimePicker(false)}
-              sx={{ color: '#170F58' }}
-            >
-              취소
-            </Button>
-            <Button 
-              onClick={confirmTimeChange} 
-              variant="contained"
-              sx={{ 
-                backgroundColor: '#170F58',
-                '&:hover': { backgroundColor: '#120a40' }
-              }}
-            >
-              확인
-            </Button>
-          </DialogActions>
-        </Dialog>
+          취소
+        </button>
+        <button
+          style={{
+            flex: 1,
+            background: '#170F58',
+            color: '#fff',
+            padding: '16px',
+            border: 'none',
+            borderRadius: '10px',
+            fontSize: '20px',
+            cursor: 'pointer'
+          }}
+          onClick={handleSave}
+          disabled={saving}
+        >
+          {saving ? '저장 중...' : '저장'}
+        </button>
       </div>
-    </LocalizationProvider>
+      
+      {/* Toast Component */}
+      {showToast && (
+        <Toast
+          type={toastType}
+          message={toastMessage}
+          onClose={closeToast}
+        />
+      )}
+
+
+    </div>
   );
 };
 

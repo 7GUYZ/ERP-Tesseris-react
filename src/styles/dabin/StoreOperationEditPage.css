@@ -5,13 +5,14 @@
   background-color: #f5f5f5;
   min-height: 100vh;
   padding-bottom: 120px; /* 하단 버튼 공간 */
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
 .store-operation-edit-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   padding: 10px 0;
 }
 
@@ -27,33 +28,33 @@
 .store-operation-edit-tabs {
   display: flex;
   background: white;
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 20px;
+  border-radius: 0px;
+  margin-bottom: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .store-operation-edit-tab {
   flex: 1;
+  padding: 16px;
   text-align: center;
-  padding: 12px;
-  border-radius: 8px;
   cursor: pointer;
+  border-bottom: 2px solid transparent;
   transition: all 0.3s ease;
-  font-weight: 500;
 }
 
-.store-operation-edit-tab.active {
-  background: linear-gradient(135deg, #ff6b35, #f7931e);
-  color: white;
+.store-operation-edit-tab.store-operation-edit-active {
+  background: #fff !important;
+  color: #170F58 !important;
+  border-bottom: 2px solid #170F58 !important;
+  font-weight: 700;
 }
 
-.store-operation-edit-tab.inactive {
+.store-operation-edit-tab.store-operation-edit-inactive {
   color: #666;
 }
 
-.store-operation-edit-tab.inactive:hover {
-  background-color: #f0f0f0;
+.store-operation-edit-tab.store-operation-edit-inactive:hover {
+  background-color: #f5f5f5;
 }
 
 .store-operation-edit-section-card {
@@ -129,30 +130,61 @@
 .store-operation-edit-time-inputs {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
-.store-operation-edit-time-input {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  cursor: pointer;
+.store-operation-edit-time-select {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 70px;
+  width: 70px;
+}
+
+.store-operation-edit-time-select .MuiSelect-select {
+  padding: 12px 8px;
+  padding-right: 16px;
+  padding-left: 0px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   transition: all 0.3s ease;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 40px;
+  line-height: 1.2;
 }
 
-.store-operation-edit-time-input:hover {
-  border-color: #ff6b35;
-  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+.store-operation-edit-time-select .MuiSelect-select:hover {
+  box-shadow: none;
+}
+
+.store-operation-edit-time-select-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 48px;
+}
+
+.store-operation-edit-time-colon {
+  color: #666;
+  font-weight: 500;
+  margin: 0 4px;
+  font-size: 14px;
 }
 
 .store-operation-edit-time-separator {
   color: #666;
   font-weight: 500;
+  margin: 0 16px;
+  font-size: 14px;
 }
 
 .store-operation-edit-rest-time-section {
@@ -203,18 +235,19 @@
 }
 
 .store-operation-edit-add-hours-button {
-  border: 2px dashed #ffc107 !important;
-  color: #ffc107 !important;
+  border: 2px dashed #FDCD00 !important;
+  color: #ffffff !important;
   font-weight: 500 !important;
   padding: 16px !important;
   border-radius: 12px !important;
   margin-top: 16px;
-  background: #fff !important;
+  background: #FDCD00 !important;
 }
 
 .store-operation-edit-add-hours-button:hover {
-  border-color: #ffc107 !important;
-  color: #ffc107 !important;
+  border-color: #FDCD00 !important;
+  color: #ffffff !important;
+  background: #FDCD00 !important;
 }
 
 .store-operation-edit-setting-item {
@@ -232,6 +265,9 @@
 .store-operation-edit-setting-label {
   font-weight: 500;
   color: #333;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  white-space: nowrap;
 }
 
 .store-operation-edit-regular-closing-inputs {
@@ -318,32 +354,722 @@
   .store-operation-edit-page {
     padding: 16px;
     padding-bottom: 100px;
+    max-width: 100%;
+  }
+  
+  .store-operation-edit-header {
+    margin-bottom: 0px;
+    padding: 8px 0;
+  }
+  
+  .store-operation-edit-back-button {
+    font-size: 18px;
+    padding: 6px;
+  }
+  
+  .store-operation-edit-title {
+    font-size: 16px;
+  }
+  
+  .store-operation-edit-tabs {
+    border-radius: 0px;
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-tab {
+    padding: 10px;
+    font-size: 14px;
   }
   
   .store-operation-edit-section-card {
     margin-bottom: 16px;
   }
   
+  .store-operation-edit-section-header {
+    margin-bottom: 16px;
+  }
+  
+  .store-operation-edit-section-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+  
+  .store-operation-edit-section-title {
+    font-size: 15px;
+  }
+  
   .store-operation-edit-business-hours-edit-item {
     padding: 12px;
+    margin-bottom: 12px;
   }
   
+  .store-operation-edit-hours-header {
+    margin-bottom: 12px;
+  }
+  
+  .store-operation-edit-hours-title {
+    font-size: 14px;
+  }
+  
+  .store-operation-edit-time-input-group {
+    margin-bottom: 12px;
+  }
+  
+  .store-operation-edit-time-label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  
+  /* 시간 입력 필드를 가로 배치로 유지 */
   .store-operation-edit-time-inputs {
-    flex-direction: column;
+    display: flex;
+    align-items: center;
     gap: 8px;
   }
   
+  .store-operation-edit-time-select {
+    flex: 0 0 auto;
+    max-width: 70px;
+    width: 70px;
+  }
+  
+  .store-operation-edit-time-select .MuiSelect-select {
+    padding: 10px 8px;
+    padding-left: 10px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font-size: 12px;
+    min-width: 60px;
+    box-shadow: none;
+    min-height: 36px;
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  .store-operation-edit-time-select-group {
+    gap: 3px;
+  }
+
+  .store-operation-edit-time-colon {
+    margin: 0 1px;
+    font-size: 12px;
+  }
+  
+  .store-operation-edit-time-separator {
+    font-size: 12px;
+    margin: 0 6px;
+  }
+  
+  .store-operation-edit-rest-time-section {
+    margin-bottom: 12px;
+  }
+  
+  .store-operation-edit-rest-time-header {
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-rest-time-note {
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  
+  .store-operation-edit-business-days-section {
+    margin-bottom: 12px;
+  }
+  
+  .store-operation-edit-day-buttons {
+    gap: 6px;
+    margin-top: 6px;
+    justify-content: flex-start;
+  }
+  
+  .store-operation-edit-day-button {
+    min-width: 32px !important;
+    height: 32px !important;
+    font-size: 11px !important;
+  }
+  
+  .store-operation-edit-add-hours-button {
+    padding: 12px !important;
+    font-size: 14px !important;
+    margin-top: 12px;
+  }
+  
+  .store-operation-edit-setting-item {
+    padding: 12px 0;
+  }
+  
+  .store-operation-edit-setting-label {
+    font-size: 13px;
+  }
+  
+  /* 정기 휴무 입력을 가로 배치로 유지 */
   .store-operation-edit-regular-closing-inputs {
-    flex-direction: column;
+    display: flex;
     gap: 8px;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  
+  .store-operation-edit-select-field {
+    min-width: 80px;
   }
   
   .store-operation-edit-bottom-actions {
     padding: 16px;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 12px;
+  }
+  
+  .store-operation-edit-cancel-button,
+  .store-operation-edit-save-button {
+    padding: 12px !important;
+    font-size: 16px !important;
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .store-operation-edit-page {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+  
+  .store-operation-edit-header {
+    margin-bottom: 0px;
+    padding: 6px 0;
+  }
+  
+  .store-operation-edit-back-button {
+    font-size: 16px;
+    padding: 4px;
+  }
+  
+  .store-operation-edit-title {
+    font-size: 15px;
+  }
+  
+  .store-operation-edit-tabs {
+    border-radius: 0px;
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-tab {
+    padding: 8px;
+    font-size: 13px;
+  }
+  
+  .store-operation-edit-section-card {
+    margin-bottom: 12px;
+  }
+  
+  .store-operation-edit-section-header {
+    margin-bottom: 12px;
+  }
+  
+  .store-operation-edit-section-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+  }
+  
+  .store-operation-edit-section-title {
+    font-size: 14px;
+  }
+  
+  .store-operation-edit-business-hours-edit-item {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .store-operation-edit-hours-header {
+    margin-bottom: 10px;
+  }
+  
+  .store-operation-edit-hours-title {
+    font-size: 13px;
+  }
+  
+  .store-operation-edit-time-input-group {
+    margin-bottom: 10px;
+  }
+  
+  .store-operation-edit-time-label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  /* 시간 입력 필드를 가로 배치로 유지하되 크기 조정 */
+  .store-operation-edit-time-inputs {
+    gap: 6px;
+  }
+  
+  .store-operation-edit-time-select {
+    flex: 0 0 auto;
+    max-width: 65px;
+    width: 65px;
+  }
+  
+  .store-operation-edit-time-select .MuiSelect-select {
+    padding: 6px 8px;
+    font-size: 11px;
+    min-width: 50px;
+  }
+
+  .store-operation-edit-time-select-group {
+    flex: 0 0 auto;
+    gap: 1px;
+    border: none;
+    border-radius: 6px;
+    padding: 1px;
+  }
+
+  .store-operation-edit-time-colon {
+    margin: 0 2px;
+    font-size: 11px;
+  }
+  
+  .store-operation-edit-time-separator {
+    font-size: 11px;
+    margin: 0 4px;
+  }
+  
+  .store-operation-edit-rest-time-section {
+    margin-bottom: 10px;
+  }
+  
+  .store-operation-edit-rest-time-header {
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-rest-time-note {
+    font-size: 10px;
+    margin-top: 4px;
+  }
+  
+  .store-operation-edit-business-days-section {
+    margin-bottom: 10px;
   }
   
   .store-operation-edit-day-buttons {
-    justify-content: center;
+    gap: 4px;
+    margin-top: 4px;
+    justify-content: flex-start;
   }
-} 
+  
+  .store-operation-edit-day-button {
+    min-width: 28px !important;
+    height: 28px !important;
+    font-size: 10px !important;
+  }
+  
+  .store-operation-edit-add-hours-button {
+    padding: 10px !important;
+    font-size: 13px !important;
+    margin-top: 10px;
+  }
+  
+  .store-operation-edit-setting-item {
+    padding: 10px 0;
+  }
+  
+  .store-operation-edit-setting-label {
+    font-size: 12px;
+  }
+  
+  /* 정기 휴무 입력을 가로 배치로 유지 */
+  .store-operation-edit-regular-closing-inputs {
+    gap: 6px;
+  }
+  
+  .store-operation-edit-select-field {
+    min-width: 70px;
+  }
+  
+  .store-operation-edit-bottom-actions {
+    padding: 12px;
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .store-operation-edit-cancel-button,
+  .store-operation-edit-save-button {
+    padding: 10px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    flex: 1;
+  }
+}
+
+@media (max-width: 360px) {
+  .store-operation-edit-page {
+    padding: 8px;
+    padding-bottom: 70px;
+  }
+  
+  .store-operation-edit-header {
+    margin-bottom: 0px;
+    padding: 4px 0;
+  }
+  
+  .store-operation-edit-back-button {
+    font-size: 14px;
+    padding: 2px;
+  }
+  
+  .store-operation-edit-title {
+    font-size: 14px;
+  }
+  
+  .store-operation-edit-tabs {
+    border-radius: 0px;
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-tab {
+    padding: 6px;
+    font-size: 12px;
+  }
+  
+  .store-operation-edit-section-card {
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-section-header {
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-section-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+  
+  .store-operation-edit-section-title {
+    font-size: 13px;
+  }
+  
+  .store-operation-edit-business-hours-edit-item {
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-hours-header {
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-hours-title {
+    font-size: 12px;
+  }
+  
+  .store-operation-edit-time-input-group {
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-time-label {
+    font-size: 11px;
+    margin-bottom: 3px;
+  }
+  
+  /* 시간 입력 필드를 가로 배치로 유지하되 최소 크기 */
+  .store-operation-edit-time-inputs {
+    gap: 4px;
+  }
+  
+  .store-operation-edit-time-select {
+    flex: 0 0 auto;
+    max-width: 60px;
+    width: 60px;
+  }
+  
+  .store-operation-edit-time-select .MuiSelect-select {
+    padding: 8px 6px;
+    padding-left: 8px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font-size: 10px;
+    min-width: 40px;
+    box-shadow: none;
+    min-height: 32px;
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  .store-operation-edit-time-select-group {
+    gap: 1px;
+  }
+
+  .store-operation-edit-time-colon {
+    margin: 0 1px;
+    font-size: 10px;
+  }
+  
+  .store-operation-edit-time-separator {
+    font-size: 10px;
+  }
+  
+  .store-operation-edit-rest-time-section {
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-rest-time-header {
+    margin-bottom: 4px;
+  }
+  
+  .store-operation-edit-rest-time-note {
+    font-size: 9px;
+    margin-top: 3px;
+  }
+  
+  .store-operation-edit-business-days-section {
+    margin-bottom: 8px;
+  }
+  
+  .store-operation-edit-day-buttons {
+    gap: 3px;
+    margin-top: 3px;
+    justify-content: flex-start;
+  }
+  
+  .store-operation-edit-day-button {
+    min-width: 24px !important;
+    height: 24px !important;
+    font-size: 9px !important;
+  }
+  
+  .store-operation-edit-add-hours-button {
+    padding: 8px !important;
+    font-size: 12px !important;
+    margin-top: 8px;
+  }
+  
+  .store-operation-edit-setting-item {
+    padding: 8px 0;
+  }
+  
+  .store-operation-edit-setting-label {
+    font-size: 11px;
+  }
+  
+  /* 정기 휴무 입력을 가로 배치로 유지 */
+  .store-operation-edit-regular-closing-inputs {
+    gap: 4px;
+  }
+  
+  .store-operation-edit-select-field {
+    min-width: 60px;
+  }
+  
+  .store-operation-edit-bottom-actions {
+    padding: 8px;
+    flex-direction: row;
+    gap: 6px;
+  }
+  
+  .store-operation-edit-cancel-button,
+  .store-operation-edit-save-button {
+    padding: 8px !important;
+    font-size: 13px !important;
+    flex: 1;
+  }
+}
+
+/* 아주 작은 화면 (320px 이하) */
+@media (max-width: 320px) {
+  .store-operation-edit-page {
+    padding: 6px;
+    padding-bottom: 60px;
+  }
+  
+  .store-operation-edit-header {
+    margin-bottom: 6px;
+    padding: 2px 0;
+  }
+  
+  .store-operation-edit-back-button {
+    font-size: 12px;
+    padding: 1px;
+  }
+  
+  .store-operation-edit-title {
+    font-size: 13px;
+  }
+  
+  .store-operation-edit-tabs {
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-tab {
+    padding: 4px;
+    font-size: 11px;
+  }
+  
+  .store-operation-edit-section-card {
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-section-header {
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-section-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+  }
+  
+  .store-operation-edit-section-title {
+    font-size: 12px;
+  }
+  
+  .store-operation-edit-business-hours-edit-item {
+    padding: 6px;
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-hours-header {
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-hours-title {
+    font-size: 11px;
+  }
+  
+  .store-operation-edit-time-input-group {
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-time-label {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+  
+  /* 시간 입력 필드를 가로 배치로 유지하되 최소 크기 */
+  .store-operation-edit-time-inputs {
+    gap: 3px;
+  }
+  
+  .store-operation-edit-time-select {
+    flex: 0 0 auto;
+    max-width: 50px;
+    width: 50px;
+  }
+  
+  .store-operation-edit-time-select-group {
+    flex: 0 0 auto;
+    gap: 1px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 2px;
+    min-height: 40px;
+  }
+  
+  .store-operation-edit-time-input {
+    padding: 3px 4px;
+    font-size: 9px;
+    min-width: 50px;
+  }
+  
+  .store-operation-edit-time-separator {
+    font-size: 9px;
+  }
+  
+  .store-operation-edit-rest-time-section {
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-rest-time-header {
+    margin-bottom: 3px;
+  }
+  
+  .store-operation-edit-rest-time-note {
+    font-size: 8px;
+    margin-top: 2px;
+  }
+  
+  .store-operation-edit-business-days-section {
+    margin-bottom: 6px;
+  }
+  
+  .store-operation-edit-day-buttons {
+    gap: 2px;
+    margin-top: 2px;
+    justify-content: flex-start;
+  }
+  
+  .store-operation-edit-day-button {
+    min-width: 20px !important;
+    height: 20px !important;
+    font-size: 8px !important;
+  }
+  
+  .store-operation-edit-add-hours-button {
+    padding: 6px !important;
+    font-size: 11px !important;
+    margin-top: 6px;
+  }
+  
+  .store-operation-edit-setting-item {
+    padding: 6px 0;
+  }
+  
+  .store-operation-edit-setting-label {
+    font-size: 10px;
+  }
+  
+  /* 정기 휴무 입력을 가로 배치로 유지 */
+  .store-operation-edit-regular-closing-inputs {
+    gap: 3px;
+  }
+  
+  .store-operation-edit-select-field {
+    min-width: 50px;
+  }
+  
+  .store-operation-edit-bottom-actions {
+    padding: 6px;
+    flex-direction: row;
+    gap: 4px;
+  }
+  
+  .store-operation-edit-cancel-button,
+  .store-operation-edit-save-button {
+    padding: 6px !important;
+    font-size: 12px !important;
+    flex: 1;
+  }
+}
+
+/* 모바일 친화적인 시간 선택기 스타일 */
+
+/* StoreOperationEditPage에서 사용하는 토스트 스타일 통일 */
+/* StoreOperationEditPage.css에서 사용하는 토스트 스타일 - Toast.jsx 기본 색상 사용 */
+.store-operation-edit-page .user-toast-success {
+  background-color: #FDCD00 !important;
+  color: #170F58 !important;
+  border: 1px solid #FDD835 !important;
+}
+
+.store-operation-edit-page .user-toast-error {
+  background-color: #ff6b6b !important;
+  color: #fff !important;
+  border: 1px solid #ff5252 !important;
+}
+
+.store-operation-edit-page .user-toast-info {
+  background-color: #F5F5F9 !important;
+  color: #170F58 !important;
+  border: 1px solid #2D1B69 !important;
+}
+
+.store-operation-edit-page .user-toast-close {
+  color: inherit !important;
+}
+
+.store-operation-edit-page .user-toast-close:hover {
+  opacity: 0.8 !important;
+}
