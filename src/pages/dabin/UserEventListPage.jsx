@@ -108,7 +108,6 @@ const UserEventListPage = () => {
                         <div className="user-event-list-event-content">
                             <div className="user-event-list-event-info">
                                 <h3 className="user-event-list-event-title">{event.eventMasterName}</h3>
-                                <p className="user-event-list-event-condition">{event.eventMasterCondition}</p>
                                 <p className="user-event-list-event-remaining">
                                     잔여 쿠폰 &emsp; {formatNumber(event.totalCouponPrice)} CM
                                 </p>

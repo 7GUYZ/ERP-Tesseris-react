@@ -9,7 +9,6 @@ export default function EventRegistrationPage() {
   const [formData, setFormData] = useState({
     couponType: "전체",
     eventName: "",
-    targetCondition: "",
     downloadCode: "",
   })
 
@@ -206,10 +205,7 @@ export default function EventRegistrationPage() {
         return;
       }
       
-      if (!formData.targetCondition || formData.targetCondition.trim() === '') {
-        showToastMessage("적용할 조건을 입력해주세요.", "error");
-        return;
-      }
+
       
       if (!formData.downloadCode || formData.downloadCode.trim() === '') {
         showToastMessage("1인당 다운로드 제한을 입력해주세요.", "error");
@@ -240,7 +236,6 @@ export default function EventRegistrationPage() {
       
       const requestData = {
         eventName: formData.eventName.trim(),
-        eventCondition: formData.targetCondition,
         eventDownLimit: parseInt(formData.downloadCode) || 0,
         couponIssuanceIndexList: selectedCoupons
       }
@@ -254,7 +249,6 @@ export default function EventRegistrationPage() {
         setFormData({
           couponType: "전체", // 필터링 초기화
           eventName: "",
-          targetCondition: "적용할 조건",
           downloadCode: "",
         })
         setSelectedCoupons([])
@@ -376,20 +370,7 @@ export default function EventRegistrationPage() {
           />
         </div>
 
-        <div className="event-reg-form-group">
-          <label>적용할 조건</label>
-          <input
-            type="text"
-            value={formData.targetCondition}
-            onChange={(e) => handleInputChange("targetCondition", e.target.value)}
-            className="event-reg-form-input"
-            placeholder="적용할 조건을 입력하세요"
-            inputMode="text"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-          />
-        </div>
+
 
         <div className="event-reg-form-group">
           <label>1인당 다운로드 제한</label>
