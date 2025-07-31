@@ -111,14 +111,6 @@ const StoreDetail = () => {
 
       {/* 메인 콘텐츠 */}
       <div className="store-detail-content">
-        {/* 가맹점 이미지 카드 */}
-        <div className="store-image-card">
-          <div className="store-logo">
-            <div className="logo-placeholder">
-              <span>1</span>
-            </div>
-          </div>
-        </div>
 
         {/* 영업 상태 바 */}
         <div className="business-status-bar">
