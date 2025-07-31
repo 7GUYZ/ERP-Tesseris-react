@@ -190,6 +190,9 @@ export default function RegisterStore2() {
         console.log('🧹 RegisterStore2: 비정상 종료 감지 - localStorage 정리')
         localStorage.removeItem('register-store-temp')
         localStorage.removeItem('register-store-agreements')
+        localStorage.removeItem('temp-business-license-file')
+        localStorage.removeItem('temp-sign-photo-file')
+        localStorage.removeItem('temp-front-photo-file')
         if (window.tempFormData) {
           delete window.tempFormData
         }
@@ -224,11 +227,18 @@ export default function RegisterStore2() {
 
   // 파일 검증 함수
   const validateFile = useCallback((file) => {
-    // 파일 크기 검증 (10MB 제한)
-    const maxSize = 10 * 1024 * 1024 // 10MB
+    // 파일 크기 검증 (localStorage 용량 고려하여 5MB로 제한)
+    const maxSize = 5 * 1024 * 1024 // 5MB
     if (file.size > maxSize) {
-      alert('파일 크기는 10MB 이하여야 합니다.')
+      alert(`파일 크기는 5MB 이하여야 합니다.\n현재 파일: ${(file.size / 1024 / 1024).toFixed(2)}MB\n\n더 작은 크기의 이미지를 선택하거나 이미지를 압축해주세요.`)
       return false
+    }
+    
+    // 권장 크기 안내 (2MB 이상일 때)
+    const recommendedSize = 2 * 1024 * 1024 // 2MB
+    if (file.size > recommendedSize) {
+      console.warn(`⚠️ 권장 크기 초과: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
+      console.warn('⚠️ 권장 크기는 2MB 이하입니다. 압축하여 저장됩니다.')
     }
     
     // 이미지 형식 검증 (iOS Photos 앱 대응)
@@ -273,6 +283,59 @@ export default function RegisterStore2() {
     // 여기서는 파일명만 생성하여 반환
     console.log(`파일 저장 시뮬레이션: ${fileName}`)
     return fileName
+  }, [])
+
+  // 이미지 압축 함수 (동적 품질 조정)
+  const compressImage = useCallback((file, maxWidth = 1200, quality = null) => {
+    // 파일 크기에 따른 동적 품질 조정
+    if (quality === null) {
+      const fileSizeMB = file.size / 1024 / 1024;
+      if (fileSizeMB > 3) {
+        quality = 0.6; // 3MB 이상: 낮은 품질
+      } else if (fileSizeMB > 1) {
+        quality = 0.7; // 1-3MB: 중간 품질
+      } else {
+        quality = 0.8; // 1MB 이하: 높은 품질
+      }
+      console.log(`📊 동적 품질 조정: ${file.name} (${fileSizeMB.toFixed(2)}MB) → 품질: ${quality}`);
+    }
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // 비율 유지하면서 크기 조정
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // 이미지 그리기
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // 압축된 이미지를 blob으로 변환
+        canvas.toBlob((blob) => {
+          const compressedFile = new File([blob], file.name, {
+            type: file.type,
+            lastModified: Date.now()
+          });
+          
+          console.log(`📦 이미지 압축 완료: ${file.name}`);
+          console.log(`   - 원본: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+          console.log(`   - 압축: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+          console.log(`   - 압축률: ${((1 - compressedFile.size / file.size) * 100).toFixed(1)}%`);
+          
+          resolve(compressedFile);
+        }, file.type, quality);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
   }, [])
 
   // 파일 업로드 처리 - 더 간단한 방식
@@ -434,7 +497,7 @@ export default function RegisterStore2() {
     }
   }, [])
 
-  const handleApplyClick = () => {
+  const handleApplyClick = async () => {
     // 필수 항목 검증
     if (!businessInfo.storeRegistrationNum || !businessInfo.storeCorporateName || 
         !businessInfo.storeBossName || !businessInfo.storeTypeTaxation ||
@@ -461,11 +524,203 @@ export default function RegisterStore2() {
       }
     }
     
+    // 파일들을 localStorage에 별도 저장
+    console.log("📁 파일들을 localStorage에 저장 시작...");
+    
+    // 사용자에게 압축 진행 상황 알림
+    const hasFiles = businessInfo.storeBusinessLicensePhoto || storeInfo.storeSignPhoto || storeInfo.storeFrontPhoto;
+    if (hasFiles) {
+      alert('이미지 파일을 압축하여 저장하는 중입니다.\n잠시만 기다려주세요...');
+    }
+    
+    const filePromises = [];
+    
+    // 사업자등록증 파일 저장 (압축 적용)
+    if (businessInfo.storeBusinessLicensePhoto && businessInfo.storeBusinessLicensePhoto instanceof File) {
+      const filePromise = new Promise(async (resolve) => {
+        try {
+          // 이미지 압축 (동적 품질)
+          const compressedFile = await compressImage(businessInfo.storeBusinessLicensePhoto);
+          
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const fileData = {
+                name: businessInfo.storeBusinessLicensePhoto.name, // 원본 파일명 유지
+                type: compressedFile.type,
+                size: compressedFile.size,
+                originalSize: businessInfo.storeBusinessLicensePhoto.size,
+                data: reader.result.split(',')[1] // base64 데이터만 추출
+              };
+              
+              localStorage.setItem('temp-business-license-file', JSON.stringify(fileData));
+              console.log("✅ 사업자등록증 파일 localStorage 저장:", businessInfo.storeBusinessLicensePhoto.name);
+              console.log(`   - 압축 후 크기: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+              resolve();
+            } catch (error) {
+              if (error.name === 'QuotaExceededError') {
+                console.error("❌ 사업자등록증 파일 저장 실패: localStorage 용량 초과");
+                alert('사업자등록증 파일이 너무 큽니다. 더 작은 크기의 이미지를 선택해주세요.');
+              } else {
+                console.error("❌ 사업자등록증 파일 저장 실패:", error);
+              }
+              resolve(); // 실패해도 계속 진행
+            }
+          };
+          reader.onerror = () => {
+            console.error("❌ 사업자등록증 파일 읽기 실패");
+            resolve(); // 실패해도 계속 진행
+          };
+          reader.readAsDataURL(compressedFile);
+        } catch (error) {
+          console.error("❌ 사업자등록증 파일 압축 실패:", error);
+          resolve(); // 실패해도 계속 진행
+        }
+      });
+      filePromises.push(filePromise);
+    }
+    
+    // 간판 사진 파일 저장 (압축 적용)
+    if (storeInfo.storeSignPhoto && storeInfo.storeSignPhoto instanceof File) {
+      const filePromise = new Promise(async (resolve) => {
+        try {
+          // 이미지 압축 (동적 품질)
+          const compressedFile = await compressImage(storeInfo.storeSignPhoto);
+          
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const fileData = {
+                name: storeInfo.storeSignPhoto.name, // 원본 파일명 유지
+                type: compressedFile.type,
+                size: compressedFile.size,
+                originalSize: storeInfo.storeSignPhoto.size,
+                data: reader.result.split(',')[1] // base64 데이터만 추출
+              };
+              
+              localStorage.setItem('temp-sign-photo-file', JSON.stringify(fileData));
+              console.log("✅ 간판 사진 파일 localStorage 저장:", storeInfo.storeSignPhoto.name);
+              console.log(`   - 압축 후 크기: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+              resolve();
+            } catch (error) {
+              if (error.name === 'QuotaExceededError') {
+                console.error("❌ 간판 사진 파일 저장 실패: localStorage 용량 초과");
+                alert('간판 사진 파일이 너무 큽니다. 더 작은 크기의 이미지를 선택해주세요.');
+              } else {
+                console.error("❌ 간판 사진 파일 저장 실패:", error);
+              }
+              resolve(); // 실패해도 계속 진행
+            }
+          };
+          reader.onerror = () => {
+            console.error("❌ 간판 사진 파일 읽기 실패");
+            resolve(); // 실패해도 계속 진행
+          };
+          reader.readAsDataURL(compressedFile);
+        } catch (error) {
+          console.error("❌ 간판 사진 파일 압축 실패:", error);
+          resolve(); // 실패해도 계속 진행
+        }
+      });
+      filePromises.push(filePromise);
+    }
+    
+    // 매장 정면 사진 파일 저장 (압축 적용)
+    if (storeInfo.storeFrontPhoto && storeInfo.storeFrontPhoto instanceof File) {
+      const filePromise = new Promise(async (resolve) => {
+        try {
+          // 이미지 압축 (동적 품질)
+          const compressedFile = await compressImage(storeInfo.storeFrontPhoto);
+          
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const fileData = {
+                name: storeInfo.storeFrontPhoto.name, // 원본 파일명 유지
+                type: compressedFile.type,
+                size: compressedFile.size,
+                originalSize: storeInfo.storeFrontPhoto.size,
+                data: reader.result.split(',')[1] // base64 데이터만 추출
+              };
+              
+              localStorage.setItem('temp-front-photo-file', JSON.stringify(fileData));
+              console.log("✅ 매장 정면 사진 파일 localStorage 저장:", storeInfo.storeFrontPhoto.name);
+              console.log(`   - 압축 후 크기: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+              resolve();
+            } catch (error) {
+              if (error.name === 'QuotaExceededError') {
+                console.error("❌ 매장 정면 사진 파일 저장 실패: localStorage 용량 초과");
+                alert('매장 정면 사진 파일이 너무 큽니다. 더 작은 크기의 이미지를 선택해주세요.');
+              } else {
+                console.error("❌ 매장 정면 사진 파일 저장 실패:", error);
+              }
+              resolve(); // 실패해도 계속 진행
+            }
+          };
+          reader.onerror = () => {
+            console.error("❌ 매장 정면 사진 파일 읽기 실패");
+            resolve(); // 실패해도 계속 진행
+          };
+          reader.readAsDataURL(compressedFile);
+        } catch (error) {
+          console.error("❌ 매장 정면 사진 파일 압축 실패:", error);
+          resolve(); // 실패해도 계속 진행
+        }
+      });
+      filePromises.push(filePromise);
+    }
+    
+        // 모든 파일 저장 완료 대기
+    if (filePromises.length > 0) {
+      console.log("⏳ 파일 저장 대기 중... (파일 개수:", filePromises.length, ")");
+      try {
+        await Promise.all(filePromises);
+        console.log("✅ 모든 파일 localStorage 저장 완료");
+        
+        // 저장된 파일들의 총 크기 확인
+        const totalSize = Object.keys(localStorage)
+          .filter(key => key.startsWith('temp-') && key.endsWith('-file'))
+          .reduce((total, key) => {
+            try {
+              const data = localStorage.getItem(key);
+              return total + (data ? data.length : 0);
+            } catch (e) {
+              return total;
+            }
+          }, 0);
+        
+        console.log(`📊 localStorage 사용량: ${(totalSize / 1024 / 1024).toFixed(2)}MB`);
+        
+        // 압축 완료 안내
+        if (hasFiles) {
+          console.log('🎉 모든 이미지 파일 압축 및 저장이 완료되었습니다.');
+        }
+        
+      } catch (error) {
+        console.error("❌ 파일 저장 중 오류:", error);
+        
+        if (error.name === 'QuotaExceededError') {
+          alert('파일 크기가 너무 큽니다. 더 작은 크기의 이미지를 선택해주세요.\n(권장: 각 파일당 2MB 이하)');
+          return; // 다음 단계로 진행하지 않음
+        }
+        
+        // 다른 오류의 경우 계속 진행
+        console.warn('⚠️ 일부 파일 저장에 실패했지만 계속 진행합니다.');
+      }
+    }
+
     // localStorage에 임시 저장 (다음 페이지로 데이터 전달)
     const tempData = {
       userInfo,
-      businessInfo,
-      storeInfo,
+      businessInfo: {
+        ...businessInfo,
+        storeBusinessLicensePhoto: businessInfo.storeBusinessLicensePhoto ? 'stored-in-localstorage' : null
+      },
+      storeInfo: {
+        ...storeInfo,
+        storeSignPhoto: storeInfo.storeSignPhoto ? 'stored-in-localstorage' : null,
+        storeFrontPhoto: storeInfo.storeFrontPhoto ? 'stored-in-localstorage' : null
+      },
       agreements,
       // FormData 생성 함수를 위한 참조
       createFormData: 'available'
@@ -473,15 +728,50 @@ export default function RegisterStore2() {
     localStorage.setItem('register-store-temp', JSON.stringify(tempData))
     
     // FormData도 별도로 생성해서 전역에서 접근 가능하도록 저장
+    console.log("🔨 createFormData() 함수 호출 시작");
     const formData = createFormData()
+    console.log("✅ createFormData() 함수 호출 완료");
+    
+    // FormData 내용 상세 확인
+    console.log("🔍 생성된 FormData 상세 분석:");
+    const entriesArray = Array.from(formData.entries());
+    console.log("   - 총 엔트리 수:", entriesArray.length);
+    
+    let fileCount = 0;
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        fileCount++;
+        console.log(`   - 📁 ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+      } else {
+        console.log(`   - 📝 ${key}: ${typeof value} = ${value}`);
+      }
+    }
+    console.log("   - 파일 개수:", fileCount);
+    
     // FormData를 window 객체에 임시 저장 (페이지 이동 간 유지)
+    console.log("💾 window.tempFormData에 저장 시작");
     window.tempFormData = formData
+    console.log("✅ window.tempFormData에 저장 완료");
+    
+    // 저장 후 검증
+    console.log("🔍 window.tempFormData 저장 검증:");
+    if (window.tempFormData) {
+      const verifyEntries = Array.from(window.tempFormData.entries());
+      console.log("   - 저장된 엔트리 수:", verifyEntries.length);
+      console.log("   - 저장된 파일 수:", verifyEntries.filter(([key, value]) => value instanceof File).length);
+    } else {
+      console.error("❌ window.tempFormData 저장 실패!");
+    }
     
     // 다음 페이지로 이동
     navigate('/registerstore3')
   }
 
   const handleCancelClick = () => { // 이전페이지로 이동
+    // 파일 임시 저장 정리
+    localStorage.removeItem('temp-business-license-file')
+    localStorage.removeItem('temp-sign-photo-file')
+    localStorage.removeItem('temp-front-photo-file')
     navigate('/registerstore1')
   }
 
