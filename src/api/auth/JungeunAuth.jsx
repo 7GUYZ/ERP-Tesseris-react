@@ -123,7 +123,7 @@ export const storeDetail = (store_index) => {
 }
 
 export const getCurrentCM = (user_index) => {
-  return api.get("/user/giftCM/currenCM", {
+  return api.get("/user/giftCM/currentCM", {
     params: {user_index}
   });
 }
@@ -163,9 +163,7 @@ export const getBrokerageFee = (user_index) => {
   });
 };
 
-// 이미지 불러오기 API
-export const getImage = (fileKey) => {
-  return api.get("/user/storeList/file", {
-    params: { fileKey }
-  });
+// 팝업 이미지 목록 가져오기
+export const getPopup = () => {
+  return api.get("/user/getPopup");
 }
