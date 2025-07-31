@@ -952,36 +952,29 @@
   cursor: pointer;
 } 
 
-/* StoreInfo.css에서 사용하는 토스트 스타일 통일 */
-.storeinfopage-edit-page .user-toast {
-  background-color: #170F58 !important;
-  color: #ffffff !important;
-  border: 1px solid #170F58 !important;
-}
-
+/* StoreInfo.css에서 사용하는 토스트 스타일 - Toast.jsx 기본 색상 사용 */
 .storeinfopage-edit-page .user-toast-success {
-  background-color: #170F58 !important;
-  color: #ffffff !important;
-  border: 1px solid #170F58 !important;
+  background-color: #FDCD00 !important;
+  color: #170F58 !important;
+  border: 1px solid #FDD835 !important;
 }
 
 .storeinfopage-edit-page .user-toast-error {
-  background-color: #170F58 !important;
-  color: #ffffff !important;
-  border: 1px solid #170F58 !important;
+  background-color: #ff6b6b !important;
+  color: #fff !important;
+  border: 1px solid #ff5252 !important;
 }
 
 .storeinfopage-edit-page .user-toast-info {
-  background-color: #170F58 !important;
-  color: #ffffff !important;
-  border: 1px solid #170F58 !important;
+  background-color: #F5F5F9 !important;
+  color: #170F58 !important;
+  border: 1px solid #2D1B69 !important;
 }
 
 .storeinfopage-edit-page .user-toast-close {
-  color: #ffffff !important;
+  color: inherit !important;
 }
 
 .storeinfopage-edit-page .user-toast-close:hover {
-  color: #ffffff !important;
   opacity: 0.8 !important;
 } 

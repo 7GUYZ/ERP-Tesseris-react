@@ -27,7 +27,8 @@ const StoreInfoPage = () => {
                 try {
                     const url = await getPresignedUrl(img.storeImage);
                     return { ...img, presignedUrl: url };
-                } catch {
+                } catch (error) {
+                    console.error('Presigned URL 생성 실패:', error);
                     return { ...img, presignedUrl: null };
                 }
             })
@@ -63,8 +64,10 @@ const StoreInfoPage = () => {
             console.log('Store Images Response:', storeImagesResponse);
             
             if (storeImagesResponse && storeImagesResponse.data) {
+                console.log('원본 이미지 데이터:', storeImagesResponse.data);
                 await fetchPresignedUrls(storeImagesResponse.data);
             } else {
+                console.error('이미지 데이터가 없습니다');
                 setStoreImages([]);
             }
             
@@ -151,6 +154,16 @@ const StoreInfoPage = () => {
                                                     src={image.presignedUrl || image.storeImage} 
                                                     alt={`매장 이미지 ${index + 1}`}
                                                     className="storeinfopage-store-image"
+                                                    onError={(e) => {
+                                                        console.error('이미지 로드 실패:', image.storeImage);
+                                                        // presigned URL이 실패하면 원본 URL로 재시도
+                                                        if (e.target.src === image.presignedUrl && image.storeImage) {
+                                                            e.target.src = image.storeImage;
+                                                        } else {
+                                                            // 이미지 로드 실패 시 기본 이미지 표시
+                                                            e.target.style.display = 'none';
+                                                        }
+                                                    }}
                                                 />
                                             </div>
                                         ))

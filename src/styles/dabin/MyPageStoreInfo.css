@@ -4,7 +4,6 @@
   margin: 0 auto;
   padding: 24px;
   background: #fff;
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
 .mypage-storeinfo-header {
@@ -28,12 +27,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
-  border-radius: 50%;
-}
-
-.mypage-storeinfo-back-button:hover {
-  background-color: #f0f0f0;
 }
 
 .mypage-storeinfo-title {
@@ -50,9 +43,6 @@
 
 .mypage-storeinfo-field-label {
   margin-bottom: 8px;
-  font-weight: 500;
-  color: #333;
-  font-size: 14px;
 }
 
 .mypage-storeinfo-field-input {
@@ -62,13 +52,6 @@
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 8px;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.mypage-storeinfo-field-input:focus {
-  outline: none;
-  background-color: #e8e8e8;
 }
 
 .mypage-storeinfo-change-button {
@@ -81,168 +64,4 @@
   font-size: 20px;
   margin-top: 32px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  font-weight: 600;
-}
-
-.mypage-storeinfo-change-button:hover {
-  background-color: #0f0b3a;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .mypage-storeinfo-container {
-    max-width: 100%;
-    padding: 20px;
-  }
-  
-  .mypage-storeinfo-header {
-    height: 48px;
-    margin-bottom: 20px;
-  }
-  
-  .mypage-storeinfo-back-button {
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-  }
-  
-  .mypage-storeinfo-title {
-    font-size: 20px;
-  }
-  
-  .mypage-storeinfo-field-container {
-    margin-bottom: 14px;
-  }
-  
-  .mypage-storeinfo-field-label {
-    font-size: 13px;
-    margin-bottom: 6px;
-  }
-  
-  .mypage-storeinfo-field-input {
-    padding: 10px;
-    font-size: 13px;
-  }
-  
-  .mypage-storeinfo-change-button {
-    padding: 14px;
-    font-size: 18px;
-    margin-top: 28px;
-  }
-}
-
-@media (max-width: 480px) {
-  .mypage-storeinfo-container {
-    padding: 16px;
-  }
-  
-  .mypage-storeinfo-header {
-    height: 44px;
-    margin-bottom: 16px;
-  }
-  
-  .mypage-storeinfo-back-button {
-    font-size: 20px;
-    width: 36px;
-    height: 36px;
-    margin-right: 8px;
-  }
-  
-  .mypage-storeinfo-title {
-    font-size: 18px;
-  }
-  
-  .mypage-storeinfo-field-container {
-    margin-bottom: 12px;
-  }
-  
-  .mypage-storeinfo-field-label {
-    font-size: 12px;
-    margin-bottom: 4px;
-  }
-  
-  .mypage-storeinfo-field-input {
-    padding: 8px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-  
-  .mypage-storeinfo-change-button {
-    padding: 12px;
-    font-size: 16px;
-    margin-top: 24px;
-    border-radius: 8px;
-  }
-}
-
-@media (max-width: 360px) {
-  .mypage-storeinfo-container {
-    padding: 12px;
-  }
-  
-  .mypage-storeinfo-header {
-    height: 40px;
-    margin-bottom: 12px;
-  }
-  
-  .mypage-storeinfo-back-button {
-    font-size: 18px;
-    width: 32px;
-    height: 32px;
-    margin-right: 6px;
-  }
-  
-  .mypage-storeinfo-title {
-    font-size: 16px;
-  }
-  
-  .mypage-storeinfo-field-container {
-    margin-bottom: 10px;
-  }
-  
-  .mypage-storeinfo-field-label {
-    font-size: 11px;
-    margin-bottom: 3px;
-  }
-  
-  .mypage-storeinfo-field-input {
-    padding: 6px;
-    font-size: 11px;
-    border-radius: 4px;
-  }
-  
-  .mypage-storeinfo-change-button {
-    padding: 10px;
-    font-size: 14px;
-    margin-top: 20px;
-    border-radius: 6px;
-  }
-}
-
-/* 터치 디바이스 최적화 */
-@media (hover: none) and (pointer: coarse) {
-  .mypage-storeinfo-back-button:hover {
-    background-color: transparent;
-  }
-  
-  .mypage-storeinfo-back-button:active {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-  
-  .mypage-storeinfo-change-button:hover {
-    background-color: #170F58;
-  }
-  
-  .mypage-storeinfo-change-button:active {
-    background-color: #0f0b3a;
-    transform: scale(0.98);
-  }
-  
-  .mypage-storeinfo-field-input:focus {
-    background-color: #f5f5f5;
-    outline: 2px solid #170F58;
-    outline-offset: 2px;
-  }
 } 

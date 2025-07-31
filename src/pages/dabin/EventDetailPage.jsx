@@ -68,7 +68,29 @@ export default function EventDetailPage() {
       
       if (response.data.resultCode === 200) {
         console.log('EventDetail Data:', response.data.data);
-        setEventDetail(response.data.data)
+        
+        // 쿠폰 데이터 매핑 (EventRegistrationPage와 동일한 방식)
+        const mappedEventDetail = {
+          ...response.data.data,
+          coupons: response.data.data.coupons?.map((coupon, index) => {
+            console.log(`쿠폰 ${index} 전체 데이터:`, coupon);
+            console.log(`쿠폰 ${coupon.couponName} - couponLimit:`, coupon.couponLimit);
+            console.log(`쿠폰 ${coupon.couponName} - couponIssuanceTime:`, coupon.couponIssuanceTime);
+            
+            return {
+              couponIndex: coupon.couponIndex,
+              couponName: coupon.couponName,
+              couponPrice: coupon.couponPrice,
+              couponIssuanceStatus: coupon.couponIssuanceStatus,
+              couponLimit: coupon.couponLimit,
+              couponLimitTime: coupon.couponLimitTime,
+              couponIssuanceTime: coupon.couponIssuanceTime,
+              storeName: coupon.storeName
+            };
+          }) || []
+        };
+        
+        setEventDetail(mappedEventDetail)
         
         // 2. 가맹점 이미지 조회 (store_main_image_status = 'T'인 메인 이미지만)
         try {
@@ -238,56 +260,26 @@ export default function EventDetailPage() {
       <div className="event-reg-coupons-container">
         {eventDetail.coupons && eventDetail.coupons.length > 0 ? (
           eventDetail.coupons.map((coupon, index) => (
-            <div key={coupon.couponIndex} className="event-reg-coupon-card selected">
-              <div className={`event-reg-coupon-background ${getCouponType(coupon.couponPrice)}`}>
-                {/* Checkbox */}
-                <div className="event-reg-coupon-checkbox">
-                  <input
-                    type="checkbox"
-                    id={`event-detail-coupon-checkbox-${coupon.couponIndex}`}
-                    checked={true}
-                    readOnly
-                    className="event-reg-checkbox-input"
-                  />
-                  <label htmlFor={`event-detail-coupon-checkbox-${coupon.couponIndex}`} className="event-reg-checkbox-label"></label>
+            <div key={coupon.couponIndex} className="event-detail-coupon-card">
+              <div className="event-reg-coupon-header">
+                <div className="event-reg-coupon-price">
+                  {(coupon.couponPrice || 0).toLocaleString()}원
                 </div>
-
-                <div className="event-reg-coupon-brand">
-                  <div className="event-reg-brand-logo">Tesseris</div>
-                  <div className="event-reg-brand-decoration"></div>
+              </div>
+                
+              <div className="event-reg-coupon-body">
+                <h3 className="event-reg-coupon-name">{coupon.couponName}</h3>
+                <div className="event-reg-coupon-store">
+                  발급 가맹점: {coupon.storeName || '가맹점 정보 없음'}
                 </div>
-
-                <div className="event-reg-coupon-content">
-                  <div className="event-reg-coupon-info-box">
-                    <div className="event-reg-coupon-name">{coupon.couponName}</div>
-                    <div className="event-reg-coupon-status">{coupon.couponIssuanceStatus}</div>
-                    <div className="event-reg-coupon-period">
-                      {coupon.couponLimitTime 
-                        ? new Date(coupon.couponLimitTime).toLocaleDateString() 
-                        : (coupon.couponLimit ? `${coupon.couponLimit}일` : '')}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="event-reg-coupon-badge">
-                  <div className="event-reg-badge-circle">
-                    <div className="event-reg-badge-text">TESSERIS KOREA INC.</div>
-                    <div className="event-reg-badge-dots">••••••••••••</div>
-                    <div className="event-reg-badge-amount">{(coupon.couponPrice || 0).toLocaleString()}</div>
-                    <div className="event-reg-badge-dots">••••••••••••</div>
-                  </div>
-                </div>
-
-                <div className="event-reg-coupon-decoration">
-                  <div className="event-reg-decoration-lines"></div>
-                  <div className="event-reg-decoration-elements">
-                    <div className="event-reg-decoration-leaf"></div>
-                  </div>
-                </div>
-
-                <div className="event-reg-selection-overlay">
-                  <div className="event-reg-selection-check">
-                    <Check className="w-8 h-8" />
+                <p className="event-reg-coupon-condition">쿠폰 사용 조건</p>
+                
+                <div className="event-reg-coupon-details">
+                  <div className="event-reg-coupon-detail-item">
+                    <span className="event-reg-detail-label">사용 기간:</span>
+                    <span className="event-reg-detail-value">
+                      {coupon.couponLimit ? `${coupon.couponLimit}일` : '기간 정보 없음'}
+                    </span>
                   </div>
                 </div>
               </div>

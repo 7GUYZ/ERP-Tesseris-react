@@ -257,78 +257,52 @@ const UserEventDetailPage = () => {
 
             {/* Coupon Section */}
             <div className="event-reg-coupons-container">
-                {eventDetail.coupons && eventDetail.coupons.map((coupon, index) => (
-                    <div key={coupon.couponIndex} className="event-reg-coupon-card selected">
-                        <div className={`event-reg-coupon-background ${getCouponType(coupon.couponPrice)}`}>
-                            {/* Checkbox */}
-                            <div className="event-reg-coupon-checkbox">
-                                <input
-                                    type="checkbox"
-                                    id={`user-event-detail-coupon-checkbox-${coupon.couponIndex}`}
-                                    checked={true}
-                                    readOnly
-                                    className="event-reg-checkbox-input"
-                                />
-                                <label htmlFor={`user-event-detail-coupon-checkbox-${coupon.couponIndex}`} className="event-reg-checkbox-label"></label>
+                {eventDetail.coupons && eventDetail.coupons.length > 0 ? (
+                    eventDetail.coupons.map((coupon, index) => (
+                        <div key={coupon.couponIndex} className="event-detail-coupon-card">
+                            <div className="event-reg-coupon-header">
+                                <div className="event-reg-coupon-price">
+                                    {(coupon.couponPrice || 0).toLocaleString()}원
+                                </div>
                             </div>
-
-                            <div className="event-reg-coupon-brand">
-                                <div className="event-reg-brand-logo">Tesseris</div>
-                                <div className="event-reg-brand-decoration"></div>
-                            </div>
-
-                            <div className="event-reg-coupon-content">
-                                <div className="event-reg-coupon-info-box">
-                                    <div className="event-reg-coupon-name">{coupon.couponName}</div>
-                                    <div className="event-reg-coupon-status">{coupon.couponIssuanceStatus}</div>
-                                    <div className="event-reg-coupon-period">
-                                        {coupon.couponLimitTime 
-                                            ? new Date(coupon.couponLimitTime).toLocaleDateString() 
-                                            : (coupon.couponLimit ? `${coupon.couponLimit}일` : '')}
+                            
+                            <div className="event-reg-coupon-body">
+                                <h3 className="event-reg-coupon-name">{coupon.couponName}</h3>
+                                <div className="event-reg-coupon-store">
+                                    발급 가맹점: {coupon.storeName || '가맹점 정보 없음'}
+                                </div>
+                                
+                                <div className="event-reg-coupon-details">
+                                    <div className="event-reg-coupon-detail-item">
+                                        <span className="event-reg-detail-label">사용 기간:</span>
+                                        <span className="event-reg-detail-value">
+                                            {coupon.couponLimit ? `${coupon.couponLimit}일` : '기간 정보 없음'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="event-reg-coupon-badge">
-                                <div className="event-reg-badge-circle">
-                                    <div className="event-reg-badge-text">TESSERIS KOREA INC.</div>
-                                    <div className="event-reg-badge-dots">••••••••••••</div>
-                                    <div className="event-reg-badge-amount">{(coupon.couponPrice || 0).toLocaleString()}</div>
-                                    <div className="event-reg-badge-dots">••••••••••••</div>
-                                </div>
-                            </div>
-
-                            <div className="event-reg-coupon-decoration">
-                                <div className="event-reg-decoration-lines"></div>
-                                <div className="event-reg-decoration-elements">
-                                    <div className="event-reg-decoration-leaf"></div>
-                                </div>
-                            </div>
-
-                            <div className="event-reg-selection-overlay">
-                                <div className="event-reg-selection-check">
-                                    <Check className="w-8 h-8" />
-                                </div>
+                            {/* 쿠폰 받기 기능 유지 */}
+                            <div className="event-reg-coupon-footer">
+                                {coupon.couponIssuanceStatus === '보유중' ? (
+                                    <button
+                                        className="user-event-detail-download-button"
+                                        onClick={() => handleCouponDownload(coupon.couponIndex)}
+                                        disabled={downloading}
+                                    >
+                                        {downloading ? '다운로드 중...' : '쿠폰 받기'}
+                                    </button>
+                                ) : (
+                                    <button className="event-reg-coupon-detail-btn">
+                                        쿠폰 상세보기
+                                    </button>
+                                )}
                             </div>
                         </div>
-
-                        <div className="event-reg-coupon-footer">
-                            {coupon.couponIssuanceStatus === '보유중' ? (
-                                <button
-                                    className="user-event-detail-download-button"
-                                    onClick={() => handleCouponDownload(coupon.couponIndex)}
-                                    disabled={downloading}
-                                >
-                                    {downloading ? '다운로드 중...' : '쿠폰 받기'}
-                                </button>
-                            ) : (
-                                <button className="event-reg-coupon-detail-btn">
-                                    쿠폰 상세보기
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <div className="event-detail-error">쿠폰 정보가 없습니다.</div>
+                )}
             </div>
             
             {/* Download Confirmation Modal */}

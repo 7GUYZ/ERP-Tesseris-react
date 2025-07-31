@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { getUserActiveEvents, getUserEndedEvents } from '../../api/auth/DabinAuth';
+import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/UserEventListPage.css';
 
 const UserEventListPage = () => {
@@ -9,7 +10,23 @@ const UserEventListPage = () => {
     const [activeEvents, setActiveEvents] = useState([]);
     const [endedEvents, setEndedEvents] = useState([]);
     const [loading, setLoading] = useState(false);
+    
+    // Toast states
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('info');
+    const [showToast, setShowToast] = useState(false);
+    
     const navigate = useNavigate();
+
+    const showToastMessage = (message, type = 'info') => {
+        setToastMessage(message);
+        setToastType(type);
+        setShowToast(true);
+    };
+
+    const closeToast = () => {
+        setShowToast(false);
+    };
 
     useEffect(() => {
         fetchEvents();
@@ -35,7 +52,7 @@ const UserEventListPage = () => {
             }
         } catch (error) {
             console.error('이벤트 목록 조회 오류:', error);
-            alert('이벤트 목록을 불러오는데 실패했습니다.');
+            showToastMessage('이벤트 목록을 불러오는데 실패했습니다.', 'error');
         } finally {
             setLoading(false);
         }
@@ -129,6 +146,15 @@ const UserEventListPage = () => {
                     </div>
                 )}
             </div>
+            
+            {/* Toast Component */}
+            {showToast && (
+                <Toast
+                    type={toastType}
+                    message={toastMessage}
+                    onClose={closeToast}
+                />
+            )}
         </div>
     );
 };
