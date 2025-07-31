@@ -36,6 +36,7 @@ const StoreOperationViewPage = () => {
       console.error('❌ [React] 응답 상태:', error.response?.status);
       console.error('❌ [React] 응답 데이터:', error.response?.data);
       console.error('❌ [React] 요청 설정:', error.config);
+      console.error('❌ [React] 에러:', error);
     } finally {
       console.log('🔍 [React] 로딩 상태 해제');
       setLoading(false);

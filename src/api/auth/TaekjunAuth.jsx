@@ -174,3 +174,63 @@ export const userLogApi = {
                 params: { page, size } 
             }),
         };
+
+// 사용자 정보 관리 API
+export const TaekjunAuth = {
+    // 현재 사용자 정보 조회
+    getUserInfo: () => {
+        // user-info 객체에서 user_index 값을 가져오기
+        const userInfo = localStorage.getItem('user-info');
+        let userIndex = null;
+        
+        if (userInfo) {
+            try {
+                const userInfoObj = JSON.parse(userInfo);
+                userIndex = userInfoObj.user_index;
+            } catch (e) {
+                console.error('user-info 파싱 오류:', e);
+            }
+        }
+        
+        console.log('TaekjunAuth.getUserInfo - userIndex:', userIndex);
+        return api.get(`user/info`, { 
+            params: { userIndex } 
+        });
+    },
+    
+    // 사용자 정보 수정
+    updateUserInfo: (userData) => {
+        // user-info 객체에서 user_index 값을 가져오기
+        const userInfo = localStorage.getItem('user-info');
+        let userIndex = null;
+        
+        if (userInfo) {
+            try {
+                const userInfoObj = JSON.parse(userInfo);
+                userIndex = userInfoObj.user_index;
+            } catch (e) {
+                console.error('user-info 파싱 오류:', e);
+            }
+        }
+        
+        console.log('TaekjunAuth.updateUserInfo - userIndex:', userIndex, 'userData:', userData);
+        return api.put(`user/update`, userData, { 
+            params: { userIndex } 
+        });
+    },
+    
+    // 은행 목록 조회
+    getBankList: () => {
+        return api.get(`user/banks`);
+    },
+    
+    // 주소 검색 API
+    searchAddress: (query) => {
+        return api.get(`address/search`, { params: { query } });
+    },
+    
+    // 키워드 검색 API
+    searchAddressKeyword: (query) => {
+        return api.get(`address/search/keyword`, { params: { query } });
+    },
+};
