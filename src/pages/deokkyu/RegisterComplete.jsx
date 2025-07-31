@@ -65,11 +65,15 @@ export default function RegisterComplete() {
           
           // 서버에서 요구하는 storeData JSON 문자열 생성
           const serverStoreData = {
+            userIndex: storeData.userInfo?.user_index || null,  // ✅ 최상위 레벨에 userIndex 추가
             userInfo: storeData.userInfo || {},
             businessInfo: storeData.businessInfo || {},
             storeInfo: storeData.storeInfo || {},
             agreements: {}
           };
+          
+          console.log("🔍 서버로 보낼 user_index:", serverStoreData.userIndex);
+          console.log("🔍 userInfo 내부 user_index:", storeData.userInfo?.user_index);
           
           // 약관 동의 정보 추가
           const agreementData = localStorage.getItem('register-store-agreements');

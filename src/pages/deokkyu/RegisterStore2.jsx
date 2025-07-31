@@ -168,13 +168,21 @@ export default function RegisterStore2() {
         const parsed = JSON.parse(savedUserInfo)
         
         // name과 phone 필드로 직접 접근
+
+        const user_index = parsed.user_index || ''
         const name = parsed.name || ''
         const phone = parsed.phone || ''
         
         setUserInfo({
+          user_index,
           name,
           phone
         })
+        
+        console.log("🔍 RegisterStore2에서 설정된 userInfo:");
+        console.log("   - user_index:", user_index);
+        console.log("   - name:", name);
+        console.log("   - phone:", phone);
         
       } catch (error) {
         console.error('user-info 파싱 오류:', error)
@@ -507,9 +515,9 @@ export default function RegisterStore2() {
       return
     }
 
-    // 담당자 여부가 YES인데 담당자 아이디가 없는 경우
-    if (storeInfo.hasManager === 'YES' && !storeInfo.managerId) {
-      alert('담당자 아이디를 입력해주세요.')
+    // 담당자 여부가 YES인데 담당자 아이디가 없는 경우 (필수 항목)
+    if (storeInfo.hasManager === 'YES' && (!storeInfo.managerId || storeInfo.managerId.trim() === '')) {
+      alert('담당자 여부를 YES로 선택하신 경우, 담당자 아이디는 필수 입력 항목입니다.')
       return
     }
     
@@ -725,6 +733,12 @@ export default function RegisterStore2() {
       // FormData 생성 함수를 위한 참조
       createFormData: 'available'
     }
+    
+    console.log("💾 localStorage에 저장할 tempData:");
+    console.log("   - userInfo.user_index:", tempData.userInfo?.user_index);
+    console.log("   - userInfo.name:", tempData.userInfo?.name);
+    console.log("   - userInfo.phone:", tempData.userInfo?.phone);
+    
     localStorage.setItem('register-store-temp', JSON.stringify(tempData))
     
     // FormData도 별도로 생성해서 전역에서 접근 가능하도록 저장
