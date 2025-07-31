@@ -1235,4 +1235,54 @@ body {
     width: 16px;
     height: 16px;
   }
+  
+  .usermain-promotioncard-inner {
+    height: 160px;
+  }
+  
+  .usermain-promotioncard-inner {
+    height: 140px;
+  }
+}
+
+/* --- UserPromotionCard 슬라이드 스타일 --- */
+.usermain-promotioncard-inner {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.usermain-promotioncard-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  transform: translateX(100%);
+  transition: transform 1.5s ease-in-out;
+}
+
+.usermain-promotioncard-slide.active {
+  transform: translateX(0);
+}
+
+.usermain-promotioncard-slide.slide-left {
+  transform: translateX(-100%);
+}
+
+.usermain-promotioncard-slide.slide-right {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.usermain-promotioncard-slide img {
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  object-fit: cover;
+  object-position: center;
+  margin: 12px;
+  border-radius: 8px;
 }
