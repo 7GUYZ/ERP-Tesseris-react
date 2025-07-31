@@ -2,6 +2,7 @@
   "name": "tesseris-react",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:19091",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -40,7 +41,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:19091",
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -64,8 +64,9 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11"
   },
-  "homepage": "__PUBLIC_URL__"
+  "homepage": ""
 }
+
 
 
 

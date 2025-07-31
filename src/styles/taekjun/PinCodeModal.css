@@ -143,7 +143,7 @@
 }
 
 .pin-confirm-btn.active {
-  background: linear-gradient(135deg, #170F58 0%, #FDCD00 100%);
+  background: #170F58;
   color: white;
 }
 

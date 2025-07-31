@@ -76,9 +76,27 @@ export const Map = ({ stores = [] }) => {
             if (!document.getElementById("kakao-map-script")) {
                 const script = document.createElement("script");
                 script.id = "kakao-map-script";
-                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=d3847b4792faef3e7980502f1f8e30f2&autoload=false&libraries=services`;
+                const apiKey = process.env.REACT_APP_KAKAO_MAP_API_KEY;
+                
+                // 환경변수 디버깅
+                console.log('🔍 환경변수 확인:', {
+                    apiKey: apiKey ? '설정됨' : '설정되지 않음',
+                    apiKeyValue: apiKey ? `${apiKey.substring(0, 8)}...` : '없음',
+                    envVars: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_'))
+                });
+
+                if (!apiKey) {
+                    console.error('❌ 카카오 지도 API 키가 설정되지 않았습니다!');
+                    console.error('📝 .env 파일에 REACT_APP_KAKAO_MAP_API_KEY=d3847b4792faef3e7980502f1f8e30f2 를 추가하고 서버를 재시작해주세요.');
+                    return;
+                }
+
+                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
                 script.async = true;
                 script.onload = createMapAndMarkers;
+                script.onerror = () => {
+                    console.error('❌ 카카오 지도 스크립트 로드 실패');
+                };
                 document.head.appendChild(script);
             } else {
                 document.getElementById("kakao-map-script").addEventListener("load", createMapAndMarkers);
@@ -116,30 +134,46 @@ const StoreListForm = () => {
     const location = useLocation();
     const navigate = useNavigate();
     // category 쿼리 없으면 "0"(전체)로
-    const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "0");
+    const [selectedCategory, setSelectedCategory] = useState(searchParams.get("store_category_index") ?? "0");
     const [stores, setStores] = useState([]);
     const [categories, setCategories] = useState([]);
     const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "list"); // "list" 또는 "map"
     const [searchKeyword, setSearchKeyword] = useState('');
     const [filteredStores, setFilteredStores] = useState([]);
     const [loading, setLoading] = useState(false);
+    
+    // URL 파라미터에서 user_index 가져오기, 없으면 로그인한 유저의 user_index 사용
+    const urlUserIndex = searchParams.get("user_index");
+    const [currentUserIndex, setCurrentUserIndex] = useState(
+        urlUserIndex ? Number(urlUserIndex) : Number(JSON.parse(localStorage.getItem("user-info"))?.user_index)
+    );
 
     // 쿼리스트링이 바뀔 때마다 state 동기화
     useEffect(() => {
-        let category = searchParams.get("category");
+        let category = searchParams.get("store_category_index");
         if (!category) category = "0";
         const tab = searchParams.get("tab") || "list";
         setSelectedCategory(category);
         setActiveTab(tab);
+        
+        // user_index도 업데이트
+        const newUrlUserIndex = searchParams.get("user_index");
+        if (newUrlUserIndex) {
+            setCurrentUserIndex(Number(newUrlUserIndex));
+        }
     }, [searchParams]);
 
     // 카테고리/탭 변경 시 쿼리스트링 동기화
     useEffect(() => {
         const params = {};
-        if (selectedCategory) params.category = selectedCategory;
+        if (selectedCategory) params.store_category_index = selectedCategory;
         if (activeTab) params.tab = activeTab;
+        // user_index도 유지
+        if (currentUserIndex !== Number(JSON.parse(localStorage.getItem("user-info"))?.user_index)) {
+            params.user_index = currentUserIndex;
+        }
         setSearchParams(params, { replace: true });
-    }, [selectedCategory, activeTab, setSearchParams]);
+    }, [selectedCategory, activeTab, currentUserIndex, setSearchParams]);
 
     // 카테고리 목록 가져오기
     useEffect(() => {
@@ -168,7 +202,14 @@ const StoreListForm = () => {
 
     // 카테고리가 바뀔 때마다 백엔드에서 데이터 받아오기
     useEffect(() => {
-        const user_index = Number(JSON.parse(localStorage.getItem("user-info"))?.user_index);
+        console.log('🔍 URL 파라미터 디버깅:', {
+            urlUserIndex: urlUserIndex,
+            parsedUrlUserIndex: urlUserIndex ? Number(urlUserIndex) : null,
+            localStorageUserIndex: Number(JSON.parse(localStorage.getItem("user-info"))?.user_index),
+            currentUserIndex: currentUserIndex,
+            selectedCategory: selectedCategory
+        });
+        
         const fetchStores = async () => {
             if (selectedCategory === null || selectedCategory === undefined) {
                 setStores([]);
@@ -176,19 +217,22 @@ const StoreListForm = () => {
             }
             try {
                 const categoryIndex = selectedCategory ? Number(selectedCategory) : 0;
-                const res = await storeList(user_index, categoryIndex);
+                console.log('📞 API 호출:', { user_index: currentUserIndex, categoryIndex });
+                const res = await storeList(currentUserIndex, categoryIndex);
              
                 if (res.data.resultCode === 200) {
+                    console.log('📦 받아온 스토어 데이터:', res.data.data);
+                    console.log('📦 첫 번째 스토어 이미지 정보:', res.data.data[0]?.storeImage);
                     setStores(res.data.data);
                  
                 }
             } catch (e) {
-                
+                console.error('❌ 스토어 데이터 로딩 오류:', e);
                 setStores([]);
             }
         };
         fetchStores();
-    }, [selectedCategory]);
+    }, [selectedCategory, currentUserIndex]);
 
     // 이미지가 없을 때 표시할 컴포넌트
     const NoImageComponent = ({ show = false }) => (
@@ -199,30 +243,37 @@ const StoreListForm = () => {
     );
 
     const StoreCard = ({ store }) => {
+        console.log('🖼️ 스토어 이미지 정보:', {
+            storeIndex: store.storeIndex,
+            storeName: store.storeName,
+            storeImage: store.storeImage,
+            storeImageType: typeof store.storeImage,
+            storeImageLength: store.storeImage?.length
+        });
+
         return (
             <div className="business-partner-card" style={{ padding: 0 }}>
                 {/* 이미지 영역 */}
                 <div className="store-list-image-container">
-                    {/* 이미지가 있을 때만 표시 */}
                     {store.storeImage ? (
-                        <>
-                            <img
-                                src={store.storeImage}
-                                alt="가맹점 이미지"
-                                className="store-list-image"
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    const noImageContainer = e.target.nextSibling;
-                                    if (noImageContainer) {
-                                        noImageContainer.classList.add('show');
-                                    }
-                                }}
-                            />
-                            <NoImageComponent show={false} />
-                        </>
-                    ) : (
-                        <NoImageComponent show={true} />
-                    )}
+                        // 이미지가 있으면 바로 표시
+                        <img
+                            src={store.storeImage}
+                            alt="가맹점 이미지"
+                            className="store-list-image"
+                            onError={(e) => {
+                                console.error('❌ 이미지 로드 실패:', store.storeImage);
+                                // 이미지 로드 실패 시 기본 이미지 표시
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                            }}
+                            onLoad={() => {
+                                console.log('✅ 이미지 로드 성공:', store.storeImage);
+                            }}
+                        />
+                    ) : null}
+                    {/* 이미지가 없거나 로드 실패 시 표시할 컴포넌트 */}
+                    <NoImageComponent show={!store.storeImage} />
                 </div>
                 <div className="card-header" style={{ padding: "1.2rem 1.5rem 0.5rem 1.5rem" }}>
                     <div
