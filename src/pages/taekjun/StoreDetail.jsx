@@ -104,7 +104,7 @@ const StoreDetail = () => {
         <button className="back-button" onClick={() => navigate(-1)}>
           ←
         </button>
-        <button className="close-button" onClick={() => navigate('/store-list')}>
+        <button className="close-button" onClick={() => navigate('/userstoreList')}>
           ✕
         </button>
       </div>
