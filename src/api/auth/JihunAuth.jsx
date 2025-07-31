@@ -3,12 +3,16 @@ import { api } from "../Http";
 export const CurrentPoint = (userid) => api.get(`/usercurrentpoint/${userid}`);
 // CM 충전
 export const confirmPayment = (paymentKey, orderId, amount, source) => {
-  const userInfo = JSON.parse(localStorage.getItem('user-info'));
-  return api.post(`/charge/confirm/${source}`, {paymentKey, orderId, amount, info: userInfo});
+    const userInfo = JSON.parse(localStorage.getItem('user-info'));
+    return api.post(`/charge/confirm/${source}`, { paymentKey, orderId, amount, info: userInfo });
 };
-
 // 비밀번호 변경
 export const changePassword = (passwordData, userIndex) => api.post("/admin/mypage/changepassword", passwordData, { params: { userIndex } });
+
+// 배너 관리 관련 API
+export const getBannerList = () => api.get("/dabin/banner/list");
+// presigned URL 받아오기
+export const getPresignedUrl = (fileKey) => api.get(`/store/images/presigned`, { params: { fileKey } });
 // =======================================================================================
 // Interceptor 등록 함수로 분리
 export function setupInterceptors() {
