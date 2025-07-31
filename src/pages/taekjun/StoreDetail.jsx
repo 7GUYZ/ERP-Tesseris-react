@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { storeListApi } from '../../api/auth/TaekjunAuth';
+import { Map } from '../../components/forms/jungeun/StoreListForm';
 import '../../styles/taekjun/StoreDetail.css';
 
 const StoreDetail = () => {
@@ -103,21 +104,13 @@ const StoreDetail = () => {
         <button className="back-button" onClick={() => navigate(-1)}>
           ←
         </button>
-        <button className="close-button" onClick={() => navigate('/store-list')}>
+        <button className="close-button" onClick={() => navigate('/userstoreList')}>
           ✕
         </button>
       </div>
 
       {/* 메인 콘텐츠 */}
       <div className="store-detail-content">
-        {/* 가맹점 이미지 카드 */}
-        <div className="store-image-card">
-          <div className="store-logo">
-            <div className="logo-placeholder">
-              <span>1</span>
-            </div>
-          </div>
-        </div>
 
         {/* 영업 상태 바 */}
         <div className="business-status-bar">
@@ -162,6 +155,14 @@ const StoreDetail = () => {
               <span className="info-value">{storeDetail.storeAddress}</span>
             </div>
             
+            {/* 가맹점 위치 지도 */}
+            <div className="store-map-section">
+              <div className="info-label">위치</div>
+              <div className="store-map-container">
+                <Map stores={[storeDetail]} />
+              </div>
+            </div>
+            
             <div className="info-item">
               <span className="info-label">연락처</span>
               <span className="info-value">{storeDetail.storePhone}</span>
@@ -199,6 +200,11 @@ const StoreDetail = () => {
               </div>
             )}
             
+            <div className="info-item">
+              <span className="info-label">영업 상태</span>
+              <span className="info-value">{getBusinessStatusText(storeDetail.storeBusinessState)}</span>
+            </div>
+            
             {storeDetail.storeTemporaryClosingDate && (
               <div className="info-item">
                 <span className="info-label">임시 휴무</span>
@@ -208,22 +214,6 @@ const StoreDetail = () => {
                 </span>
               </div>
             )}
-            
-            {storeDetail.storeRegularClosingInterval && storeDetail.storeRegularClosingWeek && (
-              <div className="info-item">
-                <span className="info-label">정기 휴무</span>
-                <span className="info-value">
-                  {storeDetail.storeRegularClosingInterval} {storeDetail.storeRegularClosingWeek}
-                </span>
-              </div>
-            )}
-            
-            <div className="info-item">
-              <span className="info-label">영업 상태</span>
-              <span className="info-value">{getBusinessStatusText(storeDetail.storeBusinessState)}</span>
-            </div>
-            
-
           </div>
 
           {/* 가맹점 소개 */}

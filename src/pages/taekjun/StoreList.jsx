@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { storeListApi } from '../../api/auth/TaekjunAuth';
+import { Map } from '../../components/forms/jungeun/StoreListForm';
 import '../../styles/taekjun/StoreList.css';
 
 const StoreList = () => {
@@ -12,10 +13,6 @@ const StoreList = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
-
-  // 시/도, 구/군 데이터 (실제로는 API에서 가져와야 함)
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -50,6 +47,9 @@ const StoreList = () => {
         response.data.data.forEach((store, index) => {
           console.log(`가맹점 ${index + 1}:`, {
             storeName: store.storeName,
+            storeImage: store.storeImage,
+            storeImageType: typeof store.storeImage,
+            storeImageLength: store.storeImage?.length,
             storeBusinessDate: store.storeBusinessDate,
             storeBusinessHour: store.storeBusinessHour,
             storeRestHour: store.storeRestHour,
@@ -145,28 +145,6 @@ const StoreList = () => {
 
       {/* 검색 및 필터 섹션 */}
       <div className="search-filter-section">
-        {/* 지역 선택 */}
-        <div className="location-filters">
-          <select 
-            value={selectedCity} 
-            onChange={(e) => setSelectedCity(e.target.value)}
-            className="location-select"
-          >
-            <option value="">-시/도 전체-</option>
-            <option value="seoul">서울</option>
-            <option value="incheon">인천</option>
-            {/* 추가 지역 옵션들 */}
-          </select>
-          <select 
-            value={selectedDistrict} 
-            onChange={(e) => setSelectedDistrict(e.target.value)}
-            className="location-select"
-          >
-            <option value="">-구/군 전체-</option>
-            {/* 선택된 시/도에 따른 구/군 옵션들 */}
-          </select>
-        </div>
-
         {/* 카테고리 필터 */}
         <div className="category-filters">
           <button 
@@ -208,7 +186,9 @@ const StoreList = () => {
       {/* 에러 메시지 */}
       {error && <div className="error-message">{error}</div>}
 
-      {/* 가맹점 목록 */}
+
+
+      {/* 가맹점 목록 또는 지도 */}
       <div className="store-list-content">
         {loading ? (
           <div className="loading-message">로딩 중...</div>
@@ -216,7 +196,13 @@ const StoreList = () => {
           <div className="no-data-message">
             검색 조건에 맞는 가맹점이 없습니다.
           </div>
+        ) : viewMode === 'map' ? (
+          // 지도 모드
+          <div className="map-container">
+            <Map stores={stores} />
+          </div>
         ) : (
+          // 목록 모드
           <div className="store-grid">
             {stores.map((store) => (
               <div 
@@ -227,12 +213,23 @@ const StoreList = () => {
                 {/* 가맹점 이미지 */}
                 <div className="store-image">
                   {store.storeImage ? (
-                    <img src={store.storeImage} alt={store.storeName} />
-                  ) : (
-                    <div className="store-image-placeholder">
-                      <span>1</span>
-                    </div>
-                  )}
+                    <img 
+                      src={store.storeImage} 
+                      alt={store.storeName}
+                      onLoad={() => console.log('✅ 이미지 로드 성공:', store.storeImage)}
+                      onError={(e) => {
+                        console.error('❌ 이미지 로드 실패:', store.storeImage);
+                        e.target.style.display = 'none';
+                        const placeholder = e.target.nextSibling;
+                        if (placeholder) {
+                          placeholder.style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div className="store-image-placeholder" style={{ display: store.storeImage ? 'none' : 'flex' }}>
+                    <span>🏪</span>
+                  </div>
                 </div>
 
                 {/* 가맹점 정보 */}

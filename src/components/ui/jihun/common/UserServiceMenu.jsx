@@ -63,20 +63,20 @@ export default function UserServiceMenu() {
     serviceItems = [
       { icon: FileUser, label: "정회원 신청", color: "usermain-icon-orange", path: "/main" },
       { icon: Coins, label: "CM 충전", color: "usermain-icon-pink", path: "/main" },
-      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/main" },
+      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/user-log" },
       { icon: BanknoteArrowUp, label: "수당 내역", color: "usermain-icon-red", path: "/user-commission-history" },
       { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: Building2, label: "가맹점 신청", color: "usermain-icon-cyan", path: "/registerstore0" },
       { icon: Tickets, label: "쿠폰 보관함", color: "usermain-icon-violet", path: "/couponlist" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
-      { icon: PartyPopper, label: "쿠폰 이벤트", color: "usermain-icon-indigo", path: "/main" },
+      { icon: PartyPopper, label: "쿠폰 이벤트", color: "usermain-icon-indigo", path: "/user-event-list" },
       { icon: ShoppingCart, label: "쇼핑몰", color: "usermain-icon-green", path: "/main" },
     ];
   }
   if (userRole === "2") {
     // 사업자 전용 메뉴 
     serviceItems = [
-      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/main" },
+      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/user-log" },
       { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: FileSearch, label: "중개수수료 현황", color: "usermain-icon-orange", path: "/brokerageFee" },
       { icon: Users, label: "산하 사업자", color: "usermain-icon-cyan", path: "/BusinessList" },
@@ -89,16 +89,16 @@ export default function UserServiceMenu() {
   if (userRole === "3") {
     // 가맹점 전용 메뉴 
     serviceItems = [
-      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/main" },
+      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/user-log" },
       { icon: BanknoteArrowUp, label: "수당 내역", color: "usermain-icon-red", path: "/user-commission-history" },
       { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: Coins, label: "CM 충전", color: "usermain-icon-pink", path: "/main" },
-      { icon: Store, label: "매장 관리", color: "usermain-icon-cyan", path: "/" },
+      { icon: Store, label: "매장 관리", color: "usermain-icon-cyan", path: "/store" },
       { icon: FolderPlus, label: "쿠폰 보관함", color: "usermain-icon-indigo", path: "/couponlist" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
       { icon: Users, label: "고객 관리", color: "usermain-icon-orange", path: "/customer-management" },
-      { icon: PartyPopper, label: "쿠폰 이벤트", color: "usermain-icon-indigo", path: "/main" },
-      { icon: CalendarPlus, label: "쿠폰 이벤트 등록", color: "usermain-icon-red", path: "/main" },
+      { icon: PartyPopper, label: "쿠폰 이벤트", color: "usermain-icon-indigo", path: "/event-list" },
+      { icon: CalendarPlus, label: "쿠폰 이벤트 등록", color: "usermain-icon-red", path: "/event-registration" },
       { icon: ShoppingCart, label: "쇼핑몰", color: "usermain-icon-green", path: "/main" },
     ];
   }

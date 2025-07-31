@@ -1053,3 +1053,236 @@ body {
     font-size: 11px;
   }
 }
+
+/* iPhone SE 반응형 추가 */
+@media (max-width: 375px) {
+  .usermain-header {
+    padding: 12px 12px 8px 12px;
+  }
+  
+  .usermain-header-title {
+    font-size: 22px;
+  }
+  
+  .usermain-header-logoicon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .usermain-header-actionicon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .usermain-bottomnavi {
+    padding: 6px 16px 6px 16px;
+    border-radius: 14px;
+  }
+  
+  .usermain-bottomnavi-inner {
+    gap: 16px;
+    height: 48px;
+  }
+  
+  .usermain-bottomnavi-btn {
+    padding: 4px 6px;
+    font-size: 10px;
+    min-width: 50px;
+  }
+  
+  .usermain-bottomnavi-icon {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 2px;
+  }
+  
+  .usermain-bottomnavi-label {
+    font-size: 10px;
+  }
+  
+  .usermain-profilecard {
+    padding: 6px;
+  }
+  
+  .usermain-profilecard-name {
+    font-size: 18px;
+  }
+  
+  .usermain-profilecard-greeting {
+    font-size: 12px;
+  }
+  
+  .usermain-profilecard-balancecard {
+    padding: 16px;
+  }
+  
+  .usermain-profilecard-balance-amount {
+    font-size: 26px;
+  }
+  
+  .usermain-profilecard-balance-unit {
+    font-size: 16px;
+  }
+  
+  .usermain-profilecard-balance-chargebtn-main {
+    padding: 10px 0;
+    font-size: 15px;
+  }
+  
+  .usermain-profilecard-badge-franchise,
+  .usermain-profilecard-badge-business,
+  .usermain-profilecard-badge-normal {
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+  
+  .usermain-servicemenu {
+    padding: 6px;
+  }
+  
+  .usermain-servicemenu-inner {
+    padding: 16px;
+  }
+  
+  .usermain-servicemenu-title {
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+  
+  .usermain-servicemenu-grid {
+    gap: 12px;
+  }
+  
+  .usermain-servicemenu-iconwrap {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .usermain-servicemenu-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .usermain-servicemenu-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 320px) {
+  .usermain-header {
+    padding: 10px 10px 6px 10px;
+  }
+  
+  .usermain-header-title {
+    font-size: 20px;
+  }
+  
+  .usermain-header-logoicon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .usermain-header-actionicon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .usermain-bottomnavi {
+    padding: 4px 12px 4px 12px;
+    border-radius: 12px;
+  }
+  
+  .usermain-bottomnavi-inner {
+    gap: 12px;
+    height: 44px;
+  }
+  
+  .usermain-bottomnavi-btn {
+    padding: 3px 4px;
+    font-size: 9px;
+    min-width: 45px;
+  }
+  
+  .usermain-bottomnavi-icon {
+    width: 14px;
+    height: 14px;
+    margin-bottom: 1px;
+  }
+  
+  .usermain-bottomnavi-label {
+    font-size: 9px;
+  }
+  
+  .usermain-profilecard-name {
+    font-size: 16px;
+  }
+  
+  .usermain-profilecard-balance-amount {
+    font-size: 24px;
+  }
+  
+  .usermain-servicemenu-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .usermain-servicemenu-iconwrap {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .usermain-servicemenu-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .usermain-promotioncard-inner {
+    height: 160px;
+  }
+  
+  .usermain-promotioncard-inner {
+    height: 140px;
+  }
+}
+
+/* --- UserPromotionCard 슬라이드 스타일 --- */
+.usermain-promotioncard-inner {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.usermain-promotioncard-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  transform: translateX(100%);
+  transition: transform 1.5s ease-in-out;
+}
+
+.usermain-promotioncard-slide.active {
+  transform: translateX(0);
+}
+
+.usermain-promotioncard-slide.slide-left {
+  transform: translateX(-100%);
+}
+
+.usermain-promotioncard-slide.slide-right {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.usermain-promotioncard-slide img {
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  object-fit: cover;
+  object-position: center;
+  margin: 12px;
+  border-radius: 8px;
+}

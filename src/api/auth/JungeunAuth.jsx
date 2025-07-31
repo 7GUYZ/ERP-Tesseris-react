@@ -92,75 +92,46 @@ export function setupInterceptors(navigate) {
 
 // 산하 사업자 등급 불러오는 api
 export const businessGradeFilter = (user_index) => {
-  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
   return api.get("/user/businessList", {
-    params: {user_index},
-    headers: {
-      Authorization: `${token}`
-    }
+    params: {user_index}
   });
 }
 // 산하 사업자 등급 선택했을 때 사업자 리스트 불러오는 api
 export const businessList = (business_grade_index) => {
-  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
   return api.get("/user/businessList/filtered", {
-    params: {business_grade_index},
-    headers: {
-      Authorization: `${token}`
-    }
+    params: {business_grade_index}
   });
 }
 
 // 가맹점 카테고리 불러오는 api
 export const storeCategoryFilter = () => {
-  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
-  return api.get("/user/storeList", {
-    headers: {
-      Authorization: `${token}`
-    }
-  });
+  return api.get("/user/storeList");
 }
 
 // 가맹점 카테고리 선택했을 때 가맹점 리스트 불러오는 api
 export const storeList = (user_index, store_category_index) => {
-  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
   return api.get("/user/storeList/filtered", {
-    params: {user_index, store_category_index},
-    headers: {
-      Authorization: `${token}`
-    }
+    params: {user_index, store_category_index}
   });
 }
 
 // 가맹점 상세보기
 export const storeDetail = (store_index) => {
-  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
   return api.get("/user/storeList/detail", {
-    params: {store_index},
-    headers: {
-      Authorization: `${token}`
-    }
+    params: {store_index}
   });
 }
 
 export const getCurrentCM = (user_index) => {
-  const token = localStorage.getItem("access-token"); // 항상 최신 토큰
-  return api.get("/user/giftCM/currenCM", {
-    params: {user_index},
-    headers: {
-      Authorization: `${token}`
-    }
+  return api.get("/user/giftCM/currentCM", {
+    params: {user_index}
   });
 }
 
 // 회원 검색 API
 export const searchUser = (recipientEmail) => {
-  const token = localStorage.getItem("access-token");
   return api.get("/user/giftCM/searchUser", {
-    params: {recipientEmail},
-    headers: {
-      Authorization: `${token}`
-    }
+    params: {recipientEmail}
   });
 }
 
@@ -173,23 +144,15 @@ export const giftTransfer = ({sendUserIndex, receiveUserIndex, giftAmount}) =>
 
 // 사용자의 알림 설정 조회
 export const getUserAlarmSetting = (userIndex, alarmTypesId) => {
-  const token = localStorage.getItem("access-token");
   return api.get("/alarms/user-alarm-setting", {
-    params: { userIndex, alarmTypesId },
-    headers: {
-      Authorization: `${token}`,
-    },
+    params: { userIndex, alarmTypesId }
   });
 };
 
 // 사용자의 알림 설정 업데이트
 export const updateUserAlarmSetting = (userIndex, alarmTypesId, isActive) => {
-  const token = localStorage.getItem("access-token");
   return api.post("/alarms/update-user-alarm-setting", null, {
-    params: { userIndex, alarmTypesId, isActive },
-    headers: {
-      Authorization: `${token}`,
-    },
+    params: { userIndex, alarmTypesId, isActive }
   });
 };
 
@@ -200,3 +163,7 @@ export const getBrokerageFee = (user_index) => {
   });
 };
 
+// 팝업 이미지 목록 가져오기
+export const getPopup = () => {
+  return api.get("/user/getPopup");
+}

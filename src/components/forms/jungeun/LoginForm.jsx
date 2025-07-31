@@ -118,6 +118,37 @@ const LoginForm = () => {
 
           // 성공 토스트 메시지
           showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
+          
+          // 외부 결제 요청인지 확인
+          const externalPaymentData = localStorage.getItem('external-payment-data');
+          if (externalPaymentData) {
+            try {
+              const parsedData = JSON.parse(externalPaymentData);
+              if (parsedData.external) {
+                console.log('외부 결제 요청 감지, 결제 페이지로 이동');
+                // 외부 결제 정보를 PaymentPage state로 전달
+                const paymentState = {
+                  fromExternal: true,
+                  externalData: parsedData,
+                  paymentData: {
+                    amount: parsedData.amount || '',
+                    selectedStore: null,
+                    selectedCoupons: [],
+                    pinCode: ''
+                  }
+                };
+                
+                localStorage.removeItem('external-payment-data'); // 사용 후 삭제
+                setTimeout(() => navigate("/payment", { state: paymentState }), 1000);
+                return;
+              }
+            } catch (error) {
+              console.error('외부 결제 데이터 파싱 오류:', error);
+              localStorage.removeItem('external-payment-data'); // 오류 시 삭제
+            }
+          }
+          
+          // 일반 로그인인 경우
           setTimeout(() => navigate("/main"), 2500);
         } else {
           showToast("error", "허용되지 않은 사용자입니다");
@@ -177,7 +208,7 @@ const LoginForm = () => {
           }}
           onClick={(e) => {
             e.preventDefault()
-            navigate("/TestFindPw")
+            navigate("/passwordfind")
           }}
         >
           비밀번호 찾기

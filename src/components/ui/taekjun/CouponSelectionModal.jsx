@@ -2,32 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { paymentApi } from '../../../api/auth/TaekjunAuth';
 import '../../../styles/taekjun/Modal.css';
 
-const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex }) => {
+const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex, storeUserIndex, paymentAmount = 0 }) => {
   const [coupons, setCoupons] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (isOpen && userIndex) {
+    if (isOpen && userIndex && storeUserIndex) {
       fetchCoupons();
     }
-  }, [isOpen, userIndex]);
+  }, [isOpen, userIndex, storeUserIndex]);
 
   const fetchCoupons = async () => {
     setLoading(true);
     setError('');
     
     try {
-      const response = await paymentApi.getUserCoupons(userIndex, searchTerm);
+      // 가맹점별 쿠폰 조회 - 검색어 없이 모든 쿠폰 가져오기
+      const response = await paymentApi.getStoreCoupons(userIndex, storeUserIndex);
       if (response.data.resultCode === 200) {
-        setCoupons(response.data.data);
+        // 단순히 해당 가맹점의 쿠폰만 표시
+        setCoupons(response.data.data || []);
       } else {
-        setError('쿠폰 목록을 불러오는데 실패했습니다.');
+        setError('가맹점 쿠폰 목록을 불러오는데 실패했습니다.');
       }
     } catch (err) {
-      console.error('쿠폰 목록 조회 오류:', err);
-      setError('쿠폰 목록을 불러오는데 실패했습니다.');
+      console.error('가맹점 쿠폰 목록 조회 오류:', err);
+      setError('가맹점 쿠폰 목록을 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -45,26 +47,26 @@ const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
+    <div className="coupon-modal-overlay">
+      <div className="coupon-modal-content">
+        <div className="coupon-modal-header">
           <h2>쿠폰 선택</h2>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <button className="coupon-modal-close" onClick={onClose}>×</button>
         </div>
         
-        <div className="modal-body">
+        <div className="coupon-modal-body">
           {/* 검색 */}
-          <div className="search-container">
+          <div className="coupon-search-container">
             <input
               type="text"
               placeholder="쿠폰명으로 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
+              className="coupon-search-input"
             />
             <button 
               onClick={handleSearch}
-              className="search-button"
+              className="coupon-search-button"
             >
               검색
             </button>
@@ -72,44 +74,51 @@ const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex }) => {
           
           {/* 로딩 */}
           {loading && (
-            <div className="loading-container">
-              <div className="loading-spinner"></div>
+            <div className="coupon-loading-container">
+              <div className="coupon-loading-spinner"></div>
               <p>쿠폰 목록을 불러오는 중...</p>
             </div>
           )}
           
           {/* 에러 */}
           {error && (
-            <div className="error-message">
+            <div className="coupon-error-message">
               {error}
             </div>
           )}
           
           {/* 쿠폰 목록 */}
           {!loading && !error && (
-            <div className="coupon-list">
+            <div className="coupon-selection-grid">
               {coupons.length === 0 ? (
-                <div className="no-results">
+                <div className="coupon-no-results">
                   {searchTerm ? '검색 결과가 없습니다.' : '사용 가능한 쿠폰이 없습니다.'}
                 </div>
               ) : (
                 coupons.map(coupon => (
                   <div
                     key={coupon.couponIndex}
-                    className="coupon-item"
+                    className="coupon-selection-card"
                     onClick={() => handleCouponSelect(coupon)}
                   >
-                    <div className="coupon-info">
-                      <div className="coupon-header">
-                        <h3 className="coupon-name">{coupon.couponName}</h3>
-                        <span className="coupon-price">{coupon.couponPrice.toLocaleString()} CM</span>
-                      </div>
-                      <div className="coupon-details">
-                        <span className="coupon-store">발급 가맹점: {coupon.storeName}</span>
-                        <span className="coupon-limit">만료일: {coupon.couponLimitTime}</span>
+                    <div className="coupon-selection-card-header">
+                      <span className="coupon-selection-status coupon-selection-status-available">사용 가능</span>
+                      <span className="coupon-selection-price">{coupon.couponPrice?.toLocaleString() || 0} CM</span>
+                    </div>
+                    <div className="coupon-selection-card-body">
+                      <h3 className="coupon-selection-name">{coupon.couponName || '쿠폰'}</h3>
+                      <p className="coupon-selection-condition">할인 쿠폰</p>
+                      <div className="coupon-selection-details">
+                        <div className="coupon-selection-detail-item">
+                          <span className="coupon-selection-detail-label">발급 가맹점</span>
+                          <span className="coupon-selection-detail-value">{coupon.storeName || '가맹점'}</span>
+                        </div>
+                        <div className="coupon-selection-detail-item">
+                          <span className="coupon-selection-detail-label">만료일</span>
+                          <span className="coupon-selection-detail-value">{coupon.couponLimitTime || '날짜 정보 없음'}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="coupon-arrow">→</div>
                   </div>
                 ))
               )}

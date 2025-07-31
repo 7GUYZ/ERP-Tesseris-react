@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getStoreMyInfo, getMyStoreImages, updateStoreInfo, getPresignedUrl, getStoreCategories } from '../../api/auth/DabinAuth';
 import { useNavigate } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
+import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/StoreInfo.css';
 
 const StoreEditPage = () => {
@@ -9,6 +11,11 @@ const StoreEditPage = () => {
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [categoryOptions, setCategoryOptions] = useState([]);
+    
+    // Toast states
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('info');
+    const [showToast, setShowToast] = useState(false);
     
     // Form states
     const [formData, setFormData] = useState({
@@ -26,6 +33,16 @@ const StoreEditPage = () => {
     const [charCount, setCharCount] = useState(0);
     
     const navigate = useNavigate();
+
+    const showToastMessage = (message, type = 'info') => {
+        setToastMessage(message);
+        setToastType(type);
+        setShowToast(true);
+    };
+
+    const closeToast = () => {
+        setShowToast(false);
+    };
 
     useEffect(() => {
         // JWT 방식으로 데이터 조회 (백엔드에서 자동으로 사용자 정보 추출)
@@ -183,7 +200,7 @@ const StoreEditPage = () => {
                 setTimeout(() => handleAddressSearch(), 100);
             };
             script.onerror = () => {
-                alert('주소 검색 서비스를 불러올 수 없습니다. 인터넷 연결을 확인해주세요.');
+                showToastMessage('주소 검색 서비스를 불러올 수 없습니다. 인터넷 연결을 확인해주세요.', 'error');
             };
             document.head.appendChild(script);
         }
@@ -192,15 +209,15 @@ const StoreEditPage = () => {
     const handleSave = async () => {
         // Validation
         if (!formData.storeName.trim()) {
-            alert('매장 명을 입력해주세요.');
+            showToastMessage('매장 명을 입력해주세요.', 'error');
             return;
         }
         if (!formData.storeAddress.trim()) {
-            alert('주소를 입력해주세요.');
+            showToastMessage('주소를 입력해주세요.', 'error');
             return;
         }
         if (!formData.storePhone.trim()) {
-            alert('핸드폰 번호를 입력해주세요.');
+            showToastMessage('핸드폰 번호를 입력해주세요.', 'error');
             return;
         }
 
@@ -211,14 +228,16 @@ const StoreEditPage = () => {
             console.log('Update Response:', response);
             
             if (response && response.data && response.data.success) {
-                alert(response.data.message);
-                navigate('/store');
+                showToastMessage(response.data.message, 'success');
+                setTimeout(() => {
+                    navigate('/store');
+                }, 1500);
             } else {
-                alert(response?.data?.message || '가맹점 정보 수정에 실패했습니다.');
+                showToastMessage(response?.data?.message || '가맹점 정보 수정에 실패했습니다.', 'error');
             }
         } catch (error) {
             console.error('Error updating store info:', error);
-            alert('가맹점 정보 수정 중 오류가 발생했습니다.');
+            showToastMessage('가맹점 정보 수정 중 오류가 발생했습니다.', 'error');
         } finally {
             setSaving(false);
         }
@@ -233,30 +252,41 @@ const StoreEditPage = () => {
     return (
         <div className="storeinfopage-edit-page">
             {/* Header */}
-            <div className="storeinfopage-header">
+            <div className="storeinfopage-header" style={{ borderBottom: '1px solid #e0e0e0', background: '#fff', marginBottom: 0 }}>
                 <button
                     onClick={handleBackClick}
                     className="storeinfopage-back-button"
                     aria-label="뒤로가기"
+                    style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', marginRight: '16px' }}
                 >
                     {"<"}
                 </button>
-                <span className="storeinfopage-title">
+                <span className="storeinfopage-title" style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '20px' }}>
                     매장 관리
                 </span>
             </div>
 
+            {/* Navigation Tabs */}
+            <Box className="storeinfopage-tabs">
+                <Typography 
+                    variant="body1" 
+                    className="storeinfopage-tab storeinfopage-tab-active"
+                    sx={{ color: '#170F58', borderBottom: '2px solid #170F58', background: '#fff', fontWeight: 700 }}
+                >
+                    기본 정보
+                </Typography>
+                <Typography 
+                    variant="body1" 
+                    className="storeinfopage-tab storeinfopage-tab-inactive"
+                    onClick={() => navigate('/store/operation')}
+                    sx={{ color: '#170F58', background: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                >
+                    운영정보
+                </Typography>
+            </Box>
+
             {/* Content */}
             <div className="storeinfopage-content">
-                {/* Tab Navigation */}
-                <div className="storeinfopage-tab-container">
-                    <div className="storeinfopage-tab active">
-                        기본 정보
-                    </div>
-                    <div className="storeinfopage-tab" onClick={() => navigate('/store/operation')} style={{ cursor: 'pointer' }}>
-                        운영정보
-                    </div>
-                </div>
 
                 {loading ? (
                     <div className="storeinfopage-loading">로딩 중...</div>
@@ -432,27 +462,50 @@ const StoreEditPage = () => {
                 )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="storeinfopage-action-buttons">
+            {/* Bottom Actions */}
+            <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                 <button
-                    type="button"
-                    className="storeinfopage-cancel-button"
+                    style={{
+                        flex: 1,
+                        background: '#ffffff',
+                        color: '#333333',
+                        padding: '16px',
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '10px',
+                        fontSize: '20px',
+                        cursor: 'pointer'
+                    }}
                     onClick={handleBackClick}
                     disabled={loading}
-                    style={{ flex: 1 }}
                 >
                     취소
                 </button>
                 <button
-                    type="button"
-                    className="storeinfopage-edit-button"
+                    style={{
+                        flex: 1,
+                        background: '#170F58',
+                        color: '#fff',
+                        padding: '16px',
+                        border: 'none',
+                        borderRadius: '10px',
+                        fontSize: '20px',
+                        cursor: 'pointer'
+                    }}
                     onClick={handleSave}
                     disabled={saving}
-                    style={{ flex: 1 }}
                 >
                     {saving ? '저장 중...' : '저장'}
                 </button>
             </div>
+            
+            {/* Toast Component */}
+            {showToast && (
+                <Toast
+                    type={toastType}
+                    message={toastMessage}
+                    onClose={closeToast}
+                />
+            )}
         </div>
     );
 };

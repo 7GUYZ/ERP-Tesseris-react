@@ -12,7 +12,7 @@
 npm install
 ```
 
-2. 주요 라이브러리 개별 설치
+2. 주요 라이브러리 개별 설치(0731 정은 추가 - js-cookie)
 ```
 npm install axios
 npm install @mui/material @emotion/react @emotion/styled
@@ -23,6 +23,7 @@ npm install sockjs-client
 npm install lucide-react
 npm install @tosspayments/payment-sdk
 npm install @tosspayments/tosspayments-sdk
+npm install js-cookie
 ```
 
 3. 한 줄 설치 (복사해서 바로 실행)
@@ -67,4 +68,4 @@ npm install; npm install axios; npm install @mui/material @emotion/react @emotio
 
 npm install date-fns
 
-운영환경 배포버전: 202507281454
+운영환경 배포버전: 202507311800

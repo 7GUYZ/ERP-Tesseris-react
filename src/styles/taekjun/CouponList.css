@@ -3,10 +3,13 @@
   min-height: 100vh;
   background: #F5F5F9;
   padding: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .coupon-list-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 800px;
   margin: 0 auto;
   background: white;
   border-radius: 20px;
@@ -29,15 +32,22 @@
   padding: 8px;
   border-radius: 50%;
   transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
 .header-back:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .back-arrow {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
+  color: white;
+  line-height: 1;
 }
 
 .header-title {
@@ -179,8 +189,11 @@
 /* 쿠폰 그리드 */
 .coupon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
 /* 쿠폰 카드 */
