@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom";
 import "../../../styles/jungeun/businessList.css";
 import { businessGradeFilter, businessList } from "../../../api/auth/JungeunAuth";
 
@@ -9,6 +10,7 @@ const BusinessListForm = () => {
   const [selectedGrade, setSelectedGrade] = useState(""); // 등급 id(gradeIndex)로 저장
   const [partners, setPartners] = useState([]);
   const [grades, setGrades] = useState([]);
+  const navigate = useNavigate();
 
   // 등급 목록 받아오기 (컴포넌트 마운트 시 1회)
   useEffect(() => {
@@ -35,12 +37,18 @@ const BusinessListForm = () => {
       try {
         const res = await businessList(selectedGrade); // selectedGrade는 gradeIndex(숫자)
         setPartners(res.data.data);
+        console.log(res.data.data);
       } catch (e) {
         setPartners([]);
       }
     };
     fetchPartners();
   }, [selectedGrade]);
+
+  const handleStoreListClick = (userIndex) => {
+    // storeListForm으로 이동하면서 user_index와 category_index=0(전체) 전달
+    navigate(`/storeList?user_index=${userIndex}&store_category_index=0`);
+  };
 
   const BusinessPartnerCard = ({ partner }) => {
     return (
@@ -89,7 +97,11 @@ const BusinessListForm = () => {
         </div>
 
         <div className="card-actions">
-          <button className="action-button primary" style={{ backgroundColor: MAIN_COLOR, color: '#fff' }}>
+          <button 
+            className="action-button primary" 
+            style={{ backgroundColor: MAIN_COLOR, color: '#fff' }}
+            onClick={() => handleStoreListClick(partner.userIndex)}
+          >
             산하 가맹점 확인
           </button>
         </div>

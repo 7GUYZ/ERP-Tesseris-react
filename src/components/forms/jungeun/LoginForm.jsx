@@ -177,7 +177,7 @@ const LoginForm = () => {
           }}
           onClick={(e) => {
             e.preventDefault()
-            navigate("/TestFindPw")
+            navigate("/passwordfind")
           }}
         >
           비밀번호 찾기

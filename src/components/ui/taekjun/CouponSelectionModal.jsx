@@ -2,32 +2,46 @@ import React, { useState, useEffect } from 'react';
 import { paymentApi } from '../../../api/auth/TaekjunAuth';
 import '../../../styles/taekjun/Modal.css';
 
-const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex }) => {
+const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex, storeUserIndex, paymentAmount = 0 }) => {
   const [coupons, setCoupons] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (isOpen && userIndex) {
+    if (isOpen && userIndex && storeUserIndex) {
       fetchCoupons();
     }
-  }, [isOpen, userIndex]);
+  }, [isOpen, userIndex, storeUserIndex, paymentAmount]);
 
   const fetchCoupons = async () => {
     setLoading(true);
     setError('');
     
     try {
-      const response = await paymentApi.getUserCoupons(userIndex, searchTerm);
+      // 가맹점별 쿠폰 조회
+      const response = await paymentApi.getStoreCoupons(userIndex, storeUserIndex, searchTerm);
       if (response.data.resultCode === 200) {
-        setCoupons(response.data.data);
+        // 결제 금액에 따라 쿠폰 필터링
+        const filteredCoupons = response.data.data.filter(coupon => {
+          // 10,000원 이상 결제 시에만 10,000원 쿠폰 표시
+          if (coupon.couponPrice === 10000) {
+            return paymentAmount >= 10000;
+          }
+          // 50,000원 이상 결제 시에만 50,000원 쿠폰 표시
+          else if (coupon.couponPrice === 50000) {
+            return paymentAmount >= 50000;
+          }
+          // 기타 쿠폰은 모두 표시
+          return true;
+        });
+        setCoupons(filteredCoupons);
       } else {
-        setError('쿠폰 목록을 불러오는데 실패했습니다.');
+        setError('가맹점 쿠폰 목록을 불러오는데 실패했습니다.');
       }
     } catch (err) {
-      console.error('쿠폰 목록 조회 오류:', err);
-      setError('쿠폰 목록을 불러오는데 실패했습니다.');
+      console.error('가맹점 쿠폰 목록 조회 오류:', err);
+      setError('가맹점 쿠폰 목록을 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -87,7 +101,7 @@ const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex }) => {
           
           {/* 쿠폰 목록 */}
           {!loading && !error && (
-            <div className="coupon-list">
+            <div className="coupon-grid">
               {coupons.length === 0 ? (
                 <div className="no-results">
                   {searchTerm ? '검색 결과가 없습니다.' : '사용 가능한 쿠폰이 없습니다.'}
@@ -96,20 +110,27 @@ const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex }) => {
                 coupons.map(coupon => (
                   <div
                     key={coupon.couponIndex}
-                    className="coupon-item"
+                    className="coupon-card"
                     onClick={() => handleCouponSelect(coupon)}
                   >
-                    <div className="coupon-info">
-                      <div className="coupon-header">
-                        <h3 className="coupon-name">{coupon.couponName}</h3>
-                        <span className="coupon-price">{coupon.couponPrice.toLocaleString()} CM</span>
-                      </div>
+                    <div className="coupon-card-header">
+                      <span className="coupon-status status-available">사용 가능</span>
+                      <span className="coupon-price">{coupon.couponPrice.toLocaleString()} CM</span>
+                    </div>
+                    <div className="coupon-card-body">
+                      <h3 className="coupon-name">{coupon.couponName}</h3>
+                      <p className="coupon-condition">할인 쿠폰</p>
                       <div className="coupon-details">
-                        <span className="coupon-store">발급 가맹점: {coupon.storeName}</span>
-                        <span className="coupon-limit">만료일: {coupon.couponLimitTime}</span>
+                        <div className="coupon-detail-item">
+                          <span className="detail-label">발급 가맹점</span>
+                          <span className="detail-value">{coupon.storeName}</span>
+                        </div>
+                        <div className="coupon-detail-item">
+                          <span className="detail-label">만료일</span>
+                          <span className="detail-value">{coupon.couponLimitTime}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="coupon-arrow">→</div>
                   </div>
                 ))
               )}
