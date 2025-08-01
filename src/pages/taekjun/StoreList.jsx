@@ -199,7 +199,15 @@ const StoreList = () => {
         ) : viewMode === 'map' ? (
           // 지도 모드
           <div className="map-container">
-            <Map stores={stores} />
+            {(() => {
+              const apiKey = process.env.REACT_APP_KAKAO_MAP_API_KEY;
+              console.log('🔍 StoreList 지도 모드 - 환경변수 확인:', {
+                apiKey: apiKey ? '설정됨' : '설정되지 않음',
+                apiKeyValue: apiKey ? `${apiKey.substring(0, 8)}...` : '없음',
+                storesLength: stores.length
+              });
+              return <Map stores={stores} />;
+            })()}
           </div>
         ) : (
           // 목록 모드
