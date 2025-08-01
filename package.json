@@ -18,6 +18,7 @@
     "@tosspayments/payment-sdk": "^1.9.1",
     "@tosspayments/tosspayments-sdk": "^2.3.5",
     "axios": "^1.10.0",
+    "cookie": "^1.0.2",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "gojs": "^3.0.24",
