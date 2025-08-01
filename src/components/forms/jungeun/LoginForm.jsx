@@ -10,6 +10,7 @@ import useAuthStore from "../../../store/jungeun/AuthStore.js"
 import { useToast } from "../../../context/jungeun/ToastContext.jsx"
 import { useWebSocket } from "../../../context/jungeun/WebSocketContext.jsx"
 import { useNotificationToast } from "../../../context/jungeun/NotificationToastContext.jsx";
+import { useEffect } from "react";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("")
@@ -20,6 +21,34 @@ const LoginForm = () => {
   const { showNotificationToast } = useNotificationToast();
   const navigate = useNavigate();
   const { connectWebSocket } = useWebSocket();
+  // 컴포넌트 마운트 시 기존 로그인 상태 체크
+  useEffect(() => {
+    const checkExistingLogin = () => {
+      const accessToken = localStorage.getItem("access-token");
+      const userInfo = localStorage.getItem("user-info");
+
+      // 이미 로그인된 상태라면 대시보드로 리다이렉트
+      if (accessToken && userInfo) {
+        try {
+          const parsedUserInfo = JSON.parse(userInfo);
+          
+          // 관리자 권한 확인
+          if (parsedUserInfo.user_role_index !== "4") {
+            // 이미 로그인된 상태이므로 대시보드로 이동
+            navigate("/main");
+            return;
+          }
+        } catch (error) {
+          console.error("기존 로그인 정보 파싱 오류:", error);
+          // 파싱 오류 시 로컬스토리지 클리어
+          localStorage.removeItem("access-token");
+          localStorage.removeItem("user-info");
+        }
+      }
+    };
+
+    checkExistingLogin();
+  }, [navigate]);
 
   // 이메일 유효성 검사
   const validateEmail = (email) => {
