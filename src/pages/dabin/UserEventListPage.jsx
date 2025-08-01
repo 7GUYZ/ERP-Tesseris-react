@@ -59,7 +59,11 @@ const UserEventListPage = () => {
     };
 
     const handleEventClick = (eventMasterIndex) => {
-        window.location.href = `/user-event-detail/${eventMasterIndex}`;
+        // 종료된 이벤트 탭에서는 클릭해도 이동하지 않음
+        if (activeTab === 'end') {
+            return;
+        }
+        navigate(`/user-event-detail/${eventMasterIndex}`);
     };
 
     const handleBackClick = () => {

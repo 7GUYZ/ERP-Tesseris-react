@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { ArrowLeft, Phone, Check, MapPin } from "lucide-react"
 import { useParams } from "react-router-dom"
-import { getEventDetail, getMyStoreImages, getPresignedUrl } from "../../api/auth/DabinAuth"
+import { getEventDetail, getEventStoreImages, getPresignedUrl } from "../../api/auth/DabinAuth"
 import { handleMouseDown, handleMouseUp, handleTouchStart, handleTouchEnd } from "../../utils/imageDownloadUtils"
 import Toast from "../../components/ui/jungeun/Toast"
 import "../../styles/dabin/EventDetailPage.css"
@@ -92,18 +92,18 @@ export default function EventDetailPage() {
         
         setEventDetail(mappedEventDetail)
         
-        // 2. 가맹점 이미지 조회 (store_main_image_status = 'T'인 메인 이미지만)
+        // 2. 이벤트에 해당하는 매장 이미지 조회
         try {
-          const storeImagesResponse = await getMyStoreImages();
-          console.log('Store Images Response:', storeImagesResponse);
+          const storeImagesResponse = await getEventStoreImages(parseInt(eventMasterIndex));
+          console.log('Event Store Images Response:', storeImagesResponse);
           
-          if (storeImagesResponse && storeImagesResponse.data) {
-            await fetchPresignedUrls(storeImagesResponse.data);
+          if (storeImagesResponse && storeImagesResponse.length > 0) {
+            await fetchPresignedUrls(storeImagesResponse);
           } else {
             setStoreImages([]);
           }
         } catch (imageError) {
-          console.error('가맹점 이미지 조회 실패:', imageError);
+          console.error('이벤트 매장 이미지 조회 실패:', imageError);
           setStoreImages([]);
         }
       } else {
@@ -213,23 +213,7 @@ export default function EventDetailPage() {
         </div>
       </div>
 
-      {/* 이미지 다운로드 안내 */}
-      {storeImages.length > 0 && (
-        <div style={{ 
-          padding: '12px 16px', 
-          backgroundColor: '#f0f8ff', 
-          color: '#170F58', 
-          fontSize: '14px', 
-          textAlign: 'center',
-          marginBottom: '8px',
-          borderRadius: '8px',
-          border: '1px solid #e0e8ff'
-        }}>
-          💡 이미지를 1초간 길게 누르면 새 탭에서 열립니다.<br/>
-          📱 모바일: 이미지 길게 누르기 → "이미지 저장" 선택<br/>
-          💻 데스크톱: 이미지 우클릭 → "이미지 저장" 선택
-        </div>
-      )}
+
 
       {/* 가게 정보 */}
       <div className="dabin-store-info">
