@@ -62,6 +62,18 @@ const UserCommissionHistoryPage = () => {
         return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}\n${hh}:${min}`;
+    };
+
     const renderPagination = () => {
         const pages = [];
         
@@ -110,58 +122,72 @@ const UserCommissionHistoryPage = () => {
     };
 
     return (
-        <div className={"user-commission-history-page"}>
+        <div className="user-commission-history-page" style={{ 
+            fontFamily: '"Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
+            backgroundColor: '#f5f5f9',
+            minHeight: '100vh'
+        }}>
             {/* Header */}
-            <div className="user-commission-history-header">
-                <button
-                    onClick={handleBackClick}
-                    className="user-commission-history-back-button"
-                    aria-label="뒤로가기"
-                >
-                    {"<"}
-                </button>
-                <span className="user-commission-history-title">
-                    수당 내역
-                </span>
+            <div className="user-commission-history-sub-header">
+                <div className="user-commission-history-back-arrow" onClick={handleBackClick}>
+                    ←
+                </div>
+                <h2 className="user-commission-history-sub-header-title">수당 내역</h2>
             </div>
 
-            {/* Content */}
+            {/* Main Content */}
             <div className="user-commission-history-content">
                 <div className="user-commission-history-table-container">
                     {loading ? (
                         <div className="user-commission-history-loading">로딩 중...</div>
                     ) : (
                         <>
-                            <table className="user-commission-history-history-table">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>충전인</th>
-                                        <th>발생일</th>
-                                        <th>충전내역</th>
-                                        <th>수당지급</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            {/* Table Header */}
+                            <div className="user-commission-history-table-header">
+                                <div className="user-commission-history-table-row">
+                                    <div>No</div>
+                                    <div>충전인</div>
+                                    <div>발생일</div>
+                                    <div>충전내역</div>
+                                    <div>수당지급</div>
+                                </div>
+                            </div>
+
+                            {/* Table Body */}
+                            <div className="user-commission-history-table-body">
                                     {historyData.length > 0 ? (
                                         historyData.map((item, index) => (
-                                            <tr key={index}>
-                                                <td>{item.rowNumber}</td>
-                                                <td>{item.userName}</td>
-                                                <td>{item.chargeDate}</td>
-                                                <td>{item.description}</td>
-                                                <td>{formatNumber(item.commissionAmount)}</td>
-                                            </tr>
+                                        <div key={index} className="user-commission-history-table-body-row">
+                                            <div className="user-commission-history-no-cell">{item.rowNumber}</div>
+                                            <div>
+                                                <span className="user-commission-history-person-badge">
+                                                    {item.userName}
+                                                </span>
+                                            </div>
+                                            <div className="user-commission-history-date-cell">{formatDate(item.chargeDate)}</div>
+                                            <div>
+                                                <span className="user-commission-history-type-badge">
+                                                    {item.description}
+                                                </span>
+                                            </div>
+                                            <div className="user-commission-history-amount-cell">
+                                                {formatNumber(item.commissionAmount)}
+                                            </div>
+                                        </div>
                                         ))
                                     ) : (
-                                        <tr>
-                                            <td colSpan="5" className="user-commission-history-no-data">
+                                    <div className="user-commission-history-table-body-row">
+                                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#666', fontStyle: 'italic', padding: '40px' }}>
                                                 내역이 없습니다.
-                                            </td>
-                                        </tr>
+                                        </div>
+                                    </div>
                                     )}
-                                </tbody>
-                            </table>
+                            </div>
+                        </>
+                    )}
+                </div>
+
+
 
                             {/* Pagination */}
                             {totalPages > 1 && (
@@ -169,9 +195,6 @@ const UserCommissionHistoryPage = () => {
                                     {renderPagination()}
                                 </div>
                             )}
-                        </>
-                    )}
-                </div>
             </div>
         </div>
     );

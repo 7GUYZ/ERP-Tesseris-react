@@ -65,11 +65,15 @@ export default function RegisterComplete() {
           
           // 서버에서 요구하는 storeData JSON 문자열 생성
           const serverStoreData = {
+            userIndex: storeData.userInfo?.user_index || null,  // ✅ 최상위 레벨에 userIndex 추가
             userInfo: storeData.userInfo || {},
             businessInfo: storeData.businessInfo || {},
             storeInfo: storeData.storeInfo || {},
             agreements: {}
           };
+          
+          console.log("🔍 서버로 보낼 user_index:", serverStoreData.userIndex);
+          console.log("🔍 userInfo 내부 user_index:", storeData.userInfo?.user_index);
           
           // 약관 동의 정보 추가
           const agreementData = localStorage.getItem('register-store-agreements');
@@ -86,22 +90,115 @@ export default function RegisterComplete() {
           // storeData를 JSON 문자열로 FormData에 추가
           formData.append('storeData', JSON.stringify(serverStoreData));
           
-          // 파일들은 별도로 추가 (서버에서 파일을 별도로 처리하는 경우)
-          if (storeData.businessInfo?.storeBusinessLicensePhoto) {
-            formData.append('storeBusinessLicensePhoto', storeData.businessInfo.storeBusinessLicensePhoto);
+          // localStorage에서 저장된 파일 정보 복원
+          console.log("📁 파일 정보 복원 시작...");
+          
+          // base64로 저장된 파일들 복원
+          const businessLicenseData = localStorage.getItem('temp-business-license-file');
+          const signPhotoData = localStorage.getItem('temp-sign-photo-file');
+          const frontPhotoData = localStorage.getItem('temp-front-photo-file');
+          
+          console.log("📁 localStorage 파일 확인:");
+          console.log("   - business-license-file:", !!businessLicenseData);
+          console.log("   - sign-photo-file:", !!signPhotoData);
+          console.log("   - front-photo-file:", !!frontPhotoData);
+          
+          // 사업자등록증 파일 복원
+          if (businessLicenseData) {
+            try {
+              const fileInfo = JSON.parse(businessLicenseData);
+              const byteCharacters = atob(fileInfo.data);
+              const byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              const blob = new Blob([byteArray], { type: fileInfo.type });
+              const file = new File([blob], fileInfo.name, { type: fileInfo.type });
+              
+              formData.append('storeBusinessLicensePhoto', file);
+              
+              const sizeInfo = fileInfo.originalSize 
+                ? `압축전: ${(fileInfo.originalSize / 1024 / 1024).toFixed(2)}MB → 압축후: ${(fileInfo.size / 1024 / 1024).toFixed(2)}MB`
+                : `${(fileInfo.size / 1024 / 1024).toFixed(2)}MB`;
+              console.log(`✅ 사업자등록증 파일 복원됨: ${fileInfo.name} (${sizeInfo}, ${fileInfo.type})`);
+            } catch (error) {
+              console.error('❌ 사업자등록증 파일 복원 실패:', error);
+            }
           }
-          if (storeData.storeInfo?.storeSignPhoto) {
-            formData.append('storeSignPhoto', storeData.storeInfo.storeSignPhoto);
+          
+          // 간판 사진 파일 복원
+          if (signPhotoData) {
+            try {
+              const fileInfo = JSON.parse(signPhotoData);
+              const byteCharacters = atob(fileInfo.data);
+              const byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              const blob = new Blob([byteArray], { type: fileInfo.type });
+              const file = new File([blob], fileInfo.name, { type: fileInfo.type });
+              
+              formData.append('storeSignPhoto', file);
+              
+              const sizeInfo = fileInfo.originalSize 
+                ? `압축전: ${(fileInfo.originalSize / 1024 / 1024).toFixed(2)}MB → 압축후: ${(fileInfo.size / 1024 / 1024).toFixed(2)}MB`
+                : `${(fileInfo.size / 1024 / 1024).toFixed(2)}MB`;
+              console.log(`✅ 간판 사진 파일 복원됨: ${fileInfo.name} (${sizeInfo}, ${fileInfo.type})`);
+            } catch (error) {
+              console.error('❌ 간판 사진 파일 복원 실패:', error);
+            }
           }
-          if (storeData.storeInfo?.storeFrontPhoto) {
-            formData.append('storeFrontPhoto', storeData.storeInfo.storeFrontPhoto);
+          
+          // 매장 정면 사진 파일 복원
+          if (frontPhotoData) {
+            try {
+              const fileInfo = JSON.parse(frontPhotoData);
+              const byteCharacters = atob(fileInfo.data);
+              const byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              const blob = new Blob([byteArray], { type: fileInfo.type });
+              const file = new File([blob], fileInfo.name, { type: fileInfo.type });
+              
+              formData.append('storeFrontPhoto', file);
+              
+              const sizeInfo = fileInfo.originalSize 
+                ? `압축전: ${(fileInfo.originalSize / 1024 / 1024).toFixed(2)}MB → 압축후: ${(fileInfo.size / 1024 / 1024).toFixed(2)}MB`
+                : `${(fileInfo.size / 1024 / 1024).toFixed(2)}MB`;
+              console.log(`✅ 매장 정면 사진 파일 복원됨: ${fileInfo.name} (${sizeInfo}, ${fileInfo.type})`);
+            } catch (error) {
+              console.error('❌ 매장 정면 사진 파일 복원 실패:', error);
+            }
           }
           
           console.log("=== 생성된 FormData 확인 ===");
           console.log("FormData 내용:");
+          let fileCount = 0;
+          let totalFileSize = 0;
           for (let [key, value] of formData.entries()) {
-            console.log(`${key}:`, value);
+            if (value instanceof File) {
+              fileCount++;
+              totalFileSize += value.size;
+              console.log(`📁 ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+            } else {
+              console.log(`📝 ${key}: ${typeof value} = ${value.substring ? value.substring(0, 100) + (value.length > 100 ? '...' : '') : value}`);
+            }
           }
+          console.log("📊 FormData 요약:");
+          console.log(`   - 총 엔트리 수: ${Array.from(formData.entries()).length}`);
+          console.log(`   - 파일 개수: ${fileCount}`);
+          console.log(`   - 총 파일 크기: ${totalFileSize} bytes (${(totalFileSize / 1024 / 1024).toFixed(2)} MB)`);
+          
+          // 브라우저 Network 탭 확인 가이드
+          console.log("🌐 브라우저 Network 탭에서 다음을 확인하세요:");
+          console.log("   1. /store/register POST 요청");
+          console.log("   2. Request Headers: Content-Type: multipart/form-data");
+          console.log("   3. Request Payload에서 파일들이 포함되어 있는지");
+          console.log("   4. Response에서 서버 로그 확인");
           
           // 가맹점 정보 서버에 저장
           console.log("📋 가맹점 정보 서버 저장 시작...");
@@ -124,6 +221,9 @@ export default function RegisterComplete() {
           localStorage.removeItem('register-store-agreements')
           localStorage.removeItem('temp-formdata-entries')
           localStorage.removeItem('temp-payment-info')
+          localStorage.removeItem('temp-business-license-file')
+          localStorage.removeItem('temp-sign-photo-file')
+          localStorage.removeItem('temp-front-photo-file')
           localStorage.removeItem('@tosspayments/client-id')
           localStorage.removeItem('@tosspayments/merchant-browser-id')
           

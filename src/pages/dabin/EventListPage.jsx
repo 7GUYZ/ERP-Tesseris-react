@@ -92,7 +92,6 @@ export default function EventListPage() {
             <div className="event-list-event-content">
               <div className="event-list-event-info">
                 <h3 className="event-list-event-title">{event.eventMasterName}</h3>
-                <p className="event-list-event-condition">{event.eventMasterCondition}</p>
                 <p className="event-list-event-remaining">
                   잔여 쿠폰 &emsp; {event.totalCouponPrice.toLocaleString()} CM
                 </p>

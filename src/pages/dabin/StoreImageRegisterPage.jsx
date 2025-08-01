@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
+import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/StoreInfo.css';
 import { getMyStoreImages, getStoreMyInfo, getPresignedUrl } from '../../api/auth/DabinAuth';
 import { api } from '../../api/Http';
@@ -11,9 +13,25 @@ const StoreImageRegisterPage = () => {
   const [detailImages, setDetailImages] = useState([]); // [{file, preview, id, url}]
   const [deleteIds, setDeleteIds] = useState([]);
   const [loading, setLoading] = useState(false);
+  
+  // Toast states
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('info');
+  const [showToast, setShowToast] = useState(false);
+  
   const mainInputRef = useRef();
   const detailInputRef = useRef();
   const navigate = useNavigate();
+
+  const showToastMessage = (message, type = 'info') => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+  };
+
+  const closeToast = () => {
+    setShowToast(false);
+  };
 
   // 이미지 목록 불러오기 (JWT 방식)
   useEffect(() => {
@@ -54,7 +72,7 @@ const StoreImageRegisterPage = () => {
   const handleDetailChange = e => {
     const files = Array.from(e.target.files);
     if (detailImages.length + files.length > MAX_DETAIL_IMAGES) {
-      alert(`상세 이미지는 최대 ${MAX_DETAIL_IMAGES}장까지 등록 가능합니다.`);
+      showToastMessage(`상세 이미지는 최대 ${MAX_DETAIL_IMAGES}장까지 등록 가능합니다.`, 'error');
       return;
     }
     files.forEach(file => {
@@ -91,7 +109,7 @@ const StoreImageRegisterPage = () => {
         storeIndex = infoRes.data.data.storeIndex;
       }
       if (!storeIndex) {
-        alert('매장 정보를 찾을 수 없습니다.');
+        showToastMessage('매장 정보를 찾을 수 없습니다.', 'error');
         setLoading(false);
         return;
       }
@@ -117,11 +135,13 @@ const StoreImageRegisterPage = () => {
         timeout: 30000
       });
       console.log('API 호출 성공');
-      alert('저장되었습니다.');
-      navigate(-1);
+      showToastMessage('저장되었습니다.', 'success');
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
     } catch (e) {
       console.error('API 호출 실패:', e);
-      alert('저장 실패');
+      showToastMessage('저장 실패', 'error');
     } finally {
       setLoading(false);
     }
@@ -129,11 +149,41 @@ const StoreImageRegisterPage = () => {
 
   return (
     <div className="storeinfopage-edit-page">
-      <div className="storeinfopage-header">
-        <button onClick={() => navigate(-1)} className="storeinfopage-back-button" aria-label="뒤로가기">{'<'}</button>
-        <span className="storeinfopage-title">이미지 등록</span>
-        <button onClick={() => navigate(-1)} className="storeinfopage-edit-button">취소</button>
+      {/* Header */}
+      <div className="storeinfopage-header" style={{ borderBottom: '1px solid #e0e0e0', background: '#fff', marginBottom: 0 }}>
+        <button
+          onClick={() => navigate(-1)}
+          className="storeinfopage-back-button"
+          aria-label="뒤로가기"
+          style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', marginRight: '16px' }}
+        >
+          {'<'}
+        </button>
+        <span className="storeinfopage-title" style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '20px' }}>
+          매장 관리
+        </span>
       </div>
+
+      {/* Navigation Tabs */}
+      <Box className="storeinfopage-tabs">
+        <Typography 
+          variant="body1" 
+          className="storeinfopage-tab storeinfopage-tab-active"
+          sx={{ color: '#170F58', borderBottom: '2px solid #170F58', background: '#fff', fontWeight: 700 }}
+        >
+          기본 정보
+        </Typography>
+        <Typography 
+          variant="body1" 
+          className="storeinfopage-tab storeinfopage-tab-inactive"
+          onClick={() => navigate('/store/operation')}
+          sx={{ color: '#170F58', background: '#fff', fontWeight: 700, cursor: 'pointer' }}
+        >
+          운영정보
+        </Typography>
+      </Box>
+
+      {/* Content */}
       <div className="storeinfopage-content">
         {/* 대표 이미지 */}
         <div className="storeinfopage-section">
@@ -181,13 +231,49 @@ const StoreImageRegisterPage = () => {
         </div>
       </div>
       
-      {/* 하단 버튼 */}
-      <div className="storeinfopage-action-buttons">
-        <button onClick={() => navigate(-1)} className="storeinfopage-cancel-button">취소</button>
-        <button onClick={handleSave} className="storeinfopage-save-button" disabled={loading}>
+      {/* Bottom Actions */}
+      <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+        <button
+          style={{
+            flex: 1,
+            background: '#ffffff',
+            color: '#333333',
+            padding: '16px',
+            border: '1px solid #e0e0e0',
+            borderRadius: '10px',
+            fontSize: '20px',
+            cursor: 'pointer'
+          }}
+          onClick={() => navigate(-1)}
+        >
+          취소
+        </button>
+        <button
+          style={{
+            flex: 1,
+            background: '#170F58',
+            color: '#fff',
+            padding: '16px',
+            border: 'none',
+            borderRadius: '10px',
+            fontSize: '20px',
+            cursor: 'pointer'
+          }}
+          onClick={handleSave}
+          disabled={loading}
+        >
           {loading ? '저장 중...' : '저장'}
         </button>
       </div>
+      
+      {/* Toast Component */}
+      {showToast && (
+        <Toast
+          type={toastType}
+          message={toastMessage}
+          onClose={closeToast}
+        />
+      )}
     </div>
   );
 };

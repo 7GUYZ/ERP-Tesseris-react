@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getStoreMyInfo, getMyStoreImages, getPresignedUrl } from '../../api/auth/DabinAuth';
 import { useNavigate } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
 import '../../styles/dabin/StoreInfo.css';
 
 const StoreInfoPage = () => {
@@ -26,7 +27,8 @@ const StoreInfoPage = () => {
                 try {
                     const url = await getPresignedUrl(img.storeImage);
                     return { ...img, presignedUrl: url };
-                } catch {
+                } catch (error) {
+                    console.error('Presigned URL 생성 실패:', error);
                     return { ...img, presignedUrl: null };
                 }
             })
@@ -62,8 +64,10 @@ const StoreInfoPage = () => {
             console.log('Store Images Response:', storeImagesResponse);
             
             if (storeImagesResponse && storeImagesResponse.data) {
+                console.log('원본 이미지 데이터:', storeImagesResponse.data);
                 await fetchPresignedUrls(storeImagesResponse.data);
             } else {
+                console.error('이미지 데이터가 없습니다');
                 setStoreImages([]);
             }
             
@@ -96,31 +100,41 @@ const StoreInfoPage = () => {
     return (
         <div className="storeinfopage-page">
             {/* Header */}
-            <div className="storeinfopage-header">
+            <div className="storeinfopage-header" style={{ borderBottom: '1px solid #e0e0e0', background: '#fff', marginBottom: 0 }}>
                 <button
                     onClick={handleBackClick}
                     className="storeinfopage-back-button"
                     aria-label="뒤로가기"
+                    style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', marginRight: '16px' }}
                 >
                     {"<"}
                 </button>
-                <span className="storeinfopage-title">
+                <span className="storeinfopage-title" style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: '20px' }}>
                     매장 관리
                 </span>
             </div>
 
+            {/* Navigation Tabs */}
+            <Box className="storeinfopage-tabs">
+                <Typography 
+                    variant="body1" 
+                    className="storeinfopage-tab storeinfopage-tab-active"
+                    sx={{ color: '#170F58', borderBottom: '2px solid #170F58', background: '#fff', fontWeight: 700 }}
+                >
+                    기본 정보
+                </Typography>
+                <Typography 
+                    variant="body1" 
+                    className="storeinfopage-tab storeinfopage-tab-inactive"
+                    onClick={handleOperationClick}
+                    sx={{ color: '#170F58', background: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                >
+                    운영정보
+                </Typography>
+            </Box>
+
             {/* Content */}
             <div className="storeinfopage-content">
-                {/* Tab Navigation */}
-                <div className="storeinfopage-tab-container">
-                    <div className="storeinfopage-tab active">
-                        기본 정보
-                    </div>
-                    <div className="storeinfopage-tab" onClick={handleOperationClick} style={{ cursor: 'pointer' }}>
-                        운영정보
-                    </div>
-                </div>
-
                 {loading ? (
                     <div className="storeinfopage-loading">로딩 중...</div>
                 ) : (
@@ -140,6 +154,16 @@ const StoreInfoPage = () => {
                                                     src={image.presignedUrl || image.storeImage} 
                                                     alt={`매장 이미지 ${index + 1}`}
                                                     className="storeinfopage-store-image"
+                                                    onError={(e) => {
+                                                        console.error('이미지 로드 실패:', image.storeImage);
+                                                        // presigned URL이 실패하면 원본 URL로 재시도
+                                                        if (e.target.src === image.presignedUrl && image.storeImage) {
+                                                            e.target.src = image.storeImage;
+                                                        } else {
+                                                            // 이미지 로드 실패 시 기본 이미지 표시
+                                                            e.target.style.display = 'none';
+                                                        }
+                                                    }}
                                                 />
                                             </div>
                                         ))
