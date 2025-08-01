@@ -12,7 +12,7 @@ const ChargeCalculator = (userCurrentPoint) => {
     const { showToast } = useToast();
     const { source } = useParams();
     const safeSource = source || 'deault';
-    const basePath = process.env.NODE_ENV === 'production' ? '/react' : '';
+    const basePath = process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '');
     // 결제 금액 계산
     const calculatePaymentDetails = () => {
         const amount = parseFloat(paymentAmount) || 0;

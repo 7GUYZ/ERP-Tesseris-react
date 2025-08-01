@@ -12,11 +12,16 @@ const PaymentCalculator = (storeData) => {
 
   // 결제 금액 계산
   const calculatePaymentDetails = () => {
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     return {
+      orderId: orderId,
       amount: franchiseFee,
       orderName: '가맹점 신청비',
       customerName: storeData?.userInfo?.name || '고객',
-      customerEmail: storeData?.userInfo?.email || 'customer@example.com'
+      customerEmail: storeData?.userInfo?.email || 'customer@example.com',
+      customerPhone: storeData?.userInfo?.phone || '',
+      successUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registercomplete?success=true`,
+      failUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registerstore3?failed=true`
     }
   }
 
@@ -48,8 +53,8 @@ const PaymentCalculator = (storeData) => {
       return
     }
 
-    // CLIENT_KEY 확인 및 검증
-    const clientKey = 'test_ck_KNbdOvk5rkmna9Q6ZzJ23n07xlzm';
+    // CLIENT_KEY 확인 및 검증 (.env에서 가져오기)
+    const clientKey = process.env.REACT_APP_TOSS_CLIENT_KEY;
     
     console.log('환경 변수 확인:', {
       'REACT_APP_TOSS_CLIENT_KEY': process.env.REACT_APP_TOSS_CLIENT_KEY ? '설정됨' : '설정되지 않음',
@@ -110,8 +115,8 @@ const PaymentCalculator = (storeData) => {
         orderName: '가맹점 신청비',
         customerName: storeData.userInfo?.name || '고객',
         customerEmail: storeData.userInfo?.email || 'customer@example.com',
-        successUrl: `${window.location.origin}/registercomplete?success=true`,
-        failUrl: `${window.location.origin}/registerstore3?failed=true`,
+        successUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registercomplete?success=true`,
+        failUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registerstore3?failed=true`,
         // 모바일 앱 리디렉션 방지 옵션
         flowMode: 'DEFAULT', // 기본 웹 결제 플로우 사용
         easyPay: null, // 간편결제 옵션 비활성화
