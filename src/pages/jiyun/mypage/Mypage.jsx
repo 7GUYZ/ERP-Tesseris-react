@@ -172,7 +172,7 @@ export default function MobileMyPage() {
                 </Link>
               )}
               {/* 계좌정보 변경  */}
-              <Link to="/account/edit" className="mypage-infoButton">
+              <Link to="/user_update" className="mypage-infoButton">
                 <div className="mypage-infoLabel">
                   <User className="menuIcon" />
                   <span>계정정보 변경</span>
