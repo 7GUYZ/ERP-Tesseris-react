@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Phone, MapPin, X } from 'lucide-react';
-import { getUserEventDetail, downloadUserCoupon, getMyStoreImages, getPresignedUrl } from '../../api/auth/DabinAuth';
+import { getUserEventDetail, downloadUserCoupon, getEventStoreImages, getPresignedUrl } from '../../api/auth/DabinAuth';
 import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/EventDetailPage.css';
 import '../../styles/dabin/dabinStoreDetail.css';
@@ -68,18 +68,18 @@ const UserEventDetailPage = () => {
                 // coupons 배열이 이미 포함되어 있음
                 setEventDetail(data);
                 
-                // 2. 가맹점 이미지 조회 (store_main_image_status = 'T'인 메인 이미지만)
+                // 2. 이벤트에 해당하는 매장 이미지 조회
                 try {
-                    const storeImagesResponse = await getMyStoreImages();
-                    console.log('Store Images Response:', storeImagesResponse);
+                    const storeImagesResponse = await getEventStoreImages(eventMasterIndex);
+                    console.log('Event Store Images Response:', storeImagesResponse);
                     
-                    if (storeImagesResponse && storeImagesResponse.data) {
-                        await fetchPresignedUrls(storeImagesResponse.data);
+                    if (storeImagesResponse && storeImagesResponse.length > 0) {
+                        await fetchPresignedUrls(storeImagesResponse);
                     } else {
                         setStoreImages([]);
                     }
                 } catch (imageError) {
-                    console.error('가맹점 이미지 조회 실패:', imageError);
+                    console.error('이벤트 매장 이미지 조회 실패:', imageError);
                     setStoreImages([]);
                 }
             } else {
@@ -216,10 +216,17 @@ const UserEventDetailPage = () => {
                                 alt={`${eventDetail.storeName} 이미지`}
                                 className="dabin-slider-image"
                                 onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    const noImageContainer = e.target.nextSibling;
-                                    if (noImageContainer) {
-                                        noImageContainer.classList.add('show');
+                                    console.error('이미지 로드 실패:', storeImages[0].storeImage);
+                                    // presigned URL이 실패하면 원본 URL로 재시도
+                                    if (e.target.src === storeImages[0].presignedUrl && storeImages[0].storeImage) {
+                                        e.target.src = storeImages[0].storeImage;
+                                    } else {
+                                        // 이미지 로드 실패 시 기본 이미지 표시
+                                        e.target.style.display = 'none';
+                                        const noImageContainer = e.target.nextSibling;
+                                        if (noImageContainer) {
+                                            noImageContainer.classList.add('show');
+                                        }
                                     }
                                 }}
                             />
