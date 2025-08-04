@@ -8,7 +8,7 @@ export const test = () =>
   api.get("/user/testBackend")
 
 export const logout = () => 
-  api.post("/auth/logout")
+  api.post("/auth/logout", {}, { headers: { "User-Type": "user" } })
 
 // Interceptor 등록 함수로 분리
 export function setupInterceptors(navigate) {
@@ -42,7 +42,7 @@ export function setupInterceptors(navigate) {
         config._retry = true;
 
         try {
-          const result = await api.post("/auth/refresh");
+          const result = await api.post("/auth/refresh", {}, { headers: { "User-Type": "user" } });
           const { success, data: accessToken } = result.data;
 
           if (!success || !accessToken) {
