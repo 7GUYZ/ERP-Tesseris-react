@@ -6,7 +6,7 @@ const PaymentCalculator = (storeData) => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState('pending') // pending, success, failed
-  const basePath = process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '');
+  const basePath = process.env.NODE_ENV === 'production' ? '/react' : '';
   
   // 가맹비 정보
   const franchiseFee = 10000
