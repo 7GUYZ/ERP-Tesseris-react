@@ -6,6 +6,7 @@ const PaymentCalculator = (storeData) => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState('pending') // pending, success, failed
+  const basePath = process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '');
   
   // 가맹비 정보
   const franchiseFee = 10000
@@ -20,8 +21,8 @@ const PaymentCalculator = (storeData) => {
       customerName: storeData?.userInfo?.name || '고객',
       customerEmail: storeData?.userInfo?.email || 'customer@example.com',
       customerPhone: storeData?.userInfo?.phone || '',
-      successUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registercomplete?success=true`,
-      failUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registerstore3?failed=true`
+      successUrl: `${window.location.origin}${basePath}/registercomplete?success=true`,
+      failUrl: `${window.location.origin}${basePath}/registerstore3?failed=true`
     }
   }
 
@@ -115,8 +116,8 @@ const PaymentCalculator = (storeData) => {
         orderName: '가맹점 신청비',
         customerName: storeData.userInfo?.name || '고객',
         customerEmail: storeData.userInfo?.email || 'customer@example.com',
-        successUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registerstore3?success=true`,
-        failUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registerstore3?failed=true`,
+        successUrl: `${window.location.origin}${basePath}/registerstore3?success=true`,
+        failUrl: `${window.location.origin}${basePath}/registerstore3?failed=true`,
         // 모바일 앱 리디렉션 방지 옵션
         flowMode: 'DEFAULT', // 기본 웹 결제 플로우 사용
         easyPay: null, // 간편결제 옵션 비활성화
