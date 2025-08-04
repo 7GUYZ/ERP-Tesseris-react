@@ -91,6 +91,13 @@
   align-items: center;
 }
 
+.user-commission-history-table-row > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
 .user-commission-history-table-body-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1.7fr 1fr 1fr; /* 날짜 부분(3번째)을 1.7fr로 넓힘 */
@@ -101,6 +108,13 @@
   border-bottom: 1px solid #f0f0f0;
   transition: background-color 0.2s ease;
   align-items: center;
+}
+
+.user-commission-history-table-body-row > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .user-commission-history-table-body-row:hover {

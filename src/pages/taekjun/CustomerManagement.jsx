@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { customerManagementApi } from '../../api/auth/TaekjunAuth';
+import PinInput from '../../components/forms/jiyun/pin-change/PinInput';
 import '../../styles/taekjun/CustomerManagement.css';
 
 const CustomerManagement = () => {
@@ -30,6 +31,9 @@ const CustomerManagement = () => {
     couponLimit: '',
     pinCode: ''
   });
+
+  // 핀번호 입력 모달 상태
+  const [showPinModal, setShowPinModal] = useState(false);
 
   // 페이지 로드 시 로컬스토리지에서 user_index 가져오기
   useEffect(() => {
@@ -229,6 +233,27 @@ const CustomerManagement = () => {
     }
   };
 
+  // 핀번호 입력 완료 핸들러
+  const handlePinComplete = (pin) => {
+    handleCouponFormChange('pinCode', pin);
+    setShowPinModal(false);
+    // 핀번호 입력 완료 후 성공 메시지 표시
+    setSuccess('핀번호가 입력되었습니다.');
+    setTimeout(() => {
+      setSuccess('');
+    }, 2000);
+  };
+
+  // 핀번호 입력 모달 열기
+  const handleOpenPinModal = () => {
+    setShowPinModal(true);
+  };
+
+  // 핀번호 입력 모달 닫기
+  const handleClosePinModal = () => {
+    setShowPinModal(false);
+  };
+
   return (
     <div className="customer-management">
       <div className="customer-management-container">
@@ -408,14 +433,30 @@ const CustomerManagement = () => {
                   
                   <div className="taekjun-coupon-modal-form-group">
                     <label>핀번호</label>
-                    <input
-                      type="password"
-                      value={couponForm.pinCode}
-                      onChange={(e) => handleCouponFormChange('pinCode', e.target.value)}
-                      placeholder="핀번호를 입력하세요"
-                      className="taekjun-coupon-modal-form-input"
-                      maxLength="6"
-                    />
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <input
+                        type="password"
+                        value={couponForm.pinCode}
+                        placeholder="핀번호를 입력하세요"
+                        className="taekjun-coupon-modal-form-input"
+                        readOnly
+                        style={{ flex: 1 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleOpenPinModal}
+                        style={{
+                          padding: '8px 16px',
+                          backgroundColor: '#170F58',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        핀번호 입력
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="taekjun-coupon-modal-selected-info">
@@ -441,6 +482,50 @@ const CustomerManagement = () => {
                 >
                   {loading ? '처리 중...' : '쿠폰 발급'}
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 핀번호 입력 모달 */}
+        {showPinModal && (
+          <div className="taekjun-coupon-modal-overlay">
+            <div className="taekjun-coupon-modal" style={{ 
+              maxWidth: '400px', 
+              width: '90%',
+              maxHeight: '80vh',
+              overflow: 'auto'
+            }}>
+              <div className="taekjun-coupon-modal-header">
+                <h3>핀번호 입력</h3>
+                <button 
+                  onClick={handleClosePinModal}
+                  className="taekjun-coupon-modal-close"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="taekjun-coupon-modal-body">
+                <div style={{ 
+                  textAlign: 'center', 
+                  padding: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '20px'
+                }}>
+                  <p style={{ 
+                    marginBottom: '10px', 
+                    color: '#666',
+                    fontSize: '16px',
+                    fontWeight: '500'
+                  }}>
+                    핀번호를 입력해주세요
+                  </p>
+                  <div style={{ width: '100%' }}>
+                    <PinInput onComplete={handlePinComplete} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

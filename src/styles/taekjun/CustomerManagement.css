@@ -240,6 +240,10 @@
   align-items: center;
 }
 
+.table-header > div {
+  text-align: center;
+}
+
 .header-checkbox {
   display: flex;
   justify-content: center;
@@ -271,6 +275,12 @@
   background-color: #F9FAFB;
 }
 
+.table-row > div {
+  font-size: 14px;
+  color: #374151;
+  text-align: center;
+}
+
 .row-checkbox {
   display: flex;
   justify-content: center;
@@ -280,11 +290,6 @@
   width: 18px;
   height: 18px;
   accent-color: #FDCD00;
-}
-
-.table-row > div {
-  font-size: 14px;
-  color: #374151;
 }
 
 .row-name {

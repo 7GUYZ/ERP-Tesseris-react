@@ -61,7 +61,7 @@ const PaymentPage = () => {
         navigate('/login');
         return;
       } else {
-        setError('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
+      setError('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
       }
     }
   }, [navigate]);
@@ -271,14 +271,14 @@ const PaymentPage = () => {
         
         // PaymentPage state 정보를 localStorage에 저장
         const paymentState = {
-          fromPayment: true,
-          requiredAmount: finalAmount,
-          paymentData: {
-            amount: amount,
-            selectedStore: selectedStore,
-            selectedCoupons: selectedCoupons,
-            pinCode: pinCode
-          }
+            fromPayment: true,
+            requiredAmount: finalAmount,
+            paymentData: {
+              amount: amount,
+              selectedStore: selectedStore,
+              selectedCoupons: selectedCoupons,
+              pinCode: pinCode
+            }
         };
         localStorage.setItem('payment-data', JSON.stringify(paymentState));
         
