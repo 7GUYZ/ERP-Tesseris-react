@@ -282,11 +282,8 @@ const PaymentCalculator = (storeData) => {
       console.log("🎊 2단계: 성공 처리 및 데이터 정리...");
       setPaymentStatus('success')
       
-      // FormData 정리 (localStorage는 RegisterComplete에서 정리)
-      if (window.tempFormData) {
-        delete window.tempFormData
-        console.log("🧹 FormData 정리 완료");
-      }
+      // FormData는 RegisterComplete에서 정리 (리다이렉트 중 유지)
+      console.log("📝 FormData는 RegisterComplete에서 정리 예정 - 현재는 유지");
       
       console.log("✅ 결제 승인 완료! 가맹점 정보 저장은 RegisterComplete에서 처리됩니다.");
       
