@@ -9,7 +9,7 @@ const PaymentCalculator = (storeData) => {
   const basePath = process.env.NODE_ENV === 'production' ? '/react' : '';
   
   // 가맹비 정보
-  const franchiseFee = 10000
+  const franchiseFee = 200000
 
   // 결제 금액 계산
   const calculatePaymentDetails = () => {
