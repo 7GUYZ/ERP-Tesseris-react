@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getStoreMyInfo, getMyStoreImages, getPresignedUrl } from '../../api/auth/DabinAuth';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
+import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/StoreInfo.css';
 
 const StoreInfoPage = () => {
@@ -9,7 +10,22 @@ const StoreInfoPage = () => {
     const [storeImages, setStoreImages] = useState([]);
     const [loading, setLoading] = useState(false);
     
+    // Toast states
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('info');
+    const [showToast, setShowToast] = useState(false);
+    
     const navigate = useNavigate();
+
+    const showToastMessage = (message, type = 'info') => {
+        setToastMessage(message);
+        setToastType(type);
+        setShowToast(true);
+    };
+
+    const closeToast = () => {
+        setShowToast(false);
+    };
 
     useEffect(() => {
         // JWT 방식으로 데이터 조회 (백엔드에서 자동으로 사용자 정보 추출)
@@ -57,6 +73,7 @@ const StoreInfoPage = () => {
                 setStoreInfo(storeInfoResponse.data.data);
             } else {
                 console.error('Failed to fetch store info:', storeInfoResponse?.data?.message || 'Unknown error');
+                showToastMessage('매장 정보를 불러오는데 실패했습니다.', 'error');
             }
             
             // 가맹점 이미지 조회 (JWT 방식)
@@ -74,6 +91,7 @@ const StoreInfoPage = () => {
         } catch (error) {
             console.error('Error fetching store data:', error);
             console.error('Error details:', error.response?.data);
+            showToastMessage('매장 정보를 불러오는데 실패했습니다.', 'error');
         } finally {
             setLoading(false);
         }
@@ -231,6 +249,15 @@ const StoreInfoPage = () => {
                     </>
                 )}
             </div>
+            
+            {/* Toast Component */}
+            {showToast && (
+                <Toast
+                    type={toastType}
+                    message={toastMessage}
+                    onClose={closeToast}
+                />
+            )}
         </div>
     );
 };

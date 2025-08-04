@@ -35,8 +35,8 @@ const StoreOperationEditPage = () => {
   const [operationInfo, setOperationInfo] = useState({
     businessHours: [],
     holidayStatus: 'N',
-    regularClosingInterval: '매주',
-    regularClosingWeek: '일요일',
+    regularClosingInterval: null,
+    regularClosingWeek: null,
     temporaryClosingDate: '',
     temporaryClosingComment: '',
     removeList: []
@@ -50,6 +50,8 @@ const StoreOperationEditPage = () => {
 
   const weekOptions = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
   const intervalOptions = ['매주', '격주'];
+  const defaultIntervalOptions = ['주기', ...intervalOptions];
+  const defaultWeekOptions = ['요일', ...weekOptions];
 
   // 시간 옵션 생성 (1분 단위)
   const generateTimeOptions = () => {
@@ -774,13 +776,14 @@ const StoreOperationEditPage = () => {
             <Box className="store-operation-edit-regular-closing-inputs">
               <FormControl size="small" className="store-operation-edit-select-field">
                 <Select
-                  value={operationInfo.regularClosingInterval}
+                  value={operationInfo.regularClosingInterval || '주기'}
                   onChange={(e) => setOperationInfo(prev => ({
                     ...prev,
-                    regularClosingInterval: e.target.value
+                    regularClosingInterval: e.target.value === '주기' ? null : e.target.value
                   }))}
+                  displayEmpty
                 >
-                  {intervalOptions.map(option => (
+                  {defaultIntervalOptions.map(option => (
                     <MenuItem key={option} value={option}>{option}</MenuItem>
                   ))}
                 </Select>
@@ -788,13 +791,14 @@ const StoreOperationEditPage = () => {
               
               <FormControl size="small" className="store-operation-edit-select-field">
                 <Select
-                  value={operationInfo.regularClosingWeek}
+                  value={operationInfo.regularClosingWeek || '요일'}
                   onChange={(e) => setOperationInfo(prev => ({
                     ...prev,
-                    regularClosingWeek: e.target.value
+                    regularClosingWeek: e.target.value === '요일' ? null : e.target.value
                   }))}
+                  displayEmpty
                 >
-                  {weekOptions.map(option => (
+                  {defaultWeekOptions.map(option => (
                     <MenuItem key={option} value={option}>{option}</MenuItem>
                   ))}
                 </Select>

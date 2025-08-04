@@ -49,7 +49,7 @@ const MyPageStoreInfo = () => {
       {/* 헤더 */}
       <div className="mypage-storeinfo-header">
         <button
-          onClick={() => navigate("/my")}
+          onClick={() => navigate("/mypage")}
           className="mypage-storeinfo-back-button"
           aria-label="뒤로가기"
         >
