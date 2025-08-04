@@ -40,7 +40,7 @@ const ChargeResult = () => {
                   navigate('/payment');
                 }
               } else {
-                navigate('/payment');
+              navigate('/payment');
               }
               break;
             case 'user':

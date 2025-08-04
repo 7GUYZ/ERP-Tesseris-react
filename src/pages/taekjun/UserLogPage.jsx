@@ -11,7 +11,7 @@ const UserLogPage = () => {
   const [success, setSuccess] = useState('');
   
   // 탭 상태
-  const [activeTab, setActiveTab] = useState('all'); // 'all', 'spent', 'received', 'income', 'expense'
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'spent', 'received'
   
   // 필터 상태
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -23,8 +23,6 @@ const UserLogPage = () => {
   const [allLogs, setAllLogs] = useState([]);
   const [spentLogs, setSpentLogs] = useState([]);
   const [receivedLogs, setReceivedLogs] = useState([]);
-  const [incomeLogs, setIncomeLogs] = useState([]);
-  const [expenseLogs, setExpenseLogs] = useState([]);
   const [statistics, setStatistics] = useState(null);
   
   // 페이징 상태
@@ -135,58 +133,6 @@ const UserLogPage = () => {
     }
   }, [currentUserIndex, selectedYear, selectedMonth, useDateFilter]);
 
-  // 수입 거래 조회
-  const fetchIncomeLogs = useCallback(async (page = 0) => {
-    if (!currentUserIndex) return;
-    
-    setLoading(true);
-    setError('');
-    
-    try {
-      const response = await userLogApi.getIncomeLogs(currentUserIndex, page, 20);
-      
-      if (response.data.resultCode === 200) {
-        setIncomeLogs(response.data.data.content || []);
-        setTotalPages(response.data.data.totalPages || 0);
-        setTotalElements(response.data.data.totalElements || 0);
-        setCurrentPage(page);
-      } else {
-        setError(response.data.resultMessage || '수입 거래를 불러오는데 실패했습니다.');
-      }
-    } catch (err) {
-      console.error('수입 거래 조회 오류:', err);
-      setError('수입 거래를 불러오는 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUserIndex]);
-
-  // 지출 거래 조회
-  const fetchExpenseLogs = useCallback(async (page = 0) => {
-    if (!currentUserIndex) return;
-    
-    setLoading(true);
-    setError('');
-    
-    try {
-      const response = await userLogApi.getExpenseLogs(currentUserIndex, page, 20);
-      
-      if (response.data.resultCode === 200) {
-        setExpenseLogs(response.data.data.content || []);
-        setTotalPages(response.data.data.totalPages || 0);
-        setTotalElements(response.data.data.totalElements || 0);
-        setCurrentPage(page);
-      } else {
-        setError(response.data.resultMessage || '지출 거래를 불러오는데 실패했습니다.');
-      }
-    } catch (err) {
-      console.error('지출 거래 조회 오류:', err);
-      setError('지출 거래를 불러오는 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUserIndex]);
-
   const fetchStatistics = useCallback(async () => {
     if (!currentUserIndex) return;
     
@@ -211,14 +157,10 @@ const UserLogPage = () => {
         fetchSpentLogs(0);
       } else if (activeTab === 'received') {
         fetchReceivedLogs(0);
-      } else if (activeTab === 'income') {
-        fetchIncomeLogs(0);
-      } else if (activeTab === 'expense') {
-        fetchExpenseLogs(0);
       }
       fetchStatistics();
     }
-  }, [currentUserIndex, activeTab, selectedYear, selectedMonth, fetchAllLogs, fetchSpentLogs, fetchReceivedLogs, fetchIncomeLogs, fetchExpenseLogs, fetchStatistics]);
+  }, [currentUserIndex, activeTab, selectedYear, selectedMonth, fetchAllLogs, fetchSpentLogs, fetchReceivedLogs, fetchStatistics]);
 
   // 페이지 변경 시 데이터 로드
   const handlePageChange = (newPage) => {
@@ -228,10 +170,6 @@ const UserLogPage = () => {
       fetchSpentLogs(newPage);
     } else if (activeTab === 'received') {
       fetchReceivedLogs(newPage);
-    } else if (activeTab === 'income') {
-      fetchIncomeLogs(newPage);
-    } else if (activeTab === 'expense') {
-      fetchExpenseLogs(newPage);
     }
   };
 
@@ -244,10 +182,6 @@ const UserLogPage = () => {
         return spentLogs;
       case 'received':
         return receivedLogs;
-      case 'income':
-        return incomeLogs;
-      case 'expense':
-        return expenseLogs;
       default:
         return [];
     }
@@ -331,10 +265,6 @@ const UserLogPage = () => {
         fetchSpentLogs(0);
       } else if (activeTab === 'received') {
         fetchReceivedLogs(0);
-      } else if (activeTab === 'income') {
-        fetchIncomeLogs(0);
-      } else if (activeTab === 'expense') {
-        fetchExpenseLogs(0);
       }
     }
   };
@@ -393,18 +323,6 @@ const UserLogPage = () => {
             onClick={() => setActiveTab('received')}
           >
             내가 받은 금액
-          </button>
-          <button 
-            className={`tab-button ${activeTab === 'income' ? 'active' : ''}`}
-            onClick={() => setActiveTab('income')}
-          >
-            수입 거래
-          </button>
-          <button 
-            className={`tab-button ${activeTab === 'expense' ? 'active' : ''}`}
-            onClick={() => setActiveTab('expense')}
-          >
-            지출 거래
           </button>
           <button 
             className="filter-button"

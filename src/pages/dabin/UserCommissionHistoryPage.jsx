@@ -11,7 +11,7 @@ const UserCommissionHistoryPage = () => {
     const [loading, setLoading] = useState(false);
     
     const navigate = useNavigate();
-    const limit = 20;
+    const limit = 5;
 
     useEffect(() => {
         // 백엔드에서 JWT로 자동 처리하므로 바로 호출

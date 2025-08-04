@@ -32,7 +32,7 @@ const ChangePasswordFeature = () => {
       const response = await changePassword(formData, userIndex);
       console.log('API 응답:', response);
       
-      if (response.data && response.data.resultCode === 200) {
+      if (response.data && response.status === 200) {
         console.log('비밀번호 변경 성공');
         showToast('success', '비밀번호가 성공적으로 변경되었습니다.');
         navigate('/mypage');

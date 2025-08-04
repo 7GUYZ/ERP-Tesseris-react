@@ -18,7 +18,7 @@ const UserUpdatePage = () => {
     userAddress: '',
     userDetailAddress: '',
     userZipCode: '',
-    userBankName: '',
+    userBankIndex: '',
     userBankNumber: '',
     userBankHolder: ''
   });
@@ -51,58 +51,41 @@ const UserUpdatePage = () => {
 
   // 현재 사용자 정보 조회
   useEffect(() => {
-    fetchUserInfo();
-    fetchBankList();
-  }, []);
-
-  const fetchUserInfo = async () => {
-    setLoading(true);
-    setError('');
+    const userIndex = JSON.parse(localStorage.getItem('user-info')).user_index;
     
-    try {
-      console.log('사용자 정보 조회 시작...');
-      const response = await TaekjunAuth.getUserInfo();
-      console.log('API 응답:', response);
-      
-      if (response.data.resultCode === 200) {
-        const userData = response.data.data;
-        console.log('사용자 데이터:', userData);
-        setFormData({
-          userName: userData.userName || '',
-          userPhone: userData.userPhone || '',
-          userEmail: userData.userEmail || '',
-          userAddress: userData.userAddress || '',
-          userDetailAddress: userData.userDetailAddress || '',
-          userZipCode: userData.userZipCode || '',
-          userBankName: userData.userBankName || '',
-          userBankNumber: userData.userBankNumber || '',
-          userBankHolder: userData.userBankHolder || ''
-        });
-      } else {
-        console.error('API 오류:', response.data);
-        setError(response.data.resultMessage || '사용자 정보를 불러오는데 실패했습니다.');
+    // 즉시 데이터 로드
+    const loadData = async () => {
+      try {
+        const [userResponse, bankResponse] = await Promise.all([
+          TaekjunAuth.getUserInfo(userIndex),
+          TaekjunAuth.getBankList()
+        ]);
+        
+        if (userResponse.data.resultCode === 200) {
+          const data = userResponse.data.data;
+          setFormData({
+            userName: data.userName || '',
+            userPhone: data.userPhone || '',
+            userEmail: data.userEmail || '',
+            userAddress: data.userAddress || '',
+            userDetailAddress: data.userDetailAddress || '',
+            userZipCode: data.userZipCode || '',
+            userBankIndex: data.userBankIndex || '',
+            userBankNumber: data.userBankNumber || '',
+            userBankHolder: data.userBankHolder || ''
+          });
+        }
+        
+        if (bankResponse.data.resultCode === 200) {
+          setBankList(bankResponse.data.data);
+        }
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
       }
-    } catch (err) {
-      console.error('사용자 정보 조회 오류:', err);
-      console.error('오류 상세:', err.response?.data);
-      setError('사용자 정보를 불러오는 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchBankList = async () => {
-    try {
-      const response = await TaekjunAuth.getBankList();
-      if (response.data.resultCode === 200) {
-        setBankList(response.data.data);
-      } else {
-        console.error('은행 목록 조회 오류:', response.data);
-      }
-    } catch (err) {
-      console.error('은행 목록 조회 오류:', err);
-    }
-  };
+    };
+    
+    loadData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -183,13 +166,37 @@ const UserUpdatePage = () => {
     setSuccess('');
 
     try {
-      const response = await TaekjunAuth.updateUserInfo(formData);
+      const userIndex = JSON.parse(localStorage.getItem('user-info')).user_index;
+      const updateData = {
+        userName: formData.userName,
+        userPhone: formData.userPhone,
+        userEmail: formData.userEmail,
+        userAddress: formData.userAddress,
+        userDetailAddress: formData.userDetailAddress,
+        userZipCode: formData.userZipCode,
+        userBankIndex: formData.userBankIndex,
+        userBankNumber: formData.userBankNumber,
+        userBankHolder: formData.userBankHolder
+      };
+
+      const response = await TaekjunAuth.updateUserInfo(userIndex, updateData);
       
       if (response.data.resultCode === 200) {
+        // 로컬 스토리지의 사용자 정보 업데이트
+        try {
+          const userInfo = JSON.parse(localStorage.getItem('user-info') || '{}');
+          const updatedUserInfo = {
+            ...userInfo,
+            name: formData.userName,
+            phone: formData.userPhone
+          };
+          localStorage.setItem('user-info', JSON.stringify(updatedUserInfo));
+        } catch (err) {
+          console.error('로컬 스토리지 업데이트 실패:', err);
+        }
+
         setSuccess('정보가 성공적으로 수정되었습니다.');
-        setTimeout(() => {
-          navigate(-1); // 이전 페이지로 돌아가기
-        }, 2000);
+        navigate(-1); // 즉시 이전 페이지로 이동
       } else {
         setError(response.data.resultMessage || '정보 수정에 실패했습니다.');
       }
@@ -204,14 +211,6 @@ const UserUpdatePage = () => {
   const handleCancel = () => {
     navigate(-1);
   };
-
-  if (loading && !formData.userName) {
-    return (
-      <div className="user-update-container">
-        <div className="loading-spinner">로딩 중...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="user-update-container">
@@ -324,18 +323,19 @@ const UserUpdatePage = () => {
           />
         </div>
 
+        {/* 은행 선택 드롭다운 부분 */}
         <div className="form-group">
-          <label htmlFor="userBankName">은행명</label>
+          <label htmlFor="userBankIndex">은행명</label>
           <select
-            id="userBankName"
-            name="userBankName"
-            value={formData.userBankName}
+            id="userBankIndex"
+            name="userBankIndex"
+            value={formData.userBankIndex || ''}
             onChange={handleInputChange}
             className="form-input"
           >
             <option value="">은행을 선택하세요</option>
-            {bankList.map((bank, index) => (
-              <option key={index} value={bank.user_bank_name}>
+            {bankList.map((bank) => (
+              <option key={bank.user_bank_index} value={bank.user_bank_index}>
                 {bank.user_bank_name}
               </option>
             ))}

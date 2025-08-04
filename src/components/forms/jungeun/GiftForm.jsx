@@ -90,6 +90,13 @@ export default function GiftForm() {
         // 실시간 검색 제거
     }
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSearch();
+        }
+    }
+
     const handleGiftAmountChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, "")
         setGiftAmount(value)
@@ -226,7 +233,7 @@ export default function GiftForm() {
                         <h2 className="gift-section-title">현재 CM 보유액</h2>
                         <div className="gift-cm-card">
                             <div className="gift-cm-status">
-                                <span className="gift-status-badge">사용가능</span>
+                                <span className="gift-status-badge">현재 CM</span>
                             </div>
                             <div className="gift-cm-amount">{formatNumber(currentCM)} CM </div>
                         </div>
@@ -238,15 +245,17 @@ export default function GiftForm() {
                         <div className="gift-input-group">
                             <input
                                 type="email"
-                                className="gift-input"
+                                className={`gift-input ${selectedUser ? 'disabled' : ''}`}
                                 placeholder="이메일을 입력하세요."
                                 value={recipientEmail || ""}
                                 onChange={handleInputChange}
+                                onKeyPress={handleKeyPress}
+                                disabled={selectedUser}
                             />
                             <button
-                                className={`gift-search-btn ${isSearching ? "gift-searching" : ""}`}
+                                className={`gift-search-btn ${isSearching ? "gift-searching" : ""} ${selectedUser ? 'disabled' : ''}`}
                                 onClick={handleSearch}
-                                disabled={isSearching}
+                                disabled={isSearching || selectedUser}
                             >
                                 {isSearching ? (
                                     <div className="gift-spinner"></div>
@@ -331,7 +340,7 @@ export default function GiftForm() {
                         <h2 className="gift-section-title">선물 후 CM 보유액</h2>
                         <div className="gift-cm-card">
                             <div className="gift-cm-status">
-                                <span className="gift-status-badge">사용가능</span>
+                                <span className="gift-status-badge">선물 후 CM</span>
                             </div>
                             <div className="gift-cm-amount">{formatNumber(Math.max(0, remainingCM))} CM</div>
                         </div>
