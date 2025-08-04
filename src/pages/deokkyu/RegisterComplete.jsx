@@ -41,7 +41,7 @@ export default function RegisterComplete() {
     console.log('URL 파라미터:', { success });
     
     if (success === 'true') {
-      console.log('🎉 결제 성공으로 페이지에 도달했습니다. 가맹점 정보 저장을 시작합니다.')
+      console.log('🎉 결제 승인 완료로 페이지에 도달했습니다. 가맹점 정보 저장을 시작합니다.')
       setIsProcessing(true)
       
       // 가맹점 정보 저장 처리
