@@ -3,12 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowBack, Edit } from '@mui/icons-material';
 import { IconButton, Button, Typography, Box, Card, CardContent, Chip } from '@mui/material';
 import { getStoreOperationInfo } from '../../api/auth/DabinAuth';
+import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/StoreOperationViewPage.css';
 
 const StoreOperationViewPage = () => {
   const navigate = useNavigate();
   const [operationInfo, setOperationInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Toast states
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('info');
+  const [showToast, setShowToast] = useState(false);
+
+  const showToastMessage = (message, type = 'info') => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+  };
+
+  const closeToast = () => {
+    setShowToast(false);
+  };
 
   useEffect(() => {
     fetchOperationInfo();
@@ -28,6 +44,7 @@ const StoreOperationViewPage = () => {
         setOperationInfo(response.data.data);
       } else {
         console.error('❌ [React] success: false, 메시지:', response.data.message);
+        showToastMessage('운영정보를 불러오는데 실패했습니다.', 'error');
       }
     } catch (error) {
       console.error('❌ [React] API 호출 실패');
@@ -37,6 +54,7 @@ const StoreOperationViewPage = () => {
       console.error('❌ [React] 응답 데이터:', error.response?.data);
       console.error('❌ [React] 요청 설정:', error.config);
       console.error('❌ [React] 에러:', error);
+      showToastMessage('운영정보를 불러오는데 실패했습니다.', 'error');
     } finally {
       console.log('🔍 [React] 로딩 상태 해제');
       setLoading(false);
@@ -236,6 +254,15 @@ const StoreOperationViewPage = () => {
       >
         수정
       </button>
+      
+      {/* Toast Component */}
+      {showToast && (
+        <Toast
+          type={toastType}
+          message={toastMessage}
+          onClose={closeToast}
+        />
+      )}
     </div>
   );
 };
