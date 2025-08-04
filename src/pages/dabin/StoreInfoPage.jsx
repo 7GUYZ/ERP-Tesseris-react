@@ -174,15 +174,14 @@ const StoreInfoPage = () => {
                                                     className="storeinfopage-store-image"
                                                     onError={(e) => {
                                                         console.error('이미지 로드 실패:', image.storeImage);
-                                                        // presigned URL이 실패하면 원본 URL로 재시도
-                                                        if (e.target.src === image.presignedUrl && image.storeImage) {
-                                                            e.target.src = image.storeImage;
-                                                        } else {
-                                                            // 이미지 로드 실패 시 기본 이미지 표시
-                                                            e.target.style.display = 'none';
-                                                        }
+                                                        // 이미지 로드 실패 시 숨기고 텍스트 표시
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextSibling && (e.target.nextSibling.style.display = 'block');
                                                     }}
                                                 />
+                                                <div style={{ display: 'none', padding: '10px', textAlign: 'center', color: '#999', fontSize: '12px' }}>
+                                                    이미지를 불러올 수 없습니다
+                                                </div>
                                             </div>
                                         ))
                                     ) : (
