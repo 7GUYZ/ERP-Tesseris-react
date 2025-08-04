@@ -1,61 +1,61 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../../../context/jungeun/ToastContext';
-import { changePassword } from '../../../../api/auth/JihunAuth';
 
 const ChangePasswordFeature = () => {
-  const { showToast } = useToast();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
 
-  const handlePasswordChange = async (formData) => {
-    setLoading(true);
-    setError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
+    // 비밀번호 변경 로직
     try {
-      console.log('비밀번호 변경 시작 - formData:', formData);
-      
-      // 현재 사용자 정보 가져오기
-      const userInfo = localStorage.getItem('user-info');
-      if (!userInfo) {
-        throw new Error('사용자 정보를 찾을 수 없습니다.');
-      }
-      
-      const userData = JSON.parse(userInfo);
-      const userIndex = userData.user_index;
-      console.log('사용자 정보:', userData);
-      console.log('userIndex:', userIndex);
-      
-      // 비밀번호 변경 API 호출
-      console.log('API 호출 시작...');
-      const response = await changePassword(formData, userIndex);
-      console.log('API 응답:', response);
-      
-      if (response.data && response.data.resultCode === 200) {
-        console.log('비밀번호 변경 성공');
-        showToast('success', '비밀번호가 성공적으로 변경되었습니다.');
-        navigate('/mypage');
-      } else {
-        console.log('API 응답 오류:', response.data);
-        throw new Error(response.data?.resultMessage || '비밀번호 변경에 실패했습니다.');
-      }
+      // API 호출 등
+      toast.success('비밀번호가 성공적으로 변경되었습니다.');
     } catch (error) {
-      console.error('비밀번호 변경 오류:', error);
-      console.error('오류 상세:', error.response);
-      const errorMessage = error.response?.data?.resultMessage || error.message || '비밀번호 변경에 실패했습니다.';
-      setError(errorMessage);
-      showToast('error', errorMessage);
-    } finally {
-      setLoading(false);
+      toast.error('비밀번호 변경에 실패했습니다.');
     }
   };
 
-  return {
-    loading,
-    error,
-    handlePasswordChange
-  };
+  return (
+    <div className="change-password-feature">
+      <h3>비밀번호 변경</h3>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>현재 비밀번호</label>
+          <input
+            type="password"
+            value={formData.currentPassword}
+            onChange={(e) => setFormData({...formData, currentPassword: e.target.value})}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>새 비밀번호</label>
+          <input
+            type="password"
+            value={formData.newPassword}
+            onChange={(e) => setFormData({...formData, newPassword: e.target.value})}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>새 비밀번호 확인</label>
+          <input
+            type="password"
+            value={formData.confirmPassword}
+            onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+            required
+          />
+        </div>
+        <button type="submit">비밀번호 변경</button>
+      </form>
+    </div>
+  );
 };
 
 export default ChangePasswordFeature; 

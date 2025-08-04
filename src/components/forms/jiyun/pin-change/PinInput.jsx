@@ -20,7 +20,11 @@ export default function PinInput({ onComplete }) {
 
   return (
     <>
-      <div className="pin-box-wrapper">
+      <div className="pin-box-wrapper" style={{ 
+        display: 'flex', 
+        justifyContent: 'center',
+        width: '100%'
+      }}>
         {Array(6)
           .fill()
           .map((_, idx) => {
