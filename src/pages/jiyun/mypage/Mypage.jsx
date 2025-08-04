@@ -171,7 +171,7 @@ export default function MobileMyPage() {
                   <ChevronRight className="menuIcon" />
                 </Link>
               )}
-              {/* 계좌정보 변경  */}
+              {/* 계정정보 변경  */}
               <Link to="/user_update" className="mypage-infoButton">
                 <div className="mypage-infoLabel">
                   <User className="menuIcon" />

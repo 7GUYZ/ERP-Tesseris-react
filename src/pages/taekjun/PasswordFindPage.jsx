@@ -36,12 +36,34 @@ const PasswordFindPage = () => {
 
   // 패스워드 찾기 인증 메일 발송
   const handleSendAuthEmail = async () => {
-    if (!emailAuth.email || !emailAuth.emailDomain || !emailAuth.name) {
-      setError('이메일과 이름을 입력해주세요.');
+    // 입력값 검증 강화
+    if (!emailAuth.email?.trim()) {
+      setError('이메일을 입력해주세요.');
       return;
     }
 
-    const fullEmail = emailAuth.email + emailAuth.emailDomain;
+    if (!emailAuth.emailDomain) {
+      setError('이메일 도메인을 선택해주세요.');
+      return;
+    }
+
+    if (!emailAuth.name?.trim()) {
+      setError('이름을 입력해주세요.');
+      return;
+    }
+
+    const fullEmail = emailAuth.email.trim() + emailAuth.emailDomain;
+    const trimmedName = emailAuth.name.trim();
+    
+    // 디버깅용 로그 추가
+    console.log('이메일 인증 요청 데이터:', {
+      email: fullEmail,
+      name: trimmedName,
+      emailParts: {
+        localPart: emailAuth.email,
+        domain: emailAuth.emailDomain
+      }
+    });
 
     setLoading(true);
     setError('');
@@ -49,8 +71,11 @@ const PasswordFindPage = () => {
     try {
       const response = await passwordFindApi.sendPasswordFindAuthEmail({
         email: fullEmail,
-        name: emailAuth.name
+        name: trimmedName
       });
+
+      // 응답 데이터 로깅
+      console.log('API 응답:', response);
 
       if (response.data.success) {
         setEmailAuth(prev => ({
@@ -63,8 +88,11 @@ const PasswordFindPage = () => {
       }
     } catch (err) {
       console.error('인증 메일 발송 오류:', err);
+      console.error('오류 상세:', err.response?.data);
       if (err.response?.data?.message) {
         setError(err.response.data.message);
+      } else if (err.response?.data?.resultMessage) {
+        setError(err.response.data.resultMessage);
       } else {
         setError('인증 메일 발송 중 오류가 발생했습니다.');
       }
