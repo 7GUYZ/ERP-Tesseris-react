@@ -152,20 +152,106 @@ const PaymentCalculator = (storeData) => {
     console.log("결제 정보:", { paymentKey, orderId, amount });
     
     // FormData를 localStorage에 임시 저장 (페이지 이동 시 유지)
+    console.log("📊 window.tempFormData 상태 확인:");
+    console.log("   - window.tempFormData 존재:", !!window.tempFormData);
     if (window.tempFormData) {
-      console.log("💾 FormData를 localStorage에 임시 저장...");
-      const formDataEntries = [];
+      // FormData 내용 미리 확인
+      console.log("📊 window.tempFormData 내용 미리보기:");
+      const tempEntries = [];
       for (let [key, value] of window.tempFormData.entries()) {
+        tempEntries.push({ key, valueType: typeof value, isFile: value instanceof File });
         if (value instanceof File) {
-          // File 객체는 Blob으로 변환하여 저장
-          const blob = new Blob([value], { type: value.type });
-          formDataEntries.push({ key, value: blob, isFile: true, fileName: value.name });
+          console.log(`   - ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
         } else {
-          formDataEntries.push({ key, value, isFile: false });
+          console.log(`   - ${key}: ${typeof value} (${value})`);
         }
       }
-      localStorage.setItem('temp-formdata-entries', JSON.stringify(formDataEntries));
-      console.log("✅ FormData 임시 저장 완료");
+      console.log("📊 총 엔트리 수:", tempEntries.length);
+      console.log("📊 파일 엔트리 수:", tempEntries.filter(e => e.isFile).length);
+      
+      console.log("💾 FormData를 localStorage에 임시 저장...");
+      const formDataEntries = [];
+      const filePromises = [];
+      
+      for (let [key, value] of window.tempFormData.entries()) {
+        if (value instanceof File) {
+          console.log(`📁 파일 처리 중: ${key} -> ${value.name} (${value.size} bytes, ${value.type})`);
+          
+          // File 객체를 ArrayBuffer로 읽어서 저장
+          const filePromise = new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const arrayBuffer = reader.result;
+              const uint8Array = new Uint8Array(arrayBuffer);
+              const binaryString = Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join('');
+              
+              formDataEntries.push({
+                key,
+                value: binaryString,
+                isFile: true,
+                fileName: value.name,
+                fileType: value.type,
+                fileSize: value.size
+              });
+              console.log(`✅ 파일 변환 완료: ${key}`);
+              resolve();
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(value);
+          });
+          
+          filePromises.push(filePromise);
+        } else {
+          formDataEntries.push({ key, value, isFile: false });
+          console.log(`📝 텍스트 데이터: ${key} -> ${value}`);
+        }
+      }
+      
+      // 모든 파일 처리가 완료될 때까지 대기
+      if (filePromises.length > 0) {
+        console.log("⏳ 파일 처리 대기 중... (파일 개수:", filePromises.length, ")");
+        try {
+          await Promise.all(filePromises);
+          console.log("✅ 모든 파일 처리 완료");
+        } catch (error) {
+          console.error("❌ 파일 처리 중 오류:", error);
+          throw error;
+        }
+      } else {
+        console.log("ℹ️ 처리할 파일이 없습니다");
+      }
+      
+      // localStorage 저장 시도
+      try {
+        console.log("💾 localStorage에 저장 시도:", formDataEntries.length, "개 항목");
+        console.log("💾 저장할 데이터 미리보기:", formDataEntries.map(entry => ({
+          key: entry.key,
+          isFile: entry.isFile,
+          fileName: entry.fileName || 'N/A',
+          fileSize: entry.fileSize || 'N/A'
+        })));
+        
+        const jsonString = JSON.stringify(formDataEntries);
+        console.log("💾 JSON 문자열 길이:", jsonString.length, "characters");
+        
+        localStorage.setItem('temp-formdata-entries', jsonString);
+        
+        // 저장 검증
+        const verifyData = localStorage.getItem('temp-formdata-entries');
+        if (verifyData) {
+          const parsedData = JSON.parse(verifyData);
+          console.log("✅ FormData 임시 저장 완료:", parsedData.length, "개 항목");
+          console.log("✅ 저장 검증 성공 - 파일 개수:", parsedData.filter(item => item.isFile).length);
+        } else {
+          console.error("❌ localStorage 저장 검증 실패");
+        }
+      } catch (error) {
+        console.error("❌ localStorage 저장 중 오류:", error);
+        console.error("❌ 저장하려던 데이터:", formDataEntries);
+        throw error;
+      }
+    } else {
+      console.warn("⚠️ window.tempFormData가 존재하지 않음 - 파일 저장 건너뜀");
     }
     
     // 결제 정보를 localStorage에 저장

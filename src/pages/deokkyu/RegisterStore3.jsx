@@ -74,9 +74,32 @@ export default function RegisterStore3() {
     const amount = urlParams.get('amount')
     const failed = urlParams.get('failed')
     
-    // 결제 성공 처리
+    console.log("🔍 RegisterStore3 URL 파라미터 확인:");
+    console.log("   - paymentKey:", paymentKey);
+    console.log("   - orderId:", orderId);
+    console.log("   - amount:", amount);
+    console.log("   - failed:", failed);
+    
+    // 결제 성공 처리 (토스페이먼츠에서 정상적으로 온 경우)
     if (paymentKey && orderId && amount) {
+      console.log("🎉 토스페이먼츠 결제 성공 파라미터 감지 - handlePaymentSuccess 호출");
       handlePaymentSuccess(paymentKey, orderId, parseInt(amount))
+    } 
+    // success=true만 있는 경우 (잘못된 접근)
+    else if (urlParams.get('success') === 'true' && !paymentKey && !orderId && !amount) {
+      console.warn("⚠️ success=true 파라미터만 있고 결제 정보가 없습니다.");
+      console.warn("⚠️ 이는 비정상적인 접근입니다. 메인 페이지로 이동합니다.");
+      alert('비정상적인 접근입니다. 메인 페이지로 이동합니다.');
+      navigate('/main');
+      return;
+    }
+    // 파라미터가 불완전한 경우
+    else if (paymentKey || orderId || amount) {
+      console.warn("⚠️ 결제 파라미터가 불완전합니다:", { paymentKey, orderId, amount });
+      console.warn("⚠️ 메인 페이지로 이동합니다.");
+      alert('결제 정보가 불완전합니다. 메인 페이지로 이동합니다.');
+      navigate('/main');
+      return;
     }
     
     // 결제 실패/취소 처리 - 메인으로 이동
@@ -86,6 +109,9 @@ export default function RegisterStore3() {
       // localStorage 정리
       localStorage.removeItem('register-store-temp')
       localStorage.removeItem('register-store-agreements')
+      localStorage.removeItem('temp-business-license-file')
+      localStorage.removeItem('temp-sign-photo-file')
+      localStorage.removeItem('temp-front-photo-file')
       localStorage.removeItem('@tosspayments/client-id')
       localStorage.removeItem('@tosspayments/merchant-browser-id')
       
@@ -127,6 +153,9 @@ export default function RegisterStore3() {
     if (window.confirm('가맹점 신청을 취소하시겠습니까? 입력한 정보가 모두 사라집니다.')) {
       localStorage.removeItem('register-store-temp')
       localStorage.removeItem('register-store-agreements')
+      localStorage.removeItem('temp-business-license-file')
+      localStorage.removeItem('temp-sign-photo-file')
+      localStorage.removeItem('temp-front-photo-file')
       localStorage.removeItem('@tosspayments/client-id')
       localStorage.removeItem('@tosspayments/merchant-browser-id')
       
@@ -215,8 +244,9 @@ export default function RegisterStore3() {
               console.log('🧹 RegisterStore3: 비정상 종료 감지 - localStorage 정리')
         localStorage.removeItem('register-store-temp')
         localStorage.removeItem('register-store-agreements')
-        localStorage.removeItem('@tosspayments/client-id')
-        localStorage.removeItem('@tosspayments/merchant-browser-id')
+        localStorage.removeItem('temp-business-license-file')
+        localStorage.removeItem('temp-sign-photo-file')
+        localStorage.removeItem('temp-front-photo-file')
         if (window.tempFormData) {
           delete window.tempFormData
         }
