@@ -1,5 +1,5 @@
 .balance-display {
-  margin-bottom: 24px;
+  margin-bottom: 0;  /* 섹션 내부에서는 margin 제거 */
   font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
 
@@ -7,7 +7,7 @@
   font-size: 16px;
   font-weight: 600;
   color: #170F58;
-  margin-bottom: 12px;
+  margin-bottom: 16px;  /* 12px에서 16px로 증가 */
 }
 
 .balance-bar {
@@ -41,6 +41,9 @@
 }
 
 @media (max-width: 600px) {
+  .balance-display {
+    margin-bottom: 0;  /* 섹션 내부에서는 margin 제거 */
+  }
   .balance-bar {
     min-height: 28px;
     padding: 0 8px;
@@ -48,6 +51,7 @@
   }
   .balance-label {
     font-size: 15px;
+    margin-bottom: 12px;  /* 모바일에서는 간격 줄임 */
   }
   .balance-amount {
     font-size: 15px;
