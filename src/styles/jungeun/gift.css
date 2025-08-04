@@ -108,6 +108,18 @@
     box-shadow: 0 0 0 3px rgba(23, 15, 88, 0.1);
   }
   
+  .gift-input.disabled {
+    background-color: #F9FAFB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    border-color: #E5E7EB;
+  }
+  
+  .gift-input.disabled:focus {
+    border-color: #E5E7EB;
+    box-shadow: none;
+  }
+  
   .gift-input::placeholder {
     color: #9CA3AF;
   }
@@ -135,6 +147,12 @@
   .gift-search-btn:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+  }
+  
+  .gift-search-btn.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    color: #9CA3AF;
   }
   
   .gift-currency {
