@@ -115,7 +115,7 @@ const PaymentCalculator = (storeData) => {
         orderName: '가맹점 신청비',
         customerName: storeData.userInfo?.name || '고객',
         customerEmail: storeData.userInfo?.email || 'customer@example.com',
-        successUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registercomplete?success=true`,
+        successUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registerstore3?success=true`,
         failUrl: `${window.location.origin}${process.env.REACT_APP_BASENAME || (process.env.NODE_ENV === 'production' ? '/react' : '')}/registerstore3?failed=true`,
         // 모바일 앱 리디렉션 방지 옵션
         flowMode: 'DEFAULT', // 기본 웹 결제 플로우 사용
@@ -289,9 +289,14 @@ const PaymentCalculator = (storeData) => {
       
       console.log("✅ 결제 승인 완료! 가맹점 정보 저장은 RegisterComplete에서 처리됩니다.");
       
-      // 3. 성공 완료 페이지로 이동
-      console.log("🚀 성공 완료 페이지로 이동: /registercomplete");
-      navigate('/registercomplete')
+      // 3. 성공 완료 페이지로 이동 (success=true 파라미터로 리디렉션)
+      console.log("🚀 결제 승인 완료 - success=true로 리디렉션");
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('success', 'true');
+      currentUrl.searchParams.delete('paymentKey');
+      currentUrl.searchParams.delete('orderId');
+      currentUrl.searchParams.delete('amount');
+      window.location.href = currentUrl.toString();
       
     } catch (error) {
       console.error('❌ 결제 승인 오류:', error)

@@ -73,24 +73,24 @@ export default function RegisterStore3() {
     const orderId = urlParams.get('orderId')
     const amount = urlParams.get('amount')
     const failed = urlParams.get('failed')
+    const success = urlParams.get('success')
     
     console.log("🔍 RegisterStore3 URL 파라미터 확인:");
     console.log("   - paymentKey:", paymentKey);
     console.log("   - orderId:", orderId);
     console.log("   - amount:", amount);
     console.log("   - failed:", failed);
+    console.log("   - success:", success);
     
     // 결제 성공 처리 (토스페이먼츠에서 정상적으로 온 경우)
     if (paymentKey && orderId && amount) {
       console.log("🎉 토스페이먼츠 결제 성공 파라미터 감지 - handlePaymentSuccess 호출");
       handlePaymentSuccess(paymentKey, orderId, parseInt(amount))
     } 
-    // success=true만 있는 경우 (잘못된 접근)
-    else if (urlParams.get('success') === 'true' && !paymentKey && !orderId && !amount) {
-      console.warn("⚠️ success=true 파라미터만 있고 결제 정보가 없습니다.");
-      console.warn("⚠️ 이는 비정상적인 접근입니다. 메인 페이지로 이동합니다.");
-      alert('비정상적인 접근입니다. 메인 페이지로 이동합니다.');
-      navigate('/main');
+    // success=true만 있는 경우 (결제 승인 완료 후 RegisterComplete로 이동)
+    else if (success === 'true' && !paymentKey && !orderId && !amount) {
+      console.log("✅ 결제 승인 완료 - RegisterComplete로 이동");
+      navigate('/registercomplete');
       return;
     }
     // 파라미터가 불완전한 경우
