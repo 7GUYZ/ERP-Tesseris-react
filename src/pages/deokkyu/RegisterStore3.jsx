@@ -42,15 +42,30 @@ export default function RegisterStore3() {
     const isPaymentFlow = paymentKey || orderId || success || failed
     
     const tempData = localStorage.getItem('register-store-temp')
-    if (!tempData) {
+    
+    // 결제 플로우가 아닌 경우에만 tempData 필수 체크
+    if (!tempData && !isPaymentFlow) {
       alert('이전 단계 정보가 없습니다. 처음부터 다시 진행해주세요.')
       navigate('/registerstore0')
       return
     }
     
     try {
-      const parsedData = JSON.parse(tempData)
-      setStoreData(parsedData)
+      // 결제 플로우일 때도 가능한 한 데이터를 로드 시도
+      if (tempData) {
+        const parsedData = JSON.parse(tempData)
+        setStoreData(parsedData)
+        console.log('📥 tempData 로드 성공:', !!parsedData)
+      } else if (isPaymentFlow) {
+        // 결제 플로우이지만 tempData가 없는 경우 - 기본값으로 설정
+        console.log('🎯 결제 플로우 - tempData 없음, 기본값 설정')
+        setStoreData({
+          userInfo: { name: '고객', phone: '', user_index: null },
+          businessInfo: {},
+          storeInfo: {},
+          agreements: {}
+        })
+      }
       
       // FormData 유효성 확인 (결제 플로우가 아닐 때만)
       if (!isPaymentFlow && !window.tempFormData) {
@@ -157,6 +172,8 @@ export default function RegisterStore3() {
       // localStorage 정리
       localStorage.removeItem('register-store-temp')
       localStorage.removeItem('register-store-agreements')
+      localStorage.removeItem('temp-formdata-entries')
+      localStorage.removeItem('temp-payment-info')
       localStorage.removeItem('temp-business-license-file')
       localStorage.removeItem('temp-sign-photo-file')
       localStorage.removeItem('temp-front-photo-file')
@@ -201,6 +218,8 @@ export default function RegisterStore3() {
     if (window.confirm('가맹점 신청을 취소하시겠습니까? 입력한 정보가 모두 사라집니다.')) {
       localStorage.removeItem('register-store-temp')
       localStorage.removeItem('register-store-agreements')
+      localStorage.removeItem('temp-formdata-entries')
+      localStorage.removeItem('temp-payment-info')
       localStorage.removeItem('temp-business-license-file')
       localStorage.removeItem('temp-sign-photo-file')
       localStorage.removeItem('temp-front-photo-file')
@@ -292,9 +311,13 @@ export default function RegisterStore3() {
               console.log('🧹 RegisterStore3: 비정상 종료 감지 - localStorage 정리')
         localStorage.removeItem('register-store-temp')
         localStorage.removeItem('register-store-agreements')
+        localStorage.removeItem('temp-formdata-entries')
+        localStorage.removeItem('temp-payment-info')
         localStorage.removeItem('temp-business-license-file')
         localStorage.removeItem('temp-sign-photo-file')
         localStorage.removeItem('temp-front-photo-file')
+        localStorage.removeItem('@tosspayments/client-id')
+        localStorage.removeItem('@tosspayments/merchant-browser-id')
         if (window.tempFormData) {
           delete window.tempFormData
         }
