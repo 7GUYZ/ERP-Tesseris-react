@@ -198,9 +198,13 @@ export default function RegisterStore2() {
         console.log('🧹 RegisterStore2: 비정상 종료 감지 - localStorage 정리')
         localStorage.removeItem('register-store-temp')
         localStorage.removeItem('register-store-agreements')
+        localStorage.removeItem('temp-formdata-entries')
+        localStorage.removeItem('temp-payment-info')
         localStorage.removeItem('temp-business-license-file')
         localStorage.removeItem('temp-sign-photo-file')
         localStorage.removeItem('temp-front-photo-file')
+        localStorage.removeItem('@tosspayments/client-id')
+        localStorage.removeItem('@tosspayments/merchant-browser-id')
         if (window.tempFormData) {
           delete window.tempFormData
         }

@@ -9,7 +9,7 @@ const PaymentCalculator = (storeData) => {
   const basePath = process.env.NODE_ENV === 'production' ? '/react' : '';
   
   // 가맹비 정보
-  const franchiseFee = 10000
+  const franchiseFee = 200000
 
   // 결제 금액 계산
   const calculatePaymentDetails = () => {
@@ -287,14 +287,9 @@ const PaymentCalculator = (storeData) => {
       
       console.log("✅ 결제 승인 완료! 가맹점 정보 저장은 RegisterComplete에서 처리됩니다.");
       
-      // 3. 성공 완료 페이지로 이동 (success=true 파라미터로 리디렉션)
-      console.log("🚀 결제 승인 완료 - success=true로 리디렉션");
-      const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.set('success', 'true');
-      currentUrl.searchParams.delete('paymentKey');
-      currentUrl.searchParams.delete('orderId');
-      currentUrl.searchParams.delete('amount');
-      window.location.href = currentUrl.toString();
+      // 3. 성공 완료 페이지로 바로 이동
+      console.log("🚀 결제 승인 완료 - RegisterComplete로 바로 이동");
+      navigate('/registercomplete?success=true');
       
     } catch (error) {
       console.error('❌ 결제 승인 오류:', error)
