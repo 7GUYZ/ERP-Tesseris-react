@@ -782,13 +782,24 @@
 /* 터치 디바이스 최적화 */
 @media (hover: none) and (pointer: coarse) {
   .event-reg-back-btn:hover,
-  .event-reg-select-all-btn:hover,
   .event-reg-register-btn:hover,
   .event-reg-coupon-card:hover,
   .event-reg-coupon-detail-btn:hover,
   .event-reg-modal-close:hover {
     background-color: transparent;
     transform: none;
+  }
+  
+  /* 전체 선택/해제 버튼은 터치에서도 호버 효과 유지 */
+  .event-reg-select-all-btn:hover {
+    background-color: #4b5563;
+    transform: translateY(-1px);
+  }
+  
+  .event-reg-select-all-btn.deselect:hover {
+    background-color: #f8f9fa;
+    border-color: #170F58;
+    transform: translateY(-1px);
   }
 
   .event-reg-back-btn:active,

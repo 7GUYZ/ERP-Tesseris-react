@@ -130,7 +130,7 @@ const UserEventListPage = () => {
                             <div className="user-event-list-event-info">
                                 <h3 className="user-event-list-event-title">{event.eventMasterName}</h3>
                                 <p className="user-event-list-event-remaining">
-                                    잔여 쿠폰 &emsp; {formatNumber(event.totalCouponPrice)} CM
+                                    잔여 쿠폰 &emsp; {formatNumber(event.totalCouponPrice)} TS
                                 </p>
                                 <p className="user-event-list-event-downloads">
                                     {activeTab === 'continue' ? '참여 가능 횟수' : '다운로드 가능'}: {event.remainingDownloads || 0}
