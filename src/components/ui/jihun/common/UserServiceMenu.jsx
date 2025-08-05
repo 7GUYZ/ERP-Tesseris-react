@@ -34,8 +34,8 @@ import '../../../../styles/jihun/common/common.css';
 // path: 클릭 시 이동할 주소
 const baseServiceItems = [
   { icon: User, label: "계좌 조회", color: "usermain-icon-blue", path: "/account" },
-  { icon: CreditCard, label: "CM 충전", color: "usermain-icon-purple", path: "/charge" },
-  { icon: DollarSign, label: "CM 사용", color: "usermain-icon-green", path: "/use" },
+      { icon: CreditCard, label: "TS 충전", color: "usermain-icon-purple", path: "/charge" },
+    { icon: DollarSign, label: "TS 사용", color: "usermain-icon-green", path: "/use" },
   { icon: PieChart, label: "수입 내역", color: "usermain-icon-orange", path: "/income" },
   { icon: Gift, label: "가맹점 안내", color: "usermain-icon-pink", path: "/franchise" },
   { icon: Building, label: "무료 송금", color: "usermain-icon-indigo", path: "/remit" },
@@ -45,7 +45,7 @@ const baseServiceItems = [
   { icon: Settings, label: "스마트", color: "usermain-icon-gray", path: "/smart" },
   { icon: Bell, label: "플레이어", color: "usermain-icon-cyan", path: "/player" },
   { icon: User, label: "정보", color: "usermain-icon-violet", path: "/info" },
-  { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
+  { icon: AppWindow, label: "Tesseris 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
   { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
 ];
 
@@ -61,9 +61,9 @@ export default function UserServiceMenu() {
   if (userRole === "1") {
     // 일반회원 전용 메뉴 
     serviceItems = [
-      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/user-log" },
+      { icon: FileText, label: "TS 내역", color: "usermain-icon-red", path: "/user-log" },
       { icon: BanknoteArrowUp, label: "수당 내역", color: "usermain-icon-red", path: "/user-commission-history" },
-      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
+      { icon: AppWindow, label: "Tesseris 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: Building2, label: "가맹점 신청", color: "usermain-icon-cyan", path: "/registerstore0" },
       { icon: Tickets, label: "쿠폰 보관함", color: "usermain-icon-violet", path: "/couponlist" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },
@@ -73,8 +73,8 @@ export default function UserServiceMenu() {
   if (userRole === "2") {
     // 사업자 전용 메뉴 
     serviceItems = [
-      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/user-log" },
-      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
+      { icon: FileText, label: "TS 내역", color: "usermain-icon-red", path: "/user-log" },
+      { icon: AppWindow, label: "Tesseris 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: FileSearch, label: "중개수수료 현황", color: "usermain-icon-orange", path: "/brokerageFee" },
       { icon: Users, label: "산하 사업자", color: "usermain-icon-cyan", path: "/BusinessList" },
       { icon: Store, label: "산하 가맹점", color: "usermain-icon-violet", path: "/StoreList" },
@@ -85,9 +85,9 @@ export default function UserServiceMenu() {
   if (userRole === "3") {
     // 가맹점 전용 메뉴 
     serviceItems = [
-      { icon: FileText, label: "CM 내역", color: "usermain-icon-red", path: "/user-log" },
+      { icon: FileText, label: "TS 내역", color: "usermain-icon-red", path: "/user-log" },
       { icon: BanknoteArrowUp, label: "수당 내역", color: "usermain-icon-red", path: "/user-commission-history" },
-      { icon: AppWindow, label: "씨엠바더 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
+      { icon: AppWindow, label: "Tesseris 홈페이지", color: "usermain-icon-blue", isExternal: true, externalUrl: "https://www.tokkitokki.kr/7guyz" },
       { icon: Store, label: "매장 관리", color: "usermain-icon-cyan", path: "/store" },
       { icon: FolderPlus, label: "쿠폰 보관함", color: "usermain-icon-indigo", path: "/couponlist" },
       { icon: MessageCircleQuestion, label: "카톡 상담", color: "usermain-icon-yellow", isExternal: true, externalUrl: "https://pf.kakao.com/_ebYWn/chat" },

@@ -103,7 +103,7 @@ const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex, storeUserI
                   >
                     <div className="coupon-selection-card-header">
                       <span className="coupon-selection-status coupon-selection-status-available">사용 가능</span>
-                      <span className="coupon-selection-price">{coupon.couponPrice?.toLocaleString() || 0} CM</span>
+                      <span className="coupon-selection-price">{coupon.couponPrice?.toLocaleString() || 0} TS</span>
                     </div>
                     <div className="coupon-selection-card-body">
                       <h3 className="coupon-selection-name">{coupon.couponName || '쿠폰'}</h3>

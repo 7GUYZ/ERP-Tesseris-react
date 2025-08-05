@@ -1,7 +1,7 @@
 .charge-layout {
   min-height: 100vh;
   background: #F5F5F9;
-  padding: 20px 0;
+  padding: 32px 0;  /* 20px에서 32px로 증가 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,7 +17,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;  /* center에서 flex-start로 변경 */
 }
 
 .charge-header {
@@ -42,16 +42,35 @@
 }
 
 .charge-content {
-  padding: 32px 16px;
+  padding: 54px 16px 24px;  /* 상단 패딩을 24px에서 54px로 늘려서 30px 아래로 이동 */
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;  /* center에서 flex-start로 변경 */
+  gap: 32px;  /* 48px에서 32px로 줄임 */
+}
+
+/* 새로운 섹션 스타일 */
+.charge-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;  /* 섹션 내부 요소 간 간격 */
+}
+
+/* 중단 섹션 특별 스타일 */
+.charge-section:nth-child(2) {
+  gap: 4px;  /* 결제할 금액과 VAT 부분을 더 가깝게 (8px에서 4px로) */
+}
+
+/* 하단 섹션 특별 스타일 */
+.charge-section:nth-child(3) {
+  gap: 16px;  /* 충전 후 CM과 결제 버튼 간격을 24px에서 16px로 줄임 */
+  margin-top: 160px;  /* 80px에서 160px로 늘려서 더 아래로 내림 */
 }
 
 @media (max-width: 600px) {
   .charge-layout {
-    padding: 0;
+    padding: 16px 0;  /* 0에서 16px로 변경 */
   }
   .charge-container {
     border-radius: 0;
@@ -59,6 +78,21 @@
     box-shadow: none;
   }
   .charge-content {
-    padding: 24px 8px;
+    padding: 46px 8px 16px;  /* 상단 패딩을 16px에서 46px로 늘려서 30px 아래로 이동 */
+    gap: 24px;  /* 32px에서 24px로 줄임 */
+  }
+  
+  /* 모바일에서 섹션 내부 간격 조정 */
+  .charge-section {
+    gap: 12px;
+  }
+  
+  .charge-section:nth-child(2) {
+    gap: 2px;  /* 모바일에서도 더 가깝게 */
+  }
+  
+  .charge-section:nth-child(3) {
+    gap: 12px;  /* 모바일에서 간격 줄임 */
+    margin-top: 80px;  /* 40px에서 80px로 늘림 */
   }
 } 

@@ -127,10 +127,10 @@ const StoreDetail = () => {
           </div>
         </div>
 
-        {/* CM 정보 및 액션 버튼 */}
+        {/* TS 정보 및 액션 버튼 */}
         <div className="store-actions">
           <button className="cm-button">
-            {storeDetail.userCmUse?.toLocaleString()}만 CM 가능
+            {storeDetail.userCmUse?.toLocaleString()}만 TS 가능
           </button>
           <div className="action-icons">
             <button className="action-icon phone-icon" onClick={handlePhoneClick}>
