@@ -425,32 +425,8 @@ export default function EventRegistrationPage() {
               <div className="event-reg-coupon-store">
                 발급 가맹점: {coupon.storeName || 'Tesseris'}
               </div>
-              <p className="event-reg-coupon-condition">쿠폰 사용 조건</p>
               
               <div className="event-reg-coupon-details">
-                <div className="event-reg-coupon-detail-item">
-                  <span className="event-reg-detail-label">발급일:</span>
-                  <span className="event-reg-detail-value">
-                    {coupon.issuanceTime ? 
-                      (() => {
-                        try {
-                          let date;
-                          if (Array.isArray(coupon.issuanceTime)) {
-                            // 배열 형태 [year, month, day, hour, minute, second] 처리
-                            const [year, month, day, hour, minute, second] = coupon.issuanceTime;
-                            date = new Date(year, month - 1, day, hour, minute, second); // month는 0부터 시작
-                          } else {
-                            date = new Date(coupon.issuanceTime);
-                          }
-                          return isNaN(date.getTime()) ? '발급 시간이 없습니다' : date.toLocaleDateString();
-                        } catch (error) {
-                          return '발급 시간이 없습니다';
-                        }
-                      })() 
-                      : '발급 시간이 없습니다'
-                    }
-                  </span>
-                </div>
                 <div className="event-reg-coupon-detail-item">
                   <span className="event-reg-detail-label">사용 기간:</span>
                   <span className="event-reg-detail-value">{coupon.period}</span>
