@@ -3,12 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowBack, Edit } from '@mui/icons-material';
 import { IconButton, Button, Typography, Box, Card, CardContent, Chip } from '@mui/material';
 import { getStoreOperationInfo } from '../../api/auth/DabinAuth';
+import Toast from '../../components/ui/jungeun/Toast';
 import '../../styles/dabin/StoreOperationViewPage.css';
 
 const StoreOperationViewPage = () => {
   const navigate = useNavigate();
   const [operationInfo, setOperationInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Toast states
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('info');
+  const [showToast, setShowToast] = useState(false);
+
+  const showToastMessage = (message, type = 'info') => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+  };
+
+  const closeToast = () => {
+    setShowToast(false);
+  };
 
   useEffect(() => {
     fetchOperationInfo();
@@ -28,6 +44,7 @@ const StoreOperationViewPage = () => {
         setOperationInfo(response.data.data);
       } else {
         console.error('❌ [React] success: false, 메시지:', response.data.message);
+        showToastMessage('운영정보를 불러오는데 실패했습니다.', 'error');
       }
     } catch (error) {
       console.error('❌ [React] API 호출 실패');
@@ -36,6 +53,8 @@ const StoreOperationViewPage = () => {
       console.error('❌ [React] 응답 상태:', error.response?.status);
       console.error('❌ [React] 응답 데이터:', error.response?.data);
       console.error('❌ [React] 요청 설정:', error.config);
+      console.error('❌ [React] 에러:', error);
+      showToastMessage('운영정보를 불러오는데 실패했습니다.', 'error');
     } finally {
       console.log('🔍 [React] 로딩 상태 해제');
       setLoading(false);
@@ -111,7 +130,7 @@ const StoreOperationViewPage = () => {
       </Box>
 
       {/* Business Information Section */}
-      <Card className="store-operation-view-section-card" sx={{ borderLeft: '4px solid #e0e0e0' }}>
+      <Card className="store-operation-view-section-card">
         <CardContent>
           <Box className="store-operation-view-section-header">
             <Box className="store-operation-view-section-icon store-operation-view-business-icon" sx={{ background: '#170F58' }} />
@@ -123,15 +142,13 @@ const StoreOperationViewPage = () => {
           {operationInfo.businessHours && operationInfo.businessHours.length > 0 ? (
             operationInfo.businessHours.map((hours, index) => (
               <Box key={index} className="store-operation-view-business-hours-item">
-                <Typography variant="subtitle1" className="store-operation-view-hours-title">
-                  영업 시간 {index + 1}
-                </Typography>
+
                 
                 <Box className="store-operation-view-hours-content">
                   <Box className="store-operation-view-time-row">
                     <Typography variant="body2" className="store-operation-view-time-label">영업시간</Typography>
                     <Typography variant="body1" className="store-operation-view-time-value">
-                      {hours.workStartTime} ~ {hours.workEndTime}
+                      {(hours.is24Hours || (hours.workStartTime === '00:00' && hours.workEndTime === '24:00')) ? '24시간 영업' : `${hours.workStartTime} ~ ${hours.workEndTime}`}
                     </Typography>
                   </Box>
                   
@@ -146,6 +163,7 @@ const StoreOperationViewPage = () => {
                   
                   <Box className="store-operation-view-business-days">
                     {hours.businessDays
+                      .filter(day => day !== '') // 빈 문자열 제거
                       .sort((a, b) => {
                         const dayOrder = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
                         return dayOrder.indexOf(a) - dayOrder.indexOf(b);
@@ -156,7 +174,7 @@ const StoreOperationViewPage = () => {
                           label={getDayName(day)}
                           className="store-operation-view-day-chip active"
                           size="small"
-                          sx={{ background: '#170F58', color: '#fff' }}
+                          sx={{ background: '#ffc107', color: '#333', fontWeight: 600 }}
                         />
                       ))}
                   </Box>
@@ -172,7 +190,7 @@ const StoreOperationViewPage = () => {
       </Card>
 
       {/* Other Settings Section */}
-      <Card className="store-operation-view-section-card" sx={{ borderLeft: '4px solid #e0e0e0' }}>
+      <Card className="store-operation-view-section-card">
         <CardContent>
           <Box className="store-operation-view-section-header">
             <Box className="store-operation-view-section-icon store-operation-view-settings-icon" sx={{ background: '#170F58' }} />
@@ -189,7 +207,7 @@ const StoreOperationViewPage = () => {
               label={operationInfo.holidayStatus === 'Y' ? '휴무' : '정상영업'}
               className={operationInfo.holidayStatus === 'Y' ? 'store-operation-view-status-chip closed' : 'store-operation-view-status-chip open'}
               size="small"
-              sx={{ background: '#ffc107', color: '#fff' }}
+              sx={{ background: '#ffc107', color: '#333', fontWeight: 600 }}
             />
           </Box>
 
@@ -229,13 +247,22 @@ const StoreOperationViewPage = () => {
           border: 'none',
           borderRadius: '10px',
           fontSize: '20px',
-          marginTop: '32px',
+          marginTop: '8px',
           cursor: 'pointer'
         }}
         onClick={() => navigate('/store/operation/edit')}
       >
         수정
       </button>
+      
+      {/* Toast Component */}
+      {showToast && (
+        <Toast
+          type={toastType}
+          message={toastMessage}
+          onClose={closeToast}
+        />
+      )}
     </div>
   );
 };

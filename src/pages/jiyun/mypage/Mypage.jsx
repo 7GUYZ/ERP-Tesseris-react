@@ -160,22 +160,22 @@ export default function MobileMyPage() {
               )}
               {/* 가맹점 정보  */}
               {showBusinessInfo() && (
-                <button className="mypage-infoButton">
+                <Link to="/mypage-storeinfo" className="mypage-infoButton">
                   <div className="mypage-infoLabel">
                     <User className="menuIcon" />
                     <span>가맹점 정보</span>
                   </div>
                   <ChevronRight className="menuIcon" />
-                </button>
+                </Link>
               )}
-              {/* 계좌정보 변경  */}
-              <button className="mypage-infoButton">
+              {/* 계정정보 변경  */}
+              <Link to="/user_update" className="mypage-infoButton">
                 <div className="mypage-infoLabel">
                   <User className="menuIcon" />
-                  <span>계좌정보 변경</span>
+                  <span>계정정보 변경</span>
                 </div>
                 <ChevronRight className="menuIcon" />
-              </button>
+              </Link>
             </div>
           </div>
         </div>

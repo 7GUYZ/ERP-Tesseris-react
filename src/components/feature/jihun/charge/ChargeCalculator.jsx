@@ -41,7 +41,7 @@ const ChargeCalculator = (userCurrentPoint) => {
             await tossPayments.requestPayment('카드',{
                 amount: Number(parseFloat(totalPayment)),
                 orderId: `order_${Date.now()}_${crypto.randomUUID()}`,
-                orderName: '택준이 팝니다.',
+                orderName: 'point 충전.',
                 customerName: JSON.parse(localStorage.getItem('user-info')).name,
                 customerEmail: JSON.parse(localStorage.getItem('user-info')).email,
                 successUrl: `${window.location.origin}${basePath}/charge/result?source=${safeSource}`,

@@ -12,7 +12,87 @@ const StoreList = () => {
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [filteredStores, setFilteredStores] = useState([]);
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
+
+  // 검색 기능 - 검색 버튼이나 엔터키를 눌렀을 때만 실행
+  const performSearch = () => {
+    console.log('🔍 검색 실행:', { 
+      searchKeyword, 
+      storesLength: stores.length,
+      storesData: stores.map(s => ({ name: s.storeName, address: s.storeAddress, phone: s.storePhone, category: s.storeCategoryName }))
+    });
+    
+    if (searchKeyword.trim() === '') {
+      setFilteredStores(stores);
+      console.log('📋 검색어 없음 - 전체 가맹점 표시:', stores.length);
+    } else {
+      const filtered = stores.filter(store => {
+        // null 값 처리 및 안전한 검색
+        const storeName = store.storeName || '';
+        const storeAddress = store.storeAddress || '';
+        const storePhone = store.storePhone || '';
+        const storeCategory = store.storeCategoryName || '';
+        
+        // 검색어 정규화 (유사한 문자 처리)
+        const normalizedKeyword = searchKeyword.toLowerCase()
+          .replace(/맴/g, '멤')  // 맴 -> 멤
+          .replace(/멤/g, '맴'); // 멤 -> 맴 (양방향)
+        
+        const nameMatch = storeName.toLowerCase().includes(searchKeyword.toLowerCase()) || 
+                         storeName.toLowerCase().includes(normalizedKeyword);
+        const addressMatch = storeAddress.toLowerCase().includes(searchKeyword.toLowerCase()) || 
+                           storeAddress.toLowerCase().includes(normalizedKeyword);
+        const phoneMatch = storePhone.includes(searchKeyword);
+        const categoryMatch = storeCategory.toLowerCase().includes(searchKeyword.toLowerCase()) || 
+                            storeCategory.toLowerCase().includes(normalizedKeyword);
+        
+        console.log('🔍 검색 매칭 확인:', {
+          storeName: storeName || 'null',
+          storeAddress: storeAddress || 'null',
+          storePhone: storePhone || 'null',
+          storeCategory: storeCategory || 'null',
+          searchKeyword,
+          normalizedKeyword,
+          nameMatch,
+          addressMatch,
+          phoneMatch,
+          categoryMatch,
+          totalMatch: nameMatch || addressMatch || phoneMatch || categoryMatch
+        });
+        
+        return nameMatch || addressMatch || phoneMatch || categoryMatch;
+      });
+      
+      setFilteredStores(filtered);
+      console.log('🔍 검색 결과:', { 
+        searchKeyword, 
+        filteredCount: filtered.length, 
+        totalCount: stores.length,
+        filteredStores: filtered.map(s => s.storeName || 'null')
+      });
+    }
+  };
+
+  // 검색 입력 핸들러
+  const handleSearchChange = (e) => {
+    console.log('🔍 검색 입력:', e.target.value);
+    setSearchKeyword(e.target.value);
+  };
+
+  // 검색 초기화
+  const handleSearchClear = () => {
+    console.log('🔍 검색 초기화');
+    setSearchKeyword('');
+    setFilteredStores(stores); // 전체 가맹점 표시
+  };
+
+  // 엔터키 핸들러
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -47,6 +127,9 @@ const StoreList = () => {
         response.data.data.forEach((store, index) => {
           console.log(`가맹점 ${index + 1}:`, {
             storeName: store.storeName,
+            storeImage: store.storeImage,
+            storeImageType: typeof store.storeImage,
+            storeImageLength: store.storeImage?.length,
             storeBusinessDate: store.storeBusinessDate,
             storeBusinessHour: store.storeBusinessHour,
             storeRestHour: store.storeRestHour,
@@ -68,9 +151,14 @@ const StoreList = () => {
     fetchStores();
   }, [selectedCategory, fetchStores]);
 
+  // 초기 로딩 시 전체 가맹점 표시
+  useEffect(() => {
+    setFilteredStores(stores);
+  }, [stores]);
+
   // 검색 실행
   const handleSearch = () => {
-    fetchStores();
+    performSearch();
   };
 
   // 가맹점 상세 페이지로 이동
@@ -166,12 +254,13 @@ const StoreList = () => {
           <input
             type="text"
             value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-            placeholder="검색어를 입력하세요."
+            onChange={handleSearchChange}
+            onKeyPress={handleKeyPress}
+            placeholder="가맹점명, 주소, 전화번호, 업종으로 검색..."
             className="search-input"
           />
           <button 
-            onClick={handleSearch}
+            onClick={performSearch}
             className="search-button"
             disabled={loading}
           >
@@ -189,19 +278,30 @@ const StoreList = () => {
       <div className="store-list-content">
         {loading ? (
           <div className="loading-message">로딩 중...</div>
-        ) : stores.length === 0 ? (
+        ) : filteredStores.length === 0 ? (
           <div className="no-data-message">
-            검색 조건에 맞는 가맹점이 없습니다.
+            {searchKeyword.trim() !== '' 
+              ? `"${searchKeyword}"에 대한 검색 결과가 없습니다.`
+              : '검색 조건에 맞는 가맹점이 없습니다.'
+            }
           </div>
         ) : viewMode === 'map' ? (
           // 지도 모드
           <div className="map-container">
-            <Map stores={stores} />
+            {(() => {
+              const apiKey = process.env.REACT_APP_KAKAO_MAP_API_KEY;
+              console.log('🔍 StoreList 지도 모드 - 환경변수 확인:', {
+                apiKey: apiKey ? '설정됨' : '설정되지 않음',
+                apiKeyValue: apiKey ? `${apiKey.substring(0, 8)}...` : '없음',
+                storesLength: filteredStores.length
+              });
+              return <Map stores={filteredStores} />;
+            })()}
           </div>
         ) : (
           // 목록 모드
           <div className="store-grid">
-            {stores.map((store) => (
+            {filteredStores.map((store) => (
               <div 
                 key={store.storeIndex} 
                 className="store-card"
@@ -210,12 +310,23 @@ const StoreList = () => {
                 {/* 가맹점 이미지 */}
                 <div className="store-image">
                   {store.storeImage ? (
-                    <img src={store.storeImage} alt={store.storeName} />
-                  ) : (
-                    <div className="store-image-placeholder">
-                      <span>1</span>
-                    </div>
-                  )}
+                    <img 
+                      src={store.storeImage} 
+                      alt={store.storeName}
+                      onLoad={() => console.log('✅ 이미지 로드 성공:', store.storeImage)}
+                      onError={(e) => {
+                        console.error('❌ 이미지 로드 실패:', store.storeImage);
+                        e.target.style.display = 'none';
+                        const placeholder = e.target.nextSibling;
+                        if (placeholder) {
+                          placeholder.style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div className="store-image-placeholder" style={{ display: store.storeImage ? 'none' : 'flex' }}>
+                    <span>🏪</span>
+                  </div>
                 </div>
 
                 {/* 가맹점 정보 */}

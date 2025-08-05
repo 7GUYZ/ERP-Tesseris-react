@@ -4,12 +4,12 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import InputField from "./LoginInputField.jsx"
 import LoginButton from "./LoginButton.jsx"
-import ErrorMessage from "../../ui/jungeun/ErrorMessage.jsx"
 import { login } from "../../../api/auth/JungeunAuth.jsx"
 import useAuthStore from "../../../store/jungeun/AuthStore.js"
 import { useToast } from "../../../context/jungeun/ToastContext.jsx"
 import { useWebSocket } from "../../../context/jungeun/WebSocketContext.jsx"
 import { useNotificationToast } from "../../../context/jungeun/NotificationToastContext.jsx";
+import { useEffect } from "react";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("")
@@ -20,6 +20,34 @@ const LoginForm = () => {
   const { showNotificationToast } = useNotificationToast();
   const navigate = useNavigate();
   const { connectWebSocket } = useWebSocket();
+  // 컴포넌트 마운트 시 기존 로그인 상태 체크
+  useEffect(() => {
+    const checkExistingLogin = () => {
+      const accessToken = localStorage.getItem("access-token");
+      const userInfo = localStorage.getItem("user-info");
+
+      // 이미 로그인된 상태라면 대시보드로 리다이렉트
+      if (accessToken && userInfo) {
+        try {
+          const parsedUserInfo = JSON.parse(userInfo);
+          
+          // 관리자 권한 확인
+          if (parsedUserInfo.user_role_index !== "4") {
+            // 이미 로그인된 상태이므로 대시보드로 이동
+            navigate("/main");
+            return;
+          }
+        } catch (error) {
+          console.error("기존 로그인 정보 파싱 오류:", error);
+          // 파싱 오류 시 로컬스토리지 클리어
+          localStorage.removeItem("access-token");
+          localStorage.removeItem("user-info");
+        }
+      }
+    };
+
+    checkExistingLogin();
+  }, [navigate]);
 
   // 이메일 유효성 검사
   const validateEmail = (email) => {
@@ -118,6 +146,37 @@ const LoginForm = () => {
 
           // 성공 토스트 메시지
           showToast("success", response.data.resultMessage || "로그인에 성공했습니다");
+          
+          // 외부 결제 요청인지 확인
+          const externalPaymentData = localStorage.getItem('external-payment-data');
+          if (externalPaymentData) {
+            try {
+              const parsedData = JSON.parse(externalPaymentData);
+              if (parsedData.external) {
+                console.log('외부 결제 요청 감지, 결제 페이지로 이동');
+                // 외부 결제 정보를 PaymentPage state로 전달
+                const paymentState = {
+                  fromExternal: true,
+                  externalData: parsedData,
+                  paymentData: {
+                    amount: parsedData.amount || '',
+                    selectedStore: null,
+                    selectedCoupons: [],
+                    pinCode: ''
+                  }
+                };
+                
+                localStorage.removeItem('external-payment-data'); // 사용 후 삭제
+                setTimeout(() => navigate("/payment", { state: paymentState }), 1000);
+                return;
+              }
+            } catch (error) {
+              console.error('외부 결제 데이터 파싱 오류:', error);
+              localStorage.removeItem('external-payment-data'); // 오류 시 삭제
+            }
+          }
+          
+          // 일반 로그인인 경우
           setTimeout(() => navigate("/main"), 2500);
         } else {
           showToast("error", "허용되지 않은 사용자입니다");
@@ -149,8 +208,8 @@ const LoginForm = () => {
         onChange={handleEmailChange}
         icon="id"
         error={errors.email}
+        errorMessage={errors.email}
       />
-      {errors.email && <ErrorMessage message={errors.email} />}
       <InputField
         type="password"
         placeholder="비밀번호를 입력하세요"
@@ -158,8 +217,8 @@ const LoginForm = () => {
         onChange={handlePasswordChange}
         icon="lock"
         error={errors.password}
+        errorMessage={errors.password}
       />
-      {errors.password && <ErrorMessage message={errors.password} />}
       <LoginButton type="submit" isLoading={isLoading}>
         {isLoading ? "로그인 중..." : "로그인"}
       </LoginButton>

@@ -11,10 +11,14 @@ export default function UserHeader() {
     navigate('/mypage');
   };
 
+  const handleLogoClick = () => {
+    navigate('/main');
+  };
+
   return (
     <div className="usermain-header">
       <div className="usermain-header-inner">
-        <div className="usermain-header-logo">
+        <div className="usermain-header-logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
           <h1 className="usermain-header-title">TESSERIS</h1>
         </div>
         <div className="usermain-header-actions">

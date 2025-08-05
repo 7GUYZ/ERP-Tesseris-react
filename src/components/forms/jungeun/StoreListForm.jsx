@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import "../../../styles/jungeun/storeList.css";
 import { storeCategoryFilter, storeList } from "../../../api/auth/JungeunAuth";
-import { Image } from "lucide-react";
+import { Image, ChevronLeft } from "lucide-react";
 
 const MAIN_COLOR = "#170F58";
 const POINT_COLOR = "#FDCD00";
@@ -41,6 +41,9 @@ export const Map = ({ stores = [] }) => {
                 const geocoder = new window.kakao.maps.services.Geocoder();
                 const bounds = new window.kakao.maps.LatLngBounds();
 
+                let completedGeocoding = 0;
+                const totalStores = stores.length;
+
                 stores.forEach(store => {
                     geocoder.addressSearch(store.storeAddress, (result, status) => {
                         if (status === window.kakao.maps.services.Status.OK) {
@@ -64,7 +67,12 @@ export const Map = ({ stores = [] }) => {
                             infoWindow.open(map, marker);
                             infoWindowsRef.current.push(infoWindow);
                         }
-                        map.setBounds(bounds);
+                        
+                        completedGeocoding++;
+                        // 모든 주소 변환이 완료된 후에 지도 범위 설정
+                        if (completedGeocoding === totalStores) {
+                            map.setBounds(bounds);
+                        }
                     });
                 });
             });
@@ -252,7 +260,7 @@ const StoreListForm = () => {
         });
 
         return (
-            <div className="business-partner-card" style={{ padding: 0 }}>
+            <div className="storelist-business-partner-card" style={{ padding: 0 }}>
                 {/* 이미지 영역 */}
                 <div className="store-list-image-container">
                     {store.storeImage ? (
@@ -275,9 +283,9 @@ const StoreListForm = () => {
                     {/* 이미지가 없거나 로드 실패 시 표시할 컴포넌트 */}
                     <NoImageComponent show={!store.storeImage} />
                 </div>
-                <div className="card-header" style={{ padding: "1.2rem 1.5rem 0.5rem 1.5rem" }}>
+                <div className="storelist-card-header" style={{ padding: "1.2rem 1.5rem 0.5rem 1.5rem" }}>
                     <div
-                        className="company-info"
+                        className="storelist-company-info"
                         style={{
                             display: "flex",
                             flexDirection: "row", // row로 변경
@@ -286,9 +294,9 @@ const StoreListForm = () => {
                             gap: "0.5rem"
                         }}
                     >
-                        <h3 className="company-name" style={{ fontSize: "1.1rem", margin: 0 }}>{store.storeName || '가맹점명 없음'}</h3>
+                        <h3 className="storelist-company-name" style={{ fontSize: "1.1rem", margin: 0 }}>{store.storeName || '가맹점명 없음'}</h3>
                         <div
-                            className="position-badge"
+                            className="storelist-position-badge"
                             style={{
                                 backgroundColor: POINT_COLOR,
                                 color: MAIN_COLOR,
@@ -303,22 +311,22 @@ const StoreListForm = () => {
                     </div>
                 </div>
 
-                <div className="card-content" style={{ padding: "0 1.5rem 1.2rem 1.5rem" }}>
-                    <div className="info-row">
-                        <span className="info-label">가맹점명</span>
-                        <span className="info-value">{store.storeName || '정보 없음'}</span>
+                <div className="storelist-card-content" style={{ padding: "0 1.5rem 1.2rem 1.5rem" }}>
+                    <div className="storelist-info-row">
+                        <span className="storelist-info-label">가맹점명</span>
+                        <span className="storelist-info-value">{store.storeName || '정보 없음'}</span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">업종</span>
-                        <span className="info-value">{store.storeCategoryName || '정보 없음'}</span>
+                    <div className="storelist-info-row">
+                        <span className="storelist-info-label">업종</span>
+                        <span className="storelist-info-value">{store.storeCategoryName || '정보 없음'}</span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">사용 가능 CM</span>
-                        <span className="info-value">{store.userCmUse ? store.userCmUse.toLocaleString() : '0'} CM</span>
+                    <div className="storelist-info-row">
+                        <span className="storelist-info-label">사용 가능 CM</span>
+                        <span className="storelist-info-value">{store.userCmUse ? store.userCmUse.toLocaleString() : '0'} CM</span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">영업 상태</span>
-                        <span className="info-value">
+                    <div className="storelist-info-row">
+                        <span className="storelist-info-label">영업 상태</span>
+                        <span className="storelist-info-value">
                             {store.storeBusinessState === 0 && '영업 종료'}
                             {store.storeBusinessState === 1 && '영업 중'}
                             {store.storeBusinessState === 2 && '영업일 아님'}
@@ -326,18 +334,18 @@ const StoreListForm = () => {
                             {store.storeBusinessState === 4 && '영업일 미지정'}
                         </span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">전화번호</span>
-                        <span className="info-value">{store.storePhone || '정보 없음'}</span>
+                    <div className="storelist-info-row">
+                        <span className="storelist-info-label">전화번호</span>
+                        <span className="storelist-info-value">{store.storePhone || '정보 없음'}</span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">주소</span>
-                        <span className="info-value">{store.storeAddress || '정보 없음'}</span>
+                    <div className="storelist-info-row">
+                        <span className="storelist-info-label">주소</span>
+                        <span className="storelist-info-value">{store.storeAddress || '정보 없음'}</span>
                     </div>
                 </div>
 
-                <div className="card-actions" style={{ padding: "0 1.5rem 1.2rem 1.5rem" }}>
-                    <button className="action-button primary" style={{ backgroundColor: MAIN_COLOR, color: '#fff' }}
+                <div className="storelist-card-actions" style={{ padding: "0 1.5rem 1.2rem 1.5rem" }}>
+                    <button className="storelist-action-button primary" style={{ backgroundColor: MAIN_COLOR, color: '#fff' }}
                         onClick={() => navigate(`/StoreList/StoreDetail/${store.storeIndex}${location.search}`)}
                     >
                         가맹점 상세정보
@@ -349,9 +357,9 @@ const StoreListForm = () => {
 
     const TabSelector = ({ activeTab, onTabChange }) => {
         return (
-            <div className="tab-selector">
+            <div className="storelist-tab-selector">
                 <button
-                    className={`tab-button ${activeTab === "list" ? "active" : ""}`}
+                    className={`storelist-tab-button ${activeTab === "list" ? "active" : ""}`}
                     onClick={() => onTabChange("list")}
                     style={{
                         borderColor: MAIN_COLOR,
@@ -362,7 +370,7 @@ const StoreListForm = () => {
                     목록
                 </button>
                 <button
-                    className={`tab-button ${activeTab === "map" ? "active" : ""}`}
+                    className={`storelist-tab-button ${activeTab === "map" ? "active" : ""}`}
                     onClick={() => onTabChange("map")}
                     style={{
                         borderColor: MAIN_COLOR,
@@ -379,10 +387,10 @@ const StoreListForm = () => {
     const StoreList = ({ stores, category }) => {
         const displayCategoryName = category?.store_category_name || "전체";
         return (
-            <div className="business-partner-list">
-                <div className="list-header">
-                    <div className="list-title-section">
-                        <h2 className="list-title" style={{ color: MAIN_COLOR }}>
+            <div className="storelist-business-partner-list">
+                <div className="storelist-list-header">
+                    <div className="storelist-list-title-section">
+                        <h2 className="storelist-list-title" style={{ color: MAIN_COLOR }}>
                             <span style={{ fontWeight: "bold", fontSize: "1.2em", color: MAIN_COLOR }}>
                                 {displayCategoryName}
                             </span>
@@ -393,7 +401,7 @@ const StoreListForm = () => {
                             </span>
                         </h2>
                     </div>
-                    <div className="total-count" style={{ background: MAIN_COLOR, color: '#fff' }}>
+                    <div className="storelist-total-count" style={{ background: MAIN_COLOR, color: '#fff' }}>
                         가맹점 수 : {stores.length}개
                     </div>
                 </div>
@@ -402,12 +410,12 @@ const StoreListForm = () => {
 
                 {activeTab === "list" ? (
                     stores.length === 0 ? (
-                        <div className="empty-state">
-                            <div className="empty-icon">🏪</div>
+                        <div className="storelist-empty-state">
+                            <div className="storelist-empty-icon">🏪</div>
                             <p>해당 카테고리의 가맹점이 없습니다.</p>
                         </div>
                     ) : (
-                        <div className="partner-grid">
+                        <div className="storelist-partner-grid">
                             {stores.map((store) => (
                                 <StoreCard key={store.storeIndex} store={store} />
                             ))}
@@ -415,12 +423,12 @@ const StoreListForm = () => {
                     )
                 ) : (
                     stores.length === 0 ? (
-                        <div className="empty-state">
-                            <div className="empty-icon">🏪</div>
+                        <div className="storelist-empty-state">
+                            <div className="storelist-empty-icon">🏪</div>
                             <p>해당 카테고리의 가맹점이 없습니다.</p>
                         </div>
                     ) : (
-                        <div className="map-container">
+                        <div className="storelist-map-container">
                             {activeTab === "map" && stores.length > 0 && (
                                 <Map stores={stores} />
                             )}
@@ -433,13 +441,13 @@ const StoreListForm = () => {
 
     const CategorySelector = ({ categories, selectedCategory, onCategorySelect }) => {
         return (
-            <div className="grade-selector">
-                <h2 className="selector-title" style={{ color: MAIN_COLOR }}>가맹점 업종 선택</h2>
-                <div className="grade-buttons">
+            <div className="storelist-grade-selector">
+                <h2 className="storelist-selector-title" style={{ color: MAIN_COLOR }}>가맹점 업종 선택</h2>
+                <div className="storelist-grade-buttons">
                     {categories.map((category) => (
                         <button
                             key={category.store_category_index}
-                            className={`grade-button ${selectedCategory === String(category.store_category_index) ? "active" : ""}`}
+                            className={`storelist-grade-button ${selectedCategory === String(category.store_category_index) ? "active" : ""}`}
                             onClick={() => onCategorySelect(String(category.store_category_index))}
                             style={{
                                 borderColor: MAIN_COLOR,
@@ -447,7 +455,7 @@ const StoreListForm = () => {
                                 color: selectedCategory === String(category.store_category_index) ? "#fff" : MAIN_COLOR,
                             }}
                         >
-                            <span className="grade-name">{category.store_category_name}</span>
+                            <span className="storelist-grade-name">{category.store_category_name}</span>
                         </button>
                     ))}
                 </div>
@@ -455,11 +463,26 @@ const StoreListForm = () => {
         )
     }
 
+    const handleGoBack = () => {
+        window.history.back();
+    };
+
+    // user_index 파라미터가 있으면 산하 사업자에서 온 것으로 판단
+    const isFromBusinessList = urlUserIndex !== null;
+
     return (
-        <div className="business-partner-page">
-            <div className="page-header">
-                <h1 className="page-title">가맹점 목록</h1>
-                <p className="page-subtitle">선택한 카테고리의 가맹점 정보를 조회할 수 있습니다</p>
+        <div className="storelist-business-partner-page">
+            {/* 뒤로가기 버튼과 헤더 */}
+            <div className="storelist-header-section">
+                {isFromBusinessList && (
+                    <button className="storelist-back-button" onClick={handleGoBack}>
+                        <ChevronLeft size={24} />
+                    </button>
+                )}
+                <div className="storelist-page-header">
+                    <h1 className="storelist-page-title">가맹점 목록</h1>
+                    <p className="storelist-page-subtitle">선택한 카테고리의 가맹점 정보를 조회할 수 있습니다</p>
+                </div>
             </div>
 
             <CategorySelector categories={categories} selectedCategory={selectedCategory} onCategorySelect={setSelectedCategory} />

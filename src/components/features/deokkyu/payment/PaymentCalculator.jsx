@@ -6,17 +6,23 @@ const PaymentCalculator = (storeData) => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState('pending') // pending, success, failed
+  const basePath = process.env.NODE_ENV === 'production' ? '/react' : '';
   
   // 가맹비 정보
-  const franchiseFee = 10000
+  const franchiseFee = 200000
 
   // 결제 금액 계산
   const calculatePaymentDetails = () => {
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     return {
+      orderId: orderId,
       amount: franchiseFee,
       orderName: '가맹점 신청비',
       customerName: storeData?.userInfo?.name || '고객',
-      customerEmail: storeData?.userInfo?.email || 'customer@example.com'
+      customerEmail: storeData?.userInfo?.email || 'customer@example.com',
+      customerPhone: storeData?.userInfo?.phone || '',
+      successUrl: `${window.location.origin}${basePath}/registercomplete?success=true`,
+      failUrl: `${window.location.origin}${basePath}/registerstore3?failed=true`
     }
   }
 
@@ -48,8 +54,8 @@ const PaymentCalculator = (storeData) => {
       return
     }
 
-    // CLIENT_KEY 확인 및 검증
-    const clientKey = 'test_ck_KNbdOvk5rkmna9Q6ZzJ23n07xlzm';
+    // CLIENT_KEY 확인 및 검증 (.env에서 가져오기)
+    const clientKey = process.env.REACT_APP_TOSS_CLIENT_KEY;
     
     console.log('환경 변수 확인:', {
       'REACT_APP_TOSS_CLIENT_KEY': process.env.REACT_APP_TOSS_CLIENT_KEY ? '설정됨' : '설정되지 않음',
@@ -110,8 +116,8 @@ const PaymentCalculator = (storeData) => {
         orderName: '가맹점 신청비',
         customerName: storeData.userInfo?.name || '고객',
         customerEmail: storeData.userInfo?.email || 'customer@example.com',
-        successUrl: `${window.location.origin}/registercomplete?success=true`,
-        failUrl: `${window.location.origin}/registerstore3?failed=true`,
+        successUrl: `${window.location.origin}${basePath}/registerstore3?success=true`,
+        failUrl: `${window.location.origin}${basePath}/registerstore3?failed=true`,
         // 모바일 앱 리디렉션 방지 옵션
         flowMode: 'DEFAULT', // 기본 웹 결제 플로우 사용
         easyPay: null, // 간편결제 옵션 비활성화
@@ -152,20 +158,106 @@ const PaymentCalculator = (storeData) => {
     console.log("결제 정보:", { paymentKey, orderId, amount });
     
     // FormData를 localStorage에 임시 저장 (페이지 이동 시 유지)
+    console.log("📊 window.tempFormData 상태 확인:");
+    console.log("   - window.tempFormData 존재:", !!window.tempFormData);
     if (window.tempFormData) {
-      console.log("💾 FormData를 localStorage에 임시 저장...");
-      const formDataEntries = [];
+      // FormData 내용 미리 확인
+      console.log("📊 window.tempFormData 내용 미리보기:");
+      const tempEntries = [];
       for (let [key, value] of window.tempFormData.entries()) {
+        tempEntries.push({ key, valueType: typeof value, isFile: value instanceof File });
         if (value instanceof File) {
-          // File 객체는 Blob으로 변환하여 저장
-          const blob = new Blob([value], { type: value.type });
-          formDataEntries.push({ key, value: blob, isFile: true, fileName: value.name });
+          console.log(`   - ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
         } else {
-          formDataEntries.push({ key, value, isFile: false });
+          console.log(`   - ${key}: ${typeof value} (${value})`);
         }
       }
-      localStorage.setItem('temp-formdata-entries', JSON.stringify(formDataEntries));
-      console.log("✅ FormData 임시 저장 완료");
+      console.log("📊 총 엔트리 수:", tempEntries.length);
+      console.log("📊 파일 엔트리 수:", tempEntries.filter(e => e.isFile).length);
+      
+      console.log("💾 FormData를 localStorage에 임시 저장...");
+      const formDataEntries = [];
+      const filePromises = [];
+      
+      for (let [key, value] of window.tempFormData.entries()) {
+        if (value instanceof File) {
+          console.log(`📁 파일 처리 중: ${key} -> ${value.name} (${value.size} bytes, ${value.type})`);
+          
+          // File 객체를 ArrayBuffer로 읽어서 저장
+          const filePromise = new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const arrayBuffer = reader.result;
+              const uint8Array = new Uint8Array(arrayBuffer);
+              const binaryString = Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join('');
+              
+              formDataEntries.push({
+                key,
+                value: binaryString,
+                isFile: true,
+                fileName: value.name,
+                fileType: value.type,
+                fileSize: value.size
+              });
+              console.log(`✅ 파일 변환 완료: ${key}`);
+              resolve();
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(value);
+          });
+          
+          filePromises.push(filePromise);
+        } else {
+          formDataEntries.push({ key, value, isFile: false });
+          console.log(`📝 텍스트 데이터: ${key} -> ${value}`);
+        }
+      }
+      
+      // 모든 파일 처리가 완료될 때까지 대기
+      if (filePromises.length > 0) {
+        console.log("⏳ 파일 처리 대기 중... (파일 개수:", filePromises.length, ")");
+        try {
+          await Promise.all(filePromises);
+          console.log("✅ 모든 파일 처리 완료");
+        } catch (error) {
+          console.error("❌ 파일 처리 중 오류:", error);
+          throw error;
+        }
+      } else {
+        console.log("ℹ️ 처리할 파일이 없습니다");
+      }
+      
+      // localStorage 저장 시도
+      try {
+        console.log("💾 localStorage에 저장 시도:", formDataEntries.length, "개 항목");
+        console.log("💾 저장할 데이터 미리보기:", formDataEntries.map(entry => ({
+          key: entry.key,
+          isFile: entry.isFile,
+          fileName: entry.fileName || 'N/A',
+          fileSize: entry.fileSize || 'N/A'
+        })));
+        
+        const jsonString = JSON.stringify(formDataEntries);
+        console.log("💾 JSON 문자열 길이:", jsonString.length, "characters");
+        
+        localStorage.setItem('temp-formdata-entries', jsonString);
+        
+        // 저장 검증
+        const verifyData = localStorage.getItem('temp-formdata-entries');
+        if (verifyData) {
+          const parsedData = JSON.parse(verifyData);
+          console.log("✅ FormData 임시 저장 완료:", parsedData.length, "개 항목");
+          console.log("✅ 저장 검증 성공 - 파일 개수:", parsedData.filter(item => item.isFile).length);
+        } else {
+          console.error("❌ localStorage 저장 검증 실패");
+        }
+      } catch (error) {
+        console.error("❌ localStorage 저장 중 오류:", error);
+        console.error("❌ 저장하려던 데이터:", formDataEntries);
+        throw error;
+      }
+    } else {
+      console.warn("⚠️ window.tempFormData가 존재하지 않음 - 파일 저장 건너뜀");
     }
     
     // 결제 정보를 localStorage에 저장
@@ -190,17 +282,14 @@ const PaymentCalculator = (storeData) => {
       console.log("🎊 2단계: 성공 처리 및 데이터 정리...");
       setPaymentStatus('success')
       
-      // FormData 정리 (localStorage는 RegisterComplete에서 정리)
-      if (window.tempFormData) {
-        delete window.tempFormData
-        console.log("🧹 FormData 정리 완료");
-      }
+      // FormData는 RegisterComplete에서 정리 (리다이렉트 중 유지)
+      console.log("📝 FormData는 RegisterComplete에서 정리 예정 - 현재는 유지");
       
       console.log("✅ 결제 승인 완료! 가맹점 정보 저장은 RegisterComplete에서 처리됩니다.");
       
-      // 3. 성공 완료 페이지로 이동
-      console.log("🚀 성공 완료 페이지로 이동: /registercomplete");
-      navigate('/registercomplete')
+      // 3. 성공 완료 페이지로 바로 이동
+      console.log("🚀 결제 승인 완료 - RegisterComplete로 바로 이동");
+      navigate('/registercomplete?success=true');
       
     } catch (error) {
       console.error('❌ 결제 승인 오류:', error)

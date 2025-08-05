@@ -74,15 +74,15 @@
     font-family: inherit;
 }
 
-/* InputField */
-.user-input-field-container {
+/* Login InputField */
+.login-input-field-container {
     position: relative;
     margin-bottom: 20px;
 }
-.user-input-field-container.error {
-    margin-bottom: 8px;
+.login-input-field-container.login-input-error {
+    margin-bottom: 20px;
 }
-.user-input-icon {
+.login-input-icon {
     position: absolute;
     left: 16px;
     top: 50%;
@@ -91,12 +91,13 @@
     transition: color 0.3s ease;
     z-index: 1;
 }
-.user-input-icon.error {
+.login-input-icon.login-input-icon-error {
+    top: 28px;
     color: #ff6b6b;
 }
-.user-input-field {
+.login-input-field {
     width: 100%;
-    padding: 16px 16px 16px 50px;
+    padding: 16px 50px 16px 50px;
     font-size: 16px;
     border: 2px solid rgba(23, 15, 88, 0.2);
     border-radius: 12px;
@@ -106,22 +107,34 @@
     background-color: #fff;
     color: #170F58;
 }
-.user-input-field:focus {
+.login-input-field:focus {
     border-color: #FDCD00;
     background-color: #fff;
     box-shadow: 0 0 0 3px rgba(253, 205, 0, 0.2);
     transform: translateY(-2px);
 }
-.user-input-field.error {
+.login-input-field.login-input-field-error {
     border-color: #ff6b6b;
     background-color: rgba(255, 107, 107, 0.05);
     color: #170F58;
 }
-.user-input-field::placeholder {
+.login-input-field::placeholder {
     color: rgba(23, 15, 88, 0.5);
 }
-.user-input-field.error::placeholder {
+.login-input-field.login-input-field-error::placeholder {
     color: rgba(255, 107, 107, 0.7);
+}
+
+/* Login 에러 메시지 스타일 */
+.login-input-error-message {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: 4px;
+    margin-left: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: user-slideInError 0.3s ease-out;
 }
 
 /* LoginButton */

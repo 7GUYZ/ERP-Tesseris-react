@@ -139,10 +139,10 @@ export const paymentApi = {
 
 // CM 사용 내역 API
 export const userLogApi = {
-                // 전체 CM 사용 내역 조회 (페이징)
-            getAllLogs: (userIndex, page = 0, size = 20, year = null, month = null) => api.get(`user_log/${userIndex}`, { 
-                params: { page, size, year, month } 
-            }),
+    // 전체 CM 사용 내역 조회 (페이징)
+    getAllLogs: (userIndex, page = 0, size = 20, year = null, month = null) => api.get(`user_log/${userIndex}`, { 
+        params: { page, size, year, month } 
+    }),
     // 월별 CM 사용 내역 조회
     getMonthlyLogs: (userIndex, year, month) => api.get(`user_log/${userIndex}/monthly`, { 
         params: { year, month } 
@@ -151,26 +151,35 @@ export const userLogApi = {
     getLogsByTransactionType: (userIndex, transactionType, page = 0, size = 20) => api.get(`user_log/${userIndex}/transaction-type/${transactionType}`, { 
         params: { page, size } 
     }),
-                // CM 사용 통계 조회
-            getStatistics: (userIndex) => api.get(`user_log/${userIndex}/statistics`),
+    // CM 사용 통계 조회
+    getStatistics: (userIndex) => api.get(`user_log/${userIndex}/statistics`),
             
-            // 내가 쓴 금액 조회
-            getSpentLogs: (userIndex, page = 0, size = 20, year = null, month = null) => api.get(`user_log/${userIndex}/spent`, { 
-                params: { page, size, year, month } 
-            }),
+    // 내가 쓴 금액 조회
+    getSpentLogs: (userIndex, page = 0, size = 20, year = null, month = null) => api.get(`user_log/${userIndex}/spent`, { 
+        params: { page, size, year, month } 
+    }),
             
-            // 내가 받은 금액 조회
-            getReceivedLogs: (userIndex, page = 0, size = 20, year = null, month = null) => api.get(`user_log/${userIndex}/received`, { 
-                params: { page, size, year, month } 
-            }),
-            
-            // 수입 거래 조회 (돈이 들어오는 거래)
-            getIncomeLogs: (userIndex, page = 0, size = 20) => api.get(`user_log/${userIndex}/income`, { 
-                params: { page, size } 
-            }),
-            
-            // 지출 거래 조회 (돈이 빠져나가는 거래)
-            getExpenseLogs: (userIndex, page = 0, size = 20) => api.get(`user_log/${userIndex}/expense`, { 
-                params: { page, size } 
-            }),
-        };
+    // 내가 받은 금액 조회
+    getReceivedLogs: (userIndex, page = 0, size = 20, year = null, month = null) => api.get(`user_log/${userIndex}/received`, { 
+        params: { page, size, year, month } 
+    })
+};
+
+// 사용자 정보 관리 API
+export const TaekjunAuth = {
+    getUserInfo: (userIndex) => {
+        return api.get('/user/info', { 
+            params: { userIndex } 
+        });
+    },
+
+    updateUserInfo: (userIndex, data) => {
+        return api.put('/user/update', data, { 
+            params: { userIndex } 
+        });
+    },
+
+    getBankList: () => {
+        return api.get('/user/banks');
+    }
+};
