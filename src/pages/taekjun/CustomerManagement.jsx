@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { customerManagementApi } from '../../api/auth/TaekjunAuth';
 import PinInput from '../../components/forms/jiyun/pin-change/PinInput';
 import PinCodeModal from '../../components/ui/taekjun/PinCodeModal';
 import '../../styles/taekjun/CustomerManagement.css';
 
 const CustomerManagement = () => {
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -18,8 +20,8 @@ const CustomerManagement = () => {
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   
-  // 필터 옵션
-  const memberOptions = ['전체', '일반 고객', '단골 고객', '추천 고객'];
+  // 필터 옵션 (추천 고객 제거)
+  const memberOptions = ['전체', '일반 고객', '단골 고객'];
   
   // 현재 로그인한 사용자의 storeUserIndex (로컬스토리지에서 가져옴)
   const [currentStoreUserIndex, setCurrentStoreUserIndex] = useState("");
@@ -48,6 +50,11 @@ const CustomerManagement = () => {
   // 핀번호 입력 모달 상태
   const [showPinModal, setShowPinModal] = useState(false);
 
+  // 뒤로가기 함수
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   // 페이지 로드 시 로컬스토리지에서 user_index 가져오기
   useEffect(() => {
     const userInfo = localStorage.getItem('user-info');
@@ -72,8 +79,8 @@ const CustomerManagement = () => {
     }
   }, []);
 
-  // 고객 목록 조회
-  const fetchCustomers = useCallback(async () => {
+  // 고객 목록 조회 (검색 조건 포함)
+  const fetchCustomers = useCallback(async (searchParams = null) => {
     if (!currentStoreUserIndex) {
       setError('사용자 정보가 없습니다.');
       return;
@@ -86,7 +93,15 @@ const CustomerManagement = () => {
       const params = {
         storeUserIndex: currentStoreUserIndex
       };
-      if (selectedMember !== '전체') params.member = selectedMember;
+      
+      // 검색 파라미터가 있으면 사용, 없으면 현재 상태 사용
+      const member = searchParams?.member ?? selectedMember;
+      const phone = searchParams?.phone ?? searchPhone;
+      
+      if (member && member !== '전체') params.member = member;
+      if (phone && phone.trim()) params.phone = phone.trim();
+      
+      console.log('검색 파라미터:', params);
       
       // 내 가맹점 고객 목록 조회 API 사용
       const response = await customerManagementApi.getMyCustomers(params);
@@ -102,18 +117,32 @@ const CustomerManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentStoreUserIndex, selectedMember]);
+  }, [currentStoreUserIndex, selectedMember, searchPhone]);
 
-  // 초기 데이터 로드 (userIndex가 있을 때만)
+  // 초기 데이터 로드 (userIndex가 있을 때만, 필터 없이 전체 조회)
   useEffect(() => {
     if (currentStoreUserIndex) {
-    fetchCustomers();
+      const params = {
+        storeUserIndex: currentStoreUserIndex
+      };
+      fetchCustomers(params);
     }
-  }, [currentStoreUserIndex, fetchCustomers]);
+  }, [currentStoreUserIndex]);
 
-  // 검색 실행
+  // 검색 실행 (버튼 클릭 또는 엔터키)
   const handleSearch = () => {
-    fetchCustomers();
+    console.log('검색 실행 - 전화번호:', searchPhone, '구분:', selectedMember);
+    fetchCustomers({
+      member: selectedMember,
+      phone: searchPhone
+    });
+  };
+
+  // 엔터키 검색
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   // 전체 선택/해제
@@ -353,10 +382,10 @@ const CustomerManagement = () => {
       <div className="customer-management-container">
         {/* 헤더 */}
         <div className="customer-management-header">
-          <div className="header-back">
+          <div className="header-back" onClick={handleGoBack}>
             <span className="back-arrow">←</span>
           </div>
-          <h1 className="header-title">고객 관리</h1>
+          <h1 className="header-title2">고객 관리</h1>
         </div>
 
         {/* 검색 및 필터 */}
@@ -366,6 +395,7 @@ const CustomerManagement = () => {
               type="text"
               value={searchPhone}
               onChange={(e) => setSearchPhone(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="전화번호 뒷 4자리"
               className="search-input"
             />

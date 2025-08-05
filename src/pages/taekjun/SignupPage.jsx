@@ -66,14 +66,26 @@ const SignupPage = () => {
     setError('');
 
     try {
-      const response = await signupApi.searchUser(referralSearch.searchValue);
+      console.log('검색 요청 데이터:', referralSearch.searchValue);
+      const response = await signupApi.searchUser(referralSearch.searchValue.trim());
+      console.log('추천인 검색 응답:', response.data);
       
       if (response.data && response.data.found) {
+        // 백엔드 응답 구조에 맞게 데이터 변환
+        const referrerData = {
+          id: response.data.userId,
+          name: response.data.userName,
+          nickname: response.data.userNickname,
+          email: response.data.userEmail,
+          referralCode: response.data.referralCode
+        };
+        
         setReferralSearch(prev => ({
           ...prev,
-          searchResults: [response.data],
+          searchResults: [referrerData],
           isSearching: false
         }));
+        setError(''); // 성공 시 에러 메시지 제거
       } else {
         setReferralSearch(prev => ({
           ...prev,
@@ -94,7 +106,8 @@ const SignupPage = () => {
       ...prev,
       selectedReferrer: referrer,
       searchValue: referrer.email,
-      searchResults: []
+      searchResults: [],
+      isSearching: false
     }));
     setUserInfo(prev => ({ ...prev, referralId: referrer.email }));
   };
@@ -720,25 +733,28 @@ const SignupPage = () => {
                     {loading ? '검색 중...' : '검색'}
                   </button>
                 </div>
-                {referralSearch.isSearching && (
-                  <div className="search-results">
-                    {referralSearch.searchResults.map((referrer, index) => (
-                      <div
-                        key={index}
-                        className="search-result-item"
-                        onClick={() => handleSelectReferrer(referrer)}
-                      >
-                        {referrer.email}
-                      </div>
-                    ))}
-                    {referralSearch.searchResults.length === 0 && (
-                      <div className="search-result-item">검색 결과가 없습니다.</div>
-                    )}
-                  </div>
-                )}
+                                 {(referralSearch.isSearching || referralSearch.searchResults.length > 0) && (
+                   <div className="search-results">
+                     {referralSearch.searchResults.map((referrer, index) => (
+                       <div
+                         key={index}
+                         className="search-result-item"
+                         onClick={() => handleSelectReferrer(referrer)}
+                       >
+                         <div className="referrer-email">{referrer.email}</div>
+                         <div className="referrer-nickname">{referrer.nickname}</div>
+                       </div>
+                     ))}
+                     {referralSearch.searchResults.length === 0 && referralSearch.isSearching && (
+                       <div className="search-result-item no-results">검색 결과가 없습니다.</div>
+                     )}
+                   </div>
+                 )}
                 {referralSearch.selectedReferrer && (
                   <div className="selected-referrer">
-                    선택된 추천인: {referralSearch.selectedReferrer.email}
+                    <div className="selected-label">선택된 추천인:</div>
+                    <div className="selected-email">{referralSearch.selectedReferrer.email}</div>
+                    <div className="selected-nickname">({referralSearch.selectedReferrer.nickname})</div>
                   </div>
                 )}
               </div>
