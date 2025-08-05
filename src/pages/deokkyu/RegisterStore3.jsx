@@ -31,23 +31,86 @@ export default function RegisterStore3() {
   
   // 페이지 로드 시 이전 데이터 확인
   useEffect(() => {
+    // URL 파라미터 확인 (결제 관련 파라미터가 있으면 FormData 체크 건너뜀)
+    const urlParams = new URLSearchParams(location.search)
+    const paymentKey = urlParams.get('paymentKey')
+    const orderId = urlParams.get('orderId')
+    const success = urlParams.get('success')
+    const failed = urlParams.get('failed')
+    
+    // 결제 관련 파라미터가 있으면 FormData 체크하지 않음
+    const isPaymentFlow = paymentKey || orderId || success || failed
+    
     const tempData = localStorage.getItem('register-store-temp')
-    if (!tempData) {
+    
+    // 결제 플로우가 아닌 경우에만 tempData 필수 체크
+    if (!tempData && !isPaymentFlow) {
       alert('이전 단계 정보가 없습니다. 처음부터 다시 진행해주세요.')
       navigate('/registerstore0')
       return
     }
     
     try {
-      const parsedData = JSON.parse(tempData)
-      setStoreData(parsedData)
+      // 결제 플로우일 때도 가능한 한 데이터를 로드 시도
+      if (tempData) {
+        const parsedData = JSON.parse(tempData)
+        setStoreData(parsedData)
+        console.log('📥 tempData 로드 성공:', !!parsedData)
+      } else if (isPaymentFlow) {
+        // 결제 플로우이지만 tempData가 없는 경우 - 기본값으로 설정
+        console.log('🎯 결제 플로우 - tempData 없음, 기본값 설정')
+        setStoreData({
+          userInfo: { name: '고객', phone: '', user_index: null },
+          businessInfo: {},
+          storeInfo: {},
+          agreements: {}
+        })
+      }
       
-      // FormData 유효성 확인
-      if (!window.tempFormData) {
-        console.error('FormData가 없습니다. 이전 페이지로 돌아갑니다.')
-        alert('폼 데이터가 유실되었습니다. 이전 단계부터 다시 진행해주세요.')
-        navigate('/registerstore2')
-        return
+      // FormData 유효성 확인 (결제 플로우가 아닐 때만)
+      if (!isPaymentFlow && !window.tempFormData) {
+        // localStorage에서 FormData 복원 시도
+        const savedFormDataEntries = localStorage.getItem('temp-formdata-entries')
+        if (savedFormDataEntries) {
+          console.log('📥 localStorage에서 FormData 복원 시도...')
+          try {
+            const formDataEntries = JSON.parse(savedFormDataEntries)
+            const restoredFormData = new FormData()
+            
+            for (const entry of formDataEntries) {
+              if (entry.isFile && entry.value) {
+                // 파일 데이터 복원
+                const binaryString = entry.value
+                const uint8Array = new Uint8Array(binaryString.length)
+                for (let i = 0; i < binaryString.length; i++) {
+                  uint8Array[i] = binaryString.charCodeAt(i)
+                }
+                const blob = new Blob([uint8Array], { type: entry.fileType })
+                const file = new File([blob], entry.fileName, { type: entry.fileType })
+                restoredFormData.append(entry.key, file)
+                console.log(`📁 파일 복원 완료: ${entry.key} -> ${entry.fileName}`)
+              } else {
+                restoredFormData.append(entry.key, entry.value)
+                console.log(`📝 텍스트 복원 완료: ${entry.key} -> ${entry.value}`)
+              }
+            }
+            
+            window.tempFormData = restoredFormData
+            console.log('✅ FormData 복원 완료')
+          } catch (restoreError) {
+            console.error('❌ FormData 복원 실패:', restoreError)
+          }
+        }
+        
+        // 복원 후에도 FormData가 없으면 에러
+        if (!window.tempFormData) {
+          console.error('FormData가 없습니다. 이전 페이지로 돌아갑니다.')
+          alert('폼 데이터가 유실되었습니다. 이전 단계부터 다시 진행해주세요.')
+          navigate('/registerstore2')
+          return
+        }
+      } else if (isPaymentFlow) {
+        console.log('🎯 결제 플로우 감지 - FormData 체크 건너뜀')
       }
       
       // FormData 상태 로그
@@ -64,7 +127,7 @@ export default function RegisterStore3() {
       alert('데이터 처리 중 오류가 발생했습니다.')
       navigate('/registerstore0')
     }
-  }, [navigate])
+  }, [navigate, location.search])
 
   // URL 파라미터 확인 (결제 성공/실패 처리)
   useEffect(() => {
@@ -109,6 +172,8 @@ export default function RegisterStore3() {
       // localStorage 정리
       localStorage.removeItem('register-store-temp')
       localStorage.removeItem('register-store-agreements')
+      localStorage.removeItem('temp-formdata-entries')
+      localStorage.removeItem('temp-payment-info')
       localStorage.removeItem('temp-business-license-file')
       localStorage.removeItem('temp-sign-photo-file')
       localStorage.removeItem('temp-front-photo-file')
@@ -153,6 +218,8 @@ export default function RegisterStore3() {
     if (window.confirm('가맹점 신청을 취소하시겠습니까? 입력한 정보가 모두 사라집니다.')) {
       localStorage.removeItem('register-store-temp')
       localStorage.removeItem('register-store-agreements')
+      localStorage.removeItem('temp-formdata-entries')
+      localStorage.removeItem('temp-payment-info')
       localStorage.removeItem('temp-business-license-file')
       localStorage.removeItem('temp-sign-photo-file')
       localStorage.removeItem('temp-front-photo-file')
@@ -244,9 +311,13 @@ export default function RegisterStore3() {
               console.log('🧹 RegisterStore3: 비정상 종료 감지 - localStorage 정리')
         localStorage.removeItem('register-store-temp')
         localStorage.removeItem('register-store-agreements')
+        localStorage.removeItem('temp-formdata-entries')
+        localStorage.removeItem('temp-payment-info')
         localStorage.removeItem('temp-business-license-file')
         localStorage.removeItem('temp-sign-photo-file')
         localStorage.removeItem('temp-front-photo-file')
+        localStorage.removeItem('@tosspayments/client-id')
+        localStorage.removeItem('@tosspayments/merchant-browser-id')
         if (window.tempFormData) {
           delete window.tempFormData
         }
