@@ -11,7 +11,7 @@ const UserCommissionHistoryPage = () => {
     const [loading, setLoading] = useState(false);
     
     const navigate = useNavigate();
-    const limit = 5;
+    const limit = 7;
 
     useEffect(() => {
         // 백엔드에서 JWT로 자동 처리하므로 바로 호출
@@ -158,7 +158,7 @@ const UserCommissionHistoryPage = () => {
                                     {historyData.length > 0 ? (
                                         historyData.map((item, index) => (
                                         <div key={index} className="user-commission-history-table-body-row">
-                                            <div className="user-commission-history-no-cell">{item.rowNumber}</div>
+                                            <div className="user-commission-history-no-cell">{((currentPage - 1) * limit) + index + 1}</div>
                                             <div>
                                                 <span className="user-commission-history-person-badge">
                                                     {item.userName}
