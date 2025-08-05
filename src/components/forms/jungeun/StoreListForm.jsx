@@ -90,18 +90,29 @@ export const Map = ({ stores = [] }) => {
                 console.log('🔍 환경변수 확인:', {
                     apiKey: apiKey ? '설정됨' : '설정되지 않음',
                     apiKeyValue: apiKey ? `${apiKey.substring(0, 8)}...` : '없음',
-                    envVars: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_'))
+                    envVars: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_')),
+                    fullApiKey: apiKey
                 });
 
                 if (!apiKey) {
                     console.error('❌ 카카오 지도 API 키가 설정되지 않았습니다!');
                     console.error('📝 환경변수 REACT_APP_KAKAO_MAP_API_KEY를 설정해주세요.');
+                    console.error('🔧 현재 process.env:', process.env);
                     return;
                 }
 
                 script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
                 script.async = true;
-                script.onload = createMapAndMarkers;
+                script.onload = () => {
+                    // 스크립트 로드 후 약간의 지연을 두고 지도 생성
+                    setTimeout(() => {
+                        if (window.kakao && window.kakao.maps && window.kakao.maps.load) {
+                            createMapAndMarkers();
+                        } else {
+                            console.error('❌ 카카오 지도 객체가 아직 준비되지 않았습니다.');
+                        }
+                    }, 100);
+                };
                 script.onerror = () => {
                     console.error('❌ 카카오 지도 스크립트 로드 실패');
                 };

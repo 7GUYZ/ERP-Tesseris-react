@@ -209,7 +209,7 @@ const StoreList = () => {
         <button className="back-button" onClick={() => navigate(-1)}>
           ←
         </button>
-        <h1 className="page-title">가맹점 찾기</h1>
+        <h1 className="page-title1">가맹점 찾기</h1>
       </div>
 
       {/* 뷰 모드 탭 */}
