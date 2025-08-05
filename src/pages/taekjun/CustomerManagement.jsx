@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { customerManagementApi } from '../../api/auth/TaekjunAuth';
 import PinInput from '../../components/forms/jiyun/pin-change/PinInput';
 import PinCodeModal from '../../components/ui/taekjun/PinCodeModal';
 import '../../styles/taekjun/CustomerManagement.css';
 
 const CustomerManagement = () => {
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -47,6 +49,11 @@ const CustomerManagement = () => {
 
   // 핀번호 입력 모달 상태
   const [showPinModal, setShowPinModal] = useState(false);
+
+  // 뒤로가기 함수
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   // 페이지 로드 시 로컬스토리지에서 user_index 가져오기
   useEffect(() => {
@@ -375,10 +382,10 @@ const CustomerManagement = () => {
       <div className="customer-management-container">
         {/* 헤더 */}
         <div className="customer-management-header">
-          <div className="header-back">
+          <div className="header-back" onClick={handleGoBack}>
             <span className="back-arrow">←</span>
           </div>
-          <h1 className="header-title">고객 관리</h1>
+          <h1 className="header-title2">고객 관리</h1>
         </div>
 
         {/* 검색 및 필터 */}
