@@ -55,6 +55,7 @@
   font-size: 20px;
   font-weight: 600;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #FFEB3B;
 }
 
 /* 통계 섹션 */
@@ -513,6 +514,7 @@
   
   .page-title {
     font-size: 16px;
+    color: #FFEB3B !important;
   }
   
   .statistics-section {

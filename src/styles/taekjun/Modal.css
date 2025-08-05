@@ -13,6 +13,16 @@
   backdrop-filter: blur(5px);
 }
 
+/* 핀번호 모달은 더 높은 z-index 사용 */
+.pin-code-modal .modal-overlay {
+  z-index: 9999;
+}
+
+/* 핀번호 모달 컨테이너도 높은 z-index 설정 */
+.pin-code-modal .modal-container {
+  z-index: 9999;
+}
+
 /* 모달 컨텐츠 */
 .modal-content {
   background: rgba(255, 255, 255, 0.95);
@@ -29,8 +39,10 @@
   background: white !important;
   border-radius: 20px;
   padding: 0;
-  max-width: 90vw;
-  max-height: 90vh;
+  width: 95vw;
+  height: 95vh;
+  max-width: 1200px;
+  max-height: 800px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(23, 15, 88, 0.3);
   animation: modalSlideIn 0.3s ease-out;
@@ -374,7 +386,9 @@
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .modal-container {
-    max-width: 95vw;
+    width: 98vw;
+    height: 95vh;
+    max-width: none;
     margin: 10px;
   }
   
