@@ -15,92 +15,91 @@ export const Map = ({ stores = [] }) => {
     const mapRef = useRef(null);
 
     useEffect(() => {
-        if (!container.current) return;
+        function createMapAndMarkers() {
+            if (!container.current) {
+                console.warn("지도 container가 아직 준비되지 않았습니다.");
+                return;
+            }
 
-        const initMap = () => {
-            // 기존 마커/인포윈도우 제거
-            markersRef.current.forEach(marker => marker.setMap(null));
-            markersRef.current = [];
-            infoWindowsRef.current.forEach(info => info.close());
-            infoWindowsRef.current = [];
+            window.kakao.maps.load(() => {
+                const position = new window.kakao.maps.LatLng(33.450701, 126.570667);
+                const options = {
+                    center: position,
+                    level: 7
+                };
+                const map = new window.kakao.maps.Map(container.current, options);
+                mapRef.current = map;
 
-            // 지도 생성
-            const position = new window.kakao.maps.LatLng(33.450701, 126.570667);
-            const options = {
-                center: position,
-                level: 7
-            };
-            const map = new window.kakao.maps.Map(container.current, options);
-            mapRef.current = map;
+                // 기존 마커/인포윈도우 제거
+                markersRef.current.forEach(marker => marker.setMap(null));
+                markersRef.current = [];
+                infoWindowsRef.current.forEach(info => info.close());
+                infoWindowsRef.current = [];
 
-            if (stores.length === 0) return;
+                if (stores.length === 0) return;
 
-            // 주소 -> 좌표 변환 객체
-            const geocoder = new window.kakao.maps.services.Geocoder();
-            const bounds = new window.kakao.maps.LatLngBounds();
+                const geocoder = new window.kakao.maps.services.Geocoder();
+                const bounds = new window.kakao.maps.LatLngBounds();
 
-            let completedGeocoding = 0;
-            const totalStores = stores.length;
+                let completedGeocoding = 0;
+                const totalStores = stores.length;
 
-            stores.forEach(store => {
-                geocoder.addressSearch(store.storeAddress, (result, status) => {
-                    if (status === window.kakao.maps.services.Status.OK) {
-                        const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-                        const marker = new window.kakao.maps.Marker({
-                            map,
-                            position: coords
-                        });
-                        markersRef.current.push(marker);
-                        bounds.extend(coords);
+                stores.forEach(store => {
+                    geocoder.addressSearch(store.storeAddress, (result, status) => {
+                        if (status === window.kakao.maps.services.Status.OK) {
+                            const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+                            const marker = new window.kakao.maps.Marker({
+                                map,
+                                position: coords
+                            });
+                            markersRef.current.push(marker);
+                            bounds.extend(coords);
 
-                        const nameSearchUrl = `https://map.kakao.com/?q=${encodeURIComponent(store.storeName)}`;
-                        const addressSearchUrl = `https://map.kakao.com/?q=${encodeURIComponent(store.storeAddress)}`;
-                        const infoWindow = new window.kakao.maps.InfoWindow({
-                            content: `<div style="padding:6px 12px;font-size:14px;white-space:nowrap;">
-                                <a href='${nameSearchUrl}' target='_blank' rel='noopener noreferrer' style='color:#170F58;text-decoration:none;font-weight:bold;font-size:15px;'>${store.storeName}</a><br/>
-                                <a href='${addressSearchUrl}' target='_blank' rel='noopener noreferrer' style='color:#555;text-decoration:underline;font-size:13px;'>${store.storeAddress}</a>
-                            </div>`,
-                            removable: true
-                        });
-                        infoWindow.open(map, marker);
-                        infoWindowsRef.current.push(infoWindow);
-                    }
-                    
-                    completedGeocoding++;
-                    if (completedGeocoding === totalStores) {
-                        map.setBounds(bounds);
-                    }
+                            const nameSearchUrl = `https://map.kakao.com/?q=${encodeURIComponent(store.storeName)}`;
+                            const addressSearchUrl = `https://map.kakao.com/?q=${encodeURIComponent(store.storeAddress)}`;
+                            const infoWindow = new window.kakao.maps.InfoWindow({
+                                content: `<div style="padding:6px 12px;font-size:14px;white-space:nowrap;">
+                                    <a href='${nameSearchUrl}' target='_blank' rel='noopener noreferrer' style='color:#170F58;text-decoration:none;font-weight:bold;font-size:15px;'>${store.storeName}</a><br/>
+                                    <a href='${addressSearchUrl}' target='_blank' rel='noopener noreferrer' style='color:#555;text-decoration:underline;font-size:13px;'>${store.storeAddress}</a>
+                                </div>`,
+                                removable: true
+                            });
+                            infoWindow.open(map, marker);
+                            infoWindowsRef.current.push(infoWindow);
+                        }
+                        
+                        completedGeocoding++;
+                        // 모든 주소 변환이 완료된 후에 지도 범위 설정
+                        if (completedGeocoding === totalStores) {
+                            map.setBounds(bounds);
+                        }
+                    });
                 });
             });
-        };
-
-        // 카카오맵 스크립트가 로드되었는지 확인
-        const script = document.querySelector('script[src*="dapi.kakao.com/v2/maps/sdk.js"]');
-        if (!script) {
-            // 스크립트가 없으면 추가
-            const mapScript = document.createElement('script');
-            mapScript.async = true;
-            mapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=d3847b4792faef3e7980502f1f8e30f2&libraries=services&autoload=false`;
-            mapScript.onload = () => {
-                window.kakao.maps.load(initMap);
-            };
-            document.head.appendChild(mapScript);
-        } else {
-            // 스크립트가 이미 있으면 kakao 객체가 있는지 확인
-            const checkKakao = setInterval(() => {
-                if (window.kakao && window.kakao.maps) {
-                    clearInterval(checkKakao);
-                    window.kakao.maps.load(initMap);
-                }
-            }, 100);
-
-            // 10초 후에도 로드되지 않으면 인터벌 제거
-            setTimeout(() => {
-                clearInterval(checkKakao);
-                console.error('카카오맵 로드 실패: 시간 초과');
-            }, 10000);
         }
 
+        if (window.kakao && window.kakao.maps && window.kakao.maps.load) {
+            createMapAndMarkers();
+        } else {
+            if (!document.getElementById("kakao-map-script")) {
+                const script = document.createElement("script");
+                script.id = "kakao-map-script";
+                const apiKey = process.env.REACT_APP_KAKAO_MAP_API_KEY;
+                
+
+                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
+                script.async = true;
+                script.onload = createMapAndMarkers;
+                script.onerror = () => {
+                    console.error('❌ 카카오 지도 스크립트 로드 실패');
+                };
+                document.head.appendChild(script);
+            } else {
+                document.getElementById("kakao-map-script").addEventListener("load", createMapAndMarkers);
+            }
+        }
+
+        // cleanup: 지도, 마커, 인포윈도우 등 리소스 해제
         return () => {
             markersRef.current.forEach(marker => marker.setMap(null));
             markersRef.current = [];
@@ -144,41 +143,6 @@ const StoreListForm = () => {
     const [currentUserIndex, setCurrentUserIndex] = useState(
         urlUserIndex ? Number(urlUserIndex) : Number(JSON.parse(localStorage.getItem("user-info"))?.user_index)
     );
-
-    // 검색 기능
-    useEffect(() => {
-        console.log('🔍 검색 기능 실행:', { searchKeyword, storesLength: stores.length });
-        if (searchKeyword.trim() === '') {
-            setFilteredStores(stores);
-            console.log('📋 검색어 없음 - 전체 가맹점 표시:', stores.length);
-        } else {
-            const filtered = stores.filter(store => 
-                store.storeName?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-                store.storeAddress?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-                store.storePhone?.includes(searchKeyword) ||
-                store.storeCategoryName?.toLowerCase().includes(searchKeyword.toLowerCase())
-            );
-            setFilteredStores(filtered);
-            console.log('🔍 검색 결과:', { 
-                searchKeyword, 
-                filteredCount: filtered.length, 
-                totalCount: stores.length,
-                filteredStores: filtered.map(s => s.storeName)
-            });
-        }
-    }, [searchKeyword, stores]);
-
-    // 검색 입력 핸들러
-    const handleSearchChange = (e) => {
-        console.log('🔍 검색 입력:', e.target.value);
-        setSearchKeyword(e.target.value);
-    };
-
-    // 검색 초기화
-    const handleSearchClear = () => {
-        console.log('🔍 검색 초기화');
-        setSearchKeyword('');
-    };
 
     // 쿼리스트링이 바뀔 때마다 state 동기화
     useEffect(() => {
@@ -410,8 +374,6 @@ const StoreListForm = () => {
 
     const StoreList = ({ stores, category }) => {
         const displayCategoryName = category?.store_category_name || "전체";
-        const displayStores = searchKeyword.trim() === '' ? stores : filteredStores;
-        
         return (
             <div className="storelist-business-partner-list">
                 <div className="storelist-list-header">
@@ -428,95 +390,35 @@ const StoreListForm = () => {
                         </h2>
                     </div>
                     <div className="storelist-total-count" style={{ background: MAIN_COLOR, color: '#fff' }}>
-                        가맹점 수 : {displayStores.length}개
-                    </div>
-                </div>
-
-                {/* 검색 입력창 */}
-                <div className="storelist-search-container" style={{ 
-                    marginBottom: '1rem',
-                    padding: '1rem',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                    border: `1px solid #e9ecef`
-                }}>
-                    <div style={{ 
-                        display: 'flex', 
-                        gap: '0.5rem', 
-                        alignItems: 'center',
-                        padding: '0.75rem',
-                        border: `2px solid ${MAIN_COLOR}`,
-                        borderRadius: '8px',
-                        backgroundColor: '#fff',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                    }}>
-                        <span style={{ color: MAIN_COLOR, fontSize: '16px' }}>🔍</span>
-                        <input
-                            type="text"
-                            placeholder="가맹점명, 주소, 전화번호, 업종으로 검색..."
-                            value={searchKeyword}
-                            onChange={handleSearchChange}
-                            style={{
-                                flex: 1,
-                                border: 'none',
-                                outline: 'none',
-                                fontSize: '14px',
-                                padding: '0.5rem'
-                            }}
-                        />
-                        {searchKeyword && (
-                            <button
-                                onClick={handleSearchClear}
-                                style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    padding: '0.25rem',
-                                    color: '#666',
-                                    fontSize: '16px'
-                                }}
-                            >
-                                ✕
-                            </button>
-                        )}
+                        가맹점 수 : {stores.length}개
                     </div>
                 </div>
 
                 <TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
 
                 {activeTab === "list" ? (
-                    displayStores.length === 0 ? (
+                    stores.length === 0 ? (
                         <div className="storelist-empty-state">
                             <div className="storelist-empty-icon">🏪</div>
-                            <p>
-                                {searchKeyword.trim() !== '' 
-                                    ? `"${searchKeyword}"에 대한 검색 결과가 없습니다.`
-                                    : '해당 카테고리의 가맹점이 없습니다.'
-                                }
-                            </p>
+                            <p>해당 카테고리의 가맹점이 없습니다.</p>
                         </div>
                     ) : (
                         <div className="storelist-partner-grid">
-                            {displayStores.map((store) => (
+                            {stores.map((store) => (
                                 <StoreCard key={store.storeIndex} store={store} />
                             ))}
                         </div>
                     )
                 ) : (
-                    displayStores.length === 0 ? (
+                    stores.length === 0 ? (
                         <div className="storelist-empty-state">
                             <div className="storelist-empty-icon">🏪</div>
-                            <p>
-                                {searchKeyword.trim() !== '' 
-                                    ? `"${searchKeyword}"에 대한 검색 결과가 없습니다.`
-                                    : '해당 카테고리의 가맹점이 없습니다.'
-                                }
-                            </p>
+                            <p>해당 카테고리의 가맹점이 없습니다.</p>
                         </div>
                     ) : (
                         <div className="storelist-map-container">
-                            {activeTab === "map" && displayStores.length > 0 && (
-                                <Map stores={displayStores} />
+                            {activeTab === "map" && stores.length > 0 && (
+                                <Map stores={stores} />
                             )}
                         </div>
                     )

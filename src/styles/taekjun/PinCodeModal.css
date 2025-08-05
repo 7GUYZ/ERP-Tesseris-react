@@ -2,6 +2,7 @@
 .pin-code-modal {
   max-width: 400px;
   width: 90vw;
+  z-index: 9999;
 }
 
 /* 핀번호 표시 영역 */

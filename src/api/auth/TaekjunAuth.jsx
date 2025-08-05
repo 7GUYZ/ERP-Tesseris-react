@@ -80,6 +80,9 @@ export const customerManagementApi = {
     
     // 쿠폰 선물
     giftCoupon: (data) => api.post('customer-management/gift-coupon', data),
+    
+    // 이벤트 쿠폰 발행
+    issueEventCoupon: (data) => api.post('customer-management/issue-event-coupon', data),
 };
 
 // 쿠폰 리스트 API
