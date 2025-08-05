@@ -160,7 +160,7 @@ const PaymentPage = () => {
     return Math.max(0, inputAmount - couponTotal); // 쿠폰 할인이므로 빼기
   };
 
-  // 실제 차감되는 CM 금액 계산 (결제 금액 - 쿠폰 금액)
+  // 실제 차감되는 TS 금액 계산 (결제 금액 - 쿠폰 금액)
   const calculateActualCmAmount = () => {
     const inputAmount = parseInt(amount) || 0;
     const couponTotal = selectedCoupons.reduce((sum, coupon) => sum + coupon.couponPrice, 0);
@@ -198,7 +198,7 @@ const PaymentPage = () => {
         const request = {
           targetUserIndex: selectedStore.userIndex,
           amount: parseInt(amount), // 가맹점이 받는 금액 (원래 결제 금액)
-          actualCmAmount: actualCmAmount, // 실제 차감되는 CM 금액
+          actualCmAmount: actualCmAmount, // 실제 차감되는 TS 금액
           couponIndexes: selectedCoupons.map(c => c.couponIndex),
           couponTotal: couponTotal, // 쿠폰 총 금액
           pinCode: pinCodeToUse
@@ -209,7 +209,7 @@ const PaymentPage = () => {
       const response = await paymentApi.processPayment(request, userIndex);
       
       if (response.data.resultCode === 200 && response.data.data.success) {
-        const successMessage = `결제가 성공적으로 완료되었습니다.\n\n내 CM 차감: ${actualCmAmount.toLocaleString()} CM\n쿠폰 사용: ${couponTotal.toLocaleString()} CM\n가맹점 입금: ${parseInt(amount).toLocaleString()} CM`;
+        const successMessage = `결제가 성공적으로 완료되었습니다.\n\n내 TS 차감: ${actualCmAmount.toLocaleString()} TS\n쿠폰 사용: ${couponTotal.toLocaleString()} TS\n가맹점 입금: ${parseInt(amount).toLocaleString()} TS`;
         setSuccess(successMessage);
         
         // 3초 후 main 페이지로 이동
@@ -257,14 +257,14 @@ const PaymentPage = () => {
       return;
     }
 
-    // CM 잔액 확인
+    // TS 잔액 확인
     const finalAmount = calculateFinalAmount();
     const currentCm = paymentInfo?.currentCm || 0;
-    console.log('CM 잔액 확인:', { finalAmount, currentCm, isInsufficient: finalAmount > currentCm });
+    console.log('TS 잔액 확인:', { finalAmount, currentCm, isInsufficient: finalAmount > currentCm });
     
     if (finalAmount > currentCm) {
-      console.log('CM 부족 감지 - 충전 페이지로 이동');
-      setError('보유 CM이 부족합니다. 충전 페이지로 이동합니다.');
+      console.log('TS 부족 감지 - 충전 페이지로 이동');
+      setError('보유 TS가 부족합니다. 충전 페이지로 이동합니다.');
       // 충전 페이지로 이동 - 현재 결제 정보와 함께
       setTimeout(() => {
         console.log('충전 페이지로 이동 실행');
@@ -317,15 +317,15 @@ const PaymentPage = () => {
           <div className="payment-page-info">
             <div className="payment-page-info-item">
               <span className="payment-page-info-label">월 결제한도:</span>
-              <span className="payment-page-info-value">{paymentInfo.monthlyLimit.toLocaleString()} CM</span>
+              <span className="payment-page-info-value">{paymentInfo.monthlyLimit.toLocaleString()} TS</span>
             </div>
             <div className="payment-page-info-item">
               <span className="payment-page-info-label">{paymentInfo.currentMonth} 사용 금액:</span>
-              <span className="payment-page-info-value">{paymentInfo.monthlyUsed.toLocaleString()} CM</span>
+              <span className="payment-page-info-value">{paymentInfo.monthlyUsed.toLocaleString()} TS</span>
             </div>
             <div className="payment-page-info-item">
-              <span className="payment-page-info-label">보유 CM:</span>
-              <span className="payment-page-info-value">{paymentInfo.currentCm.toLocaleString()} CM</span>
+              <span className="payment-page-info-label">보유 TS:</span>
+              <span className="payment-page-info-value">{paymentInfo.currentCm.toLocaleString()} TS</span>
             </div>
           </div>
         )}
@@ -361,7 +361,7 @@ const PaymentPage = () => {
           
           {/* 결제 금액 */}
           <div className="payment-page-form-group">
-            <label>결제 금액 (CM)</label>
+            <label>결제 금액 (TS)</label>
             <input
               type="number"
               value={amount}
@@ -400,11 +400,11 @@ const PaymentPage = () => {
                   <div key={coupon.couponIndex} className="payment-page-selected-coupon">
                     <div className="payment-page-coupon-header">
                       <span className="payment-page-coupon-name">{coupon.couponName}</span>
-                      <span className="payment-page-coupon-price">{coupon.couponPrice.toLocaleString()} CM</span>
+                      <span className="payment-page-coupon-price">{coupon.couponPrice.toLocaleString()} TS</span>
                     </div>
                     <div className="payment-page-coupon-body">
                       <div className="payment-page-coupon-info">
-                        <p className="payment-page-coupon-amount">{coupon.couponPrice.toLocaleString()} CM 할인</p>
+                        <p className="payment-page-coupon-amount">{coupon.couponPrice.toLocaleString()} TS 할인</p>
                       </div>
                       <button 
                         type="button" 
@@ -422,11 +422,11 @@ const PaymentPage = () => {
           
           {/* 최종 금액 */}
           <div className="payment-page-final-amount">
-            <p>최종 결제 금액: <span>{calculateFinalAmount().toLocaleString()}</span> CM</p>
+            <p>최종 결제 금액: <span>{calculateFinalAmount().toLocaleString()}</span> TS</p>
             {selectedCoupons.length > 0 && (
               <div className="payment-page-amount-breakdown">
-                <p>내 CM 차감: <span>{calculateActualCmAmount().toLocaleString()}</span> CM</p>
-                <p>쿠폰 사용: <span>{calculateCouponTotal().toLocaleString()}</span> CM</p>
+                <p>내 TS 차감: <span>{calculateActualCmAmount().toLocaleString()}</span> TS</p>
+                <p>쿠폰 사용: <span>{calculateCouponTotal().toLocaleString()}</span> TS</p>
               </div>
             )}
           </div>

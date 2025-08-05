@@ -461,7 +461,7 @@ const CustomerManagement = () => {
                   
                   <div className="taekjun-coupon-modal-selected-info">
                     <p>선택된 고객: {selectedCustomers.length}명</p>
-                    <p>필요 CM: {couponForm.couponPrice && couponForm.couponLimit ? 
+                    <p>필요 TS: {couponForm.couponPrice && couponForm.couponLimit ? 
                       (parseInt(couponForm.couponPrice) * selectedCustomers.length).toLocaleString() : 0}원</p>
                   </div>
                 </div>

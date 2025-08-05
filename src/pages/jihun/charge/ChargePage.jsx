@@ -33,10 +33,10 @@ const ChargePage = () => {
 
   return (
     <ChargeLayout>
-      {/* 상단 섹션: 현재 보유중인 CM */}
+      {/* 상단 섹션: 현재 보유중인 TS */}
       <div className="charge-section">
         <BalanceDisplay 
-          label="현재 보유중인 CM" 
+          label="현재 보유중인 TS" 
           balance={currentBalance} 
         />
       </div>
@@ -55,10 +55,10 @@ const ChargePage = () => {
         />
       </div>
       
-      {/* 하단 섹션: 충전 후 CM + 결제 버튼 */}
+      {/* 하단 섹션: 충전 후 TS + 결제 버튼 */}
       <div className="charge-section">
         <BalanceDisplay 
-          label="충전 후 CM" 
+          label="충전 후 TS" 
           balance={newBalance} 
         />
         

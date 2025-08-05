@@ -12,14 +12,14 @@ const PaymentDetails = ({ totalPayment, cmToCharge, cmRate }) => {
       </div>
       
       <div className="payment-detail-item">
-        <span className="payment-detail-label">충전할 CM</span>
+        <span className="payment-detail-label">충전할 TS</span>
         <span className="payment-detail-value">
-          {cmToCharge ? `${cmToCharge.toLocaleString()} CM` : '0 CM'}
+          {cmToCharge ? `${cmToCharge.toLocaleString()} TS` : '0 TS'}
         </span>
       </div>
       
       <div className="payment-detail-rate">
-        *CM 적용율 {cmRate} 배
+        *TS 적용율 {cmRate} 배
       </div>
     </div>
   );
