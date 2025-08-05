@@ -29,7 +29,7 @@ export default function MobileMyPage() {
   const qrRef = useRef(null);
 
   const handleLogout = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
       const response = await logout();
@@ -39,12 +39,9 @@ export default function MobileMyPage() {
         localStorage.removeItem("user-info");
         // 홈으로 이동
         navigate("/");
-
       }
-    } catch (error) {
-
-    }
-  }
+    } catch (error) {}
+  };
 
   useEffect(() => {
     const userData = localStorage.getItem("user-info");
@@ -191,7 +188,10 @@ export default function MobileMyPage() {
               </div>
               <div className="mypage-referralContent">
                 <span className="mypage-referralCode">{userInfo?.email}</span>
-                <button className="mypage-copyButton" onClick={handleCopyUserId}>
+                <button
+                  className="mypage-copyButton"
+                  onClick={handleCopyUserId}
+                >
                   코드 복사
                 </button>
               </div>
@@ -250,8 +250,9 @@ export default function MobileMyPage() {
                         (page) => (
                           <button
                             key={page}
-                            className={`mypage-pageNumber${currentPage === page ? " active" : ""
-                              }`}
+                            className={`mypage-pageNumber${
+                              currentPage === page ? " active" : ""
+                            }`}
                             onClick={() => handlePageChange(page)}
                           >
                             {page}
@@ -328,7 +329,7 @@ export default function MobileMyPage() {
               </Link>
               <div className="mypage-separator"></div>
               <button className="mypage-menuItem" onClick={handleLogout}>
-                <div className="mypage-menuLabel" >
+                <div className="mypage-menuLabel">
                   <LogOut className="menuIcon" />
                   <span>로그아웃</span>
                 </div>
