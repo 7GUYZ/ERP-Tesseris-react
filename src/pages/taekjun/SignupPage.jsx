@@ -372,7 +372,7 @@ const SignupPage = () => {
       if (response.data.success) {
         // 백엔드에서 자동으로 추천인 관계 생성 및 포인트 지급 처리
         if (userInfo.referralId) {
-          alert('회원가입이 성공적으로 완료되었습니다!\n추천인과 함께 10,000cm를 받았습니다!');
+          alert('회원가입이 성공적으로 완료되었습니다!\n추천인과 함께 10,000TS를 받았습니다!');
         } else {
           alert('회원가입이 성공적으로 완료되었습니다!');
         }

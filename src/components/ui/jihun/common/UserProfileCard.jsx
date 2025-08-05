@@ -50,10 +50,10 @@ export default function UserProfileCard() {
       </div>
       <div className="usermain-profilecard-balancewrap">
         <div className="usermain-profilecard-balancecard">
-          <p className="usermain-profilecard-balance-label">사용 가능한 CM</p>
+          <p className="usermain-profilecard-balance-label">사용 가능한 TS</p>
           <div className="usermain-profilecard-balance-amountwrap">
             <span className="usermain-profilecard-balance-amount">{userCurrentPoint.toLocaleString()}</span>
-            <span className="usermain-profilecard-balance-unit">CM</span>
+            <span className="usermain-profilecard-balance-unit">TS</span>
           </div>
           <button className="usermain-profilecard-balance-chargebtn-main" onClick={() => navigate('/charge/user', { state: { userCurrentPoint: userCurrentPoint} })}>+ 충전</button>
         </div>

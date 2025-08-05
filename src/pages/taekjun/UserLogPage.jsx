@@ -11,20 +11,18 @@ const UserLogPage = () => {
   const [success, setSuccess] = useState('');
   
   // 탭 상태
-  const [activeTab, setActiveTab] = useState('all'); // 'all', 'spent', 'received', 'income', 'expense'
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'spent', 'received'
   
   // 필터 상태
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [useDateFilter, setUseDateFilter] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [useDateFilter, setUseDateFilter] = useState(false); // 필터 사용 여부 (기본값: false)
   
   // 데이터 상태
   const [allLogs, setAllLogs] = useState([]);
   const [spentLogs, setSpentLogs] = useState([]);
   const [receivedLogs, setReceivedLogs] = useState([]);
-  const [incomeLogs, setIncomeLogs] = useState([]);
-  const [expenseLogs, setExpenseLogs] = useState([]);
   const [statistics, setStatistics] = useState(null);
   
   // 페이징 상태
@@ -61,9 +59,24 @@ const UserLogPage = () => {
     setError('');
     
     try {
-      const response = useDateFilter 
-        ? await userLogApi.getAllLogs(currentUserIndex, page, 20, selectedYear, selectedMonth)
-        : await userLogApi.getAllLogs(currentUserIndex, page, 20);
+      console.log('필터 상태:', { useDateFilter, selectedYear, selectedMonth });
+      
+      // 필터가 활성화된 경우에만 월별 파라미터 전송
+      const year = useDateFilter ? selectedYear : null;
+      const month = useDateFilter ? selectedMonth : null;
+      
+      console.log('API 호출 파라미터:', { currentUserIndex, page, year, month, useDateFilter });
+      console.log('실제 전송될 파라미터:', { year: year, month: month, yearType: typeof year, monthType: typeof month });
+      
+      // 필터가 비활성화된 경우 null, null을 명시적으로 전송
+      const finalYear = useDateFilter ? year : null;
+      const finalMonth = useDateFilter ? month : null;
+      
+      console.log('최종 전송 파라미터:', { finalYear, finalMonth });
+      
+      const response = await userLogApi.getAllLogs(currentUserIndex, page, 20, finalYear, finalMonth);
+      
+      console.log('API 응답:', response.data);
       
       if (response.data.resultCode === 200) {
         setAllLogs(response.data.data.content || []);
@@ -79,7 +92,7 @@ const UserLogPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUserIndex, selectedYear, selectedMonth, useDateFilter]);
+  }, [currentUserIndex, useDateFilter, selectedYear, selectedMonth]);
 
   const fetchSpentLogs = useCallback(async (page = 0) => {
     if (!currentUserIndex) return;
@@ -88,9 +101,11 @@ const UserLogPage = () => {
     setError('');
     
     try {
-      const response = useDateFilter 
-        ? await userLogApi.getSpentLogs(currentUserIndex, page, 20, selectedYear, selectedMonth)
-        : await userLogApi.getSpentLogs(currentUserIndex, page, 20);
+      // 필터가 활성화된 경우에만 월별 파라미터 전송
+      const year = useDateFilter ? selectedYear : null;
+      const month = useDateFilter ? selectedMonth : null;
+      
+      const response = await userLogApi.getSpentLogs(currentUserIndex, page, 20, year, month);
       
       if (response.data.resultCode === 200) {
         setSpentLogs(response.data.data.content || []);
@@ -106,7 +121,7 @@ const UserLogPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUserIndex, selectedYear, selectedMonth, useDateFilter]);
+  }, [currentUserIndex, useDateFilter, selectedYear, selectedMonth]);
 
   const fetchReceivedLogs = useCallback(async (page = 0) => {
     if (!currentUserIndex) return;
@@ -115,9 +130,11 @@ const UserLogPage = () => {
     setError('');
     
     try {
-      const response = useDateFilter 
-        ? await userLogApi.getReceivedLogs(currentUserIndex, page, 20, selectedYear, selectedMonth)
-        : await userLogApi.getReceivedLogs(currentUserIndex, page, 20);
+      // 필터가 활성화된 경우에만 월별 파라미터 전송
+      const year = useDateFilter ? selectedYear : null;
+      const month = useDateFilter ? selectedMonth : null;
+      
+      const response = await userLogApi.getReceivedLogs(currentUserIndex, page, 20, year, month);
       
       if (response.data.resultCode === 200) {
         setReceivedLogs(response.data.data.content || []);
@@ -133,59 +150,7 @@ const UserLogPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUserIndex, selectedYear, selectedMonth, useDateFilter]);
-
-  // 수입 거래 조회
-  const fetchIncomeLogs = useCallback(async (page = 0) => {
-    if (!currentUserIndex) return;
-    
-    setLoading(true);
-    setError('');
-    
-    try {
-      const response = await userLogApi.getIncomeLogs(currentUserIndex, page, 20);
-      
-      if (response.data.resultCode === 200) {
-        setIncomeLogs(response.data.data.content || []);
-        setTotalPages(response.data.data.totalPages || 0);
-        setTotalElements(response.data.data.totalElements || 0);
-        setCurrentPage(page);
-      } else {
-        setError(response.data.resultMessage || '수입 거래를 불러오는데 실패했습니다.');
-      }
-    } catch (err) {
-      console.error('수입 거래 조회 오류:', err);
-      setError('수입 거래를 불러오는 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUserIndex]);
-
-  // 지출 거래 조회
-  const fetchExpenseLogs = useCallback(async (page = 0) => {
-    if (!currentUserIndex) return;
-    
-    setLoading(true);
-    setError('');
-    
-    try {
-      const response = await userLogApi.getExpenseLogs(currentUserIndex, page, 20);
-      
-      if (response.data.resultCode === 200) {
-        setExpenseLogs(response.data.data.content || []);
-        setTotalPages(response.data.data.totalPages || 0);
-        setTotalElements(response.data.data.totalElements || 0);
-        setCurrentPage(page);
-      } else {
-        setError(response.data.resultMessage || '지출 거래를 불러오는데 실패했습니다.');
-      }
-    } catch (err) {
-      console.error('지출 거래 조회 오류:', err);
-      setError('지출 거래를 불러오는 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUserIndex]);
+  }, [currentUserIndex, useDateFilter, selectedYear, selectedMonth]);
 
   const fetchStatistics = useCallback(async () => {
     if (!currentUserIndex) return;
@@ -211,14 +176,10 @@ const UserLogPage = () => {
         fetchSpentLogs(0);
       } else if (activeTab === 'received') {
         fetchReceivedLogs(0);
-      } else if (activeTab === 'income') {
-        fetchIncomeLogs(0);
-      } else if (activeTab === 'expense') {
-        fetchExpenseLogs(0);
       }
       fetchStatistics();
     }
-  }, [currentUserIndex, activeTab, selectedYear, selectedMonth, fetchAllLogs, fetchSpentLogs, fetchReceivedLogs, fetchIncomeLogs, fetchExpenseLogs, fetchStatistics]);
+  }, [currentUserIndex, activeTab]);
 
   // 페이지 변경 시 데이터 로드
   const handlePageChange = (newPage) => {
@@ -228,10 +189,6 @@ const UserLogPage = () => {
       fetchSpentLogs(newPage);
     } else if (activeTab === 'received') {
       fetchReceivedLogs(newPage);
-    } else if (activeTab === 'income') {
-      fetchIncomeLogs(newPage);
-    } else if (activeTab === 'expense') {
-      fetchExpenseLogs(newPage);
     }
   };
 
@@ -244,10 +201,6 @@ const UserLogPage = () => {
         return spentLogs;
       case 'received':
         return receivedLogs;
-      case 'income':
-        return incomeLogs;
-      case 'expense':
-        return expenseLogs;
       default:
         return [];
     }
@@ -287,13 +240,25 @@ const UserLogPage = () => {
   const formatAmount = (amount) => {
     if (amount === null || amount === undefined) return '0';
     const sign = amount < 0 ? '-' : '';
-    return sign + Math.abs(amount).toLocaleString() + ' CM';
+    return sign + Math.abs(amount).toLocaleString() + ' TS';
   };
 
   // 날짜 포맷팅
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
+    
+    let date;
+    
+    // 배열 형태의 날짜인 경우 (백엔드에서 오는 형태)
+    if (Array.isArray(dateString)) {
+      const [year, month, day, hour, minute, second] = dateString;
+      // Java의 월은 1부터 시작하므로 그대로 사용
+      date = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      // 문자열 형태의 날짜인 경우
+      date = new Date(dateString);
+    }
+    
     return date.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: '2-digit',
@@ -322,6 +287,7 @@ const UserLogPage = () => {
   const applyFilter = () => {
     setCurrentPage(0);
     setShowFilter(false);
+    setUseDateFilter(true); // 필터 활성화
     
     // 필터 적용 시 현재 탭에 맞는 데이터 다시 로드
     if (currentUserIndex) {
@@ -331,10 +297,69 @@ const UserLogPage = () => {
         fetchSpentLogs(0);
       } else if (activeTab === 'received') {
         fetchReceivedLogs(0);
-      } else if (activeTab === 'income') {
-        fetchIncomeLogs(0);
-      } else if (activeTab === 'expense') {
-        fetchExpenseLogs(0);
+      }
+    }
+  };
+
+  // 필터 취소
+  const cancelFilter = () => {
+    console.log('필터 취소 실행');
+    setCurrentPage(0);
+    setShowFilter(false);
+    setUseDateFilter(false); // 필터 비활성화
+    
+    console.log('필터 취소 후 상태:', { useDateFilter: false, currentUserIndex, activeTab });
+    
+    // 필터 취소 시 현재 탭에 맞는 데이터 다시 로드 (전체 데이터)
+    if (currentUserIndex) {
+      // 필터가 비활성화된 상태로 API 호출
+      setLoading(true);
+      setError('');
+      
+      try {
+        console.log('필터 취소 - 전체 데이터 요청 (null, null 파라미터)');
+        
+        if (activeTab === 'all') {
+          userLogApi.getAllLogs(currentUserIndex, 0, 20, null, null).then(response => {
+            console.log('필터 취소 - 전체 데이터 응답:', response.data);
+            if (response.data.resultCode === 200) {
+              setAllLogs(response.data.data.content || []);
+              setTotalPages(response.data.data.totalPages || 0);
+              setTotalElements(response.data.data.totalElements || 0);
+              setCurrentPage(0);
+            }
+          }).catch(err => {
+            console.error('필터 취소 - 전체 데이터 요청 오류:', err);
+          });
+        } else if (activeTab === 'spent') {
+          userLogApi.getSpentLogs(currentUserIndex, 0, 20, null, null).then(response => {
+            console.log('필터 취소 - 지출 데이터 응답:', response.data);
+            if (response.data.resultCode === 200) {
+              setSpentLogs(response.data.data.content || []);
+              setTotalPages(response.data.data.totalPages || 0);
+              setTotalElements(response.data.data.totalElements || 0);
+              setCurrentPage(0);
+            }
+          }).catch(err => {
+            console.error('필터 취소 - 지출 데이터 요청 오류:', err);
+          });
+        } else if (activeTab === 'received') {
+          userLogApi.getReceivedLogs(currentUserIndex, 0, 20, null, null).then(response => {
+            console.log('필터 취소 - 수입 데이터 응답:', response.data);
+            if (response.data.resultCode === 200) {
+              setReceivedLogs(response.data.data.content || []);
+              setTotalPages(response.data.data.totalPages || 0);
+              setTotalElements(response.data.data.totalElements || 0);
+              setCurrentPage(0);
+            }
+          }).catch(err => {
+            console.error('필터 취소 - 수입 데이터 요청 오류:', err);
+          });
+        }
+      } catch (err) {
+        console.error('필터 취소 중 오류:', err);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -347,7 +372,7 @@ const UserLogPage = () => {
           <button className="back-button" onClick={() => navigate(-1)}>
             ←
           </button>
-          <h1 className="page-title">CM 사용 내역</h1>
+          <h1 className="page-title">TS 사용 내역</h1>
         </div>
 
         {/* 통계 정보 */}
@@ -395,22 +420,11 @@ const UserLogPage = () => {
             내가 받은 금액
           </button>
           <button 
-            className={`tab-button ${activeTab === 'income' ? 'active' : ''}`}
-            onClick={() => setActiveTab('income')}
-          >
-            수입 거래
-          </button>
-          <button 
-            className={`tab-button ${activeTab === 'expense' ? 'active' : ''}`}
-            onClick={() => setActiveTab('expense')}
-          >
-            지출 거래
-          </button>
-          <button 
-            className="filter-button"
+            className={`filter-button ${useDateFilter ? 'active' : ''}`}
             onClick={() => setShowFilter(!showFilter)}
+            title={useDateFilter ? '필터가 적용됨' : '필터 설정'}
           >
-            📅
+            {useDateFilter ? '🔍' : '📅'}
           </button>
         </div>
 
@@ -419,50 +433,54 @@ const UserLogPage = () => {
           <div className="filter-section">
             <div className="filter-content">
               <div className="filter-item">
-                <label>
-                  <input 
-                    type="checkbox" 
-                    checked={useDateFilter}
-                    onChange={(e) => setUseDateFilter(e.target.checked)}
-                    className="filter-checkbox"
-                  />
-                  날짜 필터 사용
-                </label>
+                <label>년도:</label>
+                <select 
+                  value={selectedYear} 
+                  onChange={(e) => {
+                    const newYear = parseInt(e.target.value);
+                    console.log('년도 변경:', { oldYear: selectedYear, newYear });
+                    setSelectedYear(newYear);
+                  }}
+                  className="filter-select"
+                >
+                  {generateYearOptions().map(year => (
+                    <option key={year} value={year}>{year}년</option>
+                  ))}
+                </select>
               </div>
-              {useDateFilter && (
-                <>
-                  <div className="filter-item">
-                    <label>년도:</label>
-                    <select 
-                      value={selectedYear} 
-                      onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                      className="filter-select"
-                    >
-                      {generateYearOptions().map(year => (
-                        <option key={year} value={year}>{year}년</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="filter-item">
-                    <label>월:</label>
-                    <select 
-                      value={selectedMonth} 
-                      onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                      className="filter-select"
-                    >
-                      {generateMonthOptions().map(month => (
-                        <option key={month} value={month}>{month}월</option>
-                      ))}
-                    </select>
-                  </div>
-                </>
-              )}
-              <button 
-                className="apply-filter-button"
-                onClick={applyFilter}
-              >
-                적용
-              </button>
+              <div className="filter-item">
+                <label>월:</label>
+                <select 
+                  value={selectedMonth} 
+                  onChange={(e) => {
+                    const newMonth = parseInt(e.target.value);
+                    console.log('월 변경:', { oldMonth: selectedMonth, newMonth });
+                    setSelectedMonth(newMonth);
+                  }}
+                  className="filter-select"
+                >
+                  {generateMonthOptions().map(month => (
+                    <option key={month} value={month}>{month}월</option>
+                  ))}
+                </select>
+                <span style={{marginLeft: '10px', fontSize: '12px', color: '#666'}}>
+                  (현재 선택: {selectedMonth}월)
+                </span>
+              </div>
+              <div className="filter-actions">
+                <button 
+                  onClick={applyFilter}
+                  className="apply-filter-button"
+                >
+                  필터 적용
+                </button>
+                <button 
+                  onClick={cancelFilter}
+                  className="cancel-filter-button"
+                >
+                  필터 취소
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -1,5 +1,5 @@
 .payment-amount-form {
-  margin-bottom: 24px;
+  margin-bottom: 0;  /* 섹션 내부에서는 margin 제거 */
   font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
 
@@ -7,7 +7,7 @@
   font-size: 16px;
   font-weight: 600;
   color: #170F58;
-  margin-bottom: 12px;
+  margin-bottom: 12px;  /* 16px에서 12px로 줄임 */
 }
 
 .payment-amount-input-container {
@@ -50,11 +50,14 @@
 .payment-amount-validation {
   font-size: 13px;
   color: #ff4757;
-  margin-top: 8px;
+  margin-top: 8px;  /* 12px에서 8px로 줄임 */
   font-weight: 400;
 }
 
 @media (max-width: 600px) {
+  .payment-amount-form {
+    margin-bottom: 0;  /* 섹션 내부에서는 margin 제거 */
+  }
   .payment-amount-input {
     height: 32px;
     font-size: 15px;
@@ -62,9 +65,13 @@
   }
   .payment-amount-label {
     font-size: 15px;
+    margin-bottom: 8px;  /* 12px에서 8px로 줄임 */
   }
   .payment-amount-unit {
     font-size: 14px;
     right: 8px;
+  }
+  .payment-amount-validation {
+    margin-top: 6px;  /* 8px에서 6px로 줄임 */
   }
 } 

@@ -78,8 +78,10 @@ const StoreDetailForm = () => {
     };
 
     const handlePhoneCall = () => {
-        if (store.storePhone != null) {
-            navigate(`tel:${store.storePhone}`);
+        if (store.storePhone != null && store.storePhone.trim() !== '') {
+            window.location.href = `tel:${store.storePhone}`;
+        } else {
+            alert("전화번호 정보가 없습니다.");
         }
     };
 
@@ -137,8 +139,8 @@ const StoreDetailForm = () => {
     return (
         <div className="storeDetail-store-detail">
             {/* 헤더 */}
-            <div className="storeDetail-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <button className="storeDetail-back-button" onClick={handleGoBack}>
+            <div className="storeDetail-header" style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                <button className="storeDetail-back-button" onClick={handleGoBack} style={{ position: 'absolute', left: 0, zIndex: 1 }}>
                     <ChevronLeft size={24} />
                 </button>
                 <div style={{ flex: 1, textAlign: 'center', fontWeight: 700, fontSize: 20, color: '#170F58' }}>
@@ -236,7 +238,7 @@ const StoreDetailForm = () => {
                 <h3>가맹점 정보</h3>
                 <div className="storeDetail-detail-item cm">
                     <Coins className="storeDetail-detail-icon" size={16} />
-                    <span>사용 가능 CM: &nbsp;{store.userCmUse?.toLocaleString()}CM</span>
+                    <span>사용 가능 TS: &nbsp;{store.userCmUse?.toLocaleString()}TS</span>
                 </div>
                 <div className="storeDetail-store-details">
                     <div className="storeDetail-detail-item address">

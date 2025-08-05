@@ -34,7 +34,7 @@ export default function RegisterStore2() {
     storeSite: '',
     storeSignPhoto: null,
     storeFrontPhoto: null,
-    hasManager: '',
+    hasManager: 'NO',
     managerId: ''
   })
 
@@ -198,9 +198,13 @@ export default function RegisterStore2() {
         console.log('🧹 RegisterStore2: 비정상 종료 감지 - localStorage 정리')
         localStorage.removeItem('register-store-temp')
         localStorage.removeItem('register-store-agreements')
+        localStorage.removeItem('temp-formdata-entries')
+        localStorage.removeItem('temp-payment-info')
         localStorage.removeItem('temp-business-license-file')
         localStorage.removeItem('temp-sign-photo-file')
         localStorage.removeItem('temp-front-photo-file')
+        localStorage.removeItem('@tosspayments/client-id')
+        localStorage.removeItem('@tosspayments/merchant-browser-id')
         if (window.tempFormData) {
           delete window.tempFormData
         }
@@ -510,14 +514,9 @@ export default function RegisterStore2() {
     if (!businessInfo.storeRegistrationNum || !businessInfo.storeCorporateName || 
         !businessInfo.storeBossName || !businessInfo.storeTypeTaxation ||
         !storeInfo.store_name || !storeInfo.store_phone || 
-        !storeInfo.store_postcode || !storeInfo.store_address) {
+        !storeInfo.store_postcode || !storeInfo.store_address ||
+        !storeInfo.managerId || storeInfo.managerId.trim() === '') {
       alert('필수 항목을 모두 입력해주세요.')
-      return
-    }
-
-    // 담당자 여부가 YES인데 담당자 아이디가 없는 경우 (필수 항목)
-    if (storeInfo.hasManager === 'YES' && (!storeInfo.managerId || storeInfo.managerId.trim() === '')) {
-      alert('담당자 여부를 YES로 선택하신 경우, 담당자 아이디는 필수 입력 항목입니다.')
       return
     }
     
@@ -534,12 +533,7 @@ export default function RegisterStore2() {
     
     // 파일들을 localStorage에 별도 저장
     console.log("📁 파일들을 localStorage에 저장 시작...");
-    
-    // 사용자에게 압축 진행 상황 알림
-    const hasFiles = businessInfo.storeBusinessLicensePhoto || storeInfo.storeSignPhoto || storeInfo.storeFrontPhoto;
-    if (hasFiles) {
-      alert('이미지 파일을 압축하여 저장하는 중입니다.\n잠시만 기다려주세요...');
-    }
+
     
     const filePromises = [];
     
@@ -699,10 +693,6 @@ export default function RegisterStore2() {
         
         console.log(`📊 localStorage 사용량: ${(totalSize / 1024 / 1024).toFixed(2)}MB`);
         
-        // 압축 완료 안내
-        if (hasFiles) {
-          console.log('🎉 모든 이미지 파일 압축 및 저장이 완료되었습니다.');
-        }
         
       } catch (error) {
         console.error("❌ 파일 저장 중 오류:", error);
@@ -1080,49 +1070,19 @@ export default function RegisterStore2() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">담당자 여부</label>
-            <div className="radio-group">
-              <div className="radio-item">
-                <input
-                  type="radio"
-                  id="manager-yes"
-                  name="hasManager"
-                  value="YES"
-                  className="radio-input"
-                  checked={storeInfo.hasManager === 'YES'}
-                  onChange={(e) => handleStoreInfoChange('hasManager', e.target.value)}
-                />
-                <label htmlFor="manager-yes" className="radio-label">YES</label>
-              </div>
-              <div className="radio-item">
-                <input
-                  type="radio"
-                  id="manager-no"
-                  name="hasManager"
-                  value="NO"
-                  className="radio-input"
-                  checked={storeInfo.hasManager === 'NO'}
-                  onChange={(e) => {
-                    handleStoreInfoChange('hasManager', e.target.value)
-                    handleStoreInfoChange('managerId', '') // NO 선택시 담당자 ID 초기화
-                  }}
-                />
-                <label htmlFor="manager-no" className="radio-label">NO</label>
-              </div>
-            </div>
-
-            {storeInfo.hasManager === 'YES' && (
-              <div className="conditional-input">
-                <label className="form-label required">담당자 아이디 (사업자 회원)</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="담당자 아이디를 입력하세요"
-                  value={storeInfo.managerId}
-                  onChange={(e) => handleStoreInfoChange('managerId', e.target.value)}
-                />
-              </div>
-            )}
+            <label className="form-label required">담당자 아이디 (사업자 회원)</label>
+            <input
+              type="text"
+              className="form-input"
+              placeholder="담당자 아이디를 입력하세요"
+              value={storeInfo.managerId}
+              onChange={(e) => {
+                const managerId = e.target.value;
+                handleStoreInfoChange('managerId', managerId);
+                // 담당자 아이디가 있으면 YES, 없으면 NO로 자동 설정 (백엔드 호환성 유지)
+                handleStoreInfoChange('hasManager', managerId.trim() ? 'YES' : 'NO');
+              }}
+            />
           </div>
         </div>
       </div>
