@@ -5,7 +5,7 @@ export default function TermsList() {
   const navigate = useNavigate();
 
   const termsList = [
-    { id: "service", title: "CMBarter 서비스 이용약관" },
+    { id: "service", title: "Tesseris 서비스 이용약관" },
     { id: "privacy", title: "개인정보 수집 및 이용약관" },
     { id: "marketing", title: "마케팅 정보 수집 및 이용 동의" },
     { id: "adinfo", title: "광고성 정보 수신 동의" },
@@ -19,7 +19,10 @@ export default function TermsList() {
   return (
     <div className="terms-container">
       <div className="terms-header">
-        <button className="terms-list-back-button" onClick={() => navigate("/mypage")}>
+        <button
+          className="terms-list-back-button"
+          onClick={() => navigate("/mypage")}
+        >
           &lt;
         </button>
         <h2>약관 및 이용 동의</h2>

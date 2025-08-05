@@ -348,7 +348,7 @@ export default function MobileMyPage() {
               카카오톡 상담하기
             </a>
             <div className="mypage-companyInfo">
-              씨엠바더코리아㈜ | 사업자 등록번호 364-86-03002
+              테서리스㈜ | 사업자 등록번호 364-86-03002
               <br />
               주소: 서울 금천구 가산디지털1로 171, 601~606호(가산동,SKV1센터) |
               대표자 김애경
@@ -356,7 +356,7 @@ export default function MobileMyPage() {
               연락처: 1566-1691
             </div>
             <div className="mypage-copyright">
-              Copyright © CMBARTER KOREA All Rights Reserved.
+              Copyright © Tesseris KOREA All Rights Reserved.
             </div>
           </div>
         </footer>
