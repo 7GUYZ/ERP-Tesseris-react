@@ -84,7 +84,7 @@ const BusinessListForm = () => {
           </div>
           <div className="businesslist-info-row">
             <span className="businesslist-info-label">수수료</span>
-            <span className="businesslist-info-value">{partner.totalCm}</span>
+            <span className="businesslist-info-value">{partner.totalCm} TS</span>
           </div>
           <div className="businesslist-info-row">
             <span className="businesslist-info-label">상급자</span>
