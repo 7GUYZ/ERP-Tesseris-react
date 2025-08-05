@@ -186,8 +186,8 @@ export default function PinForm(){
             {giftInfo && (
               <div className="gift-pin-info">
                 <div className="gift-pin-info-item">
-                  <span className="gift-pin-info-label">선물할 CM:</span>
-                  <span className="gift-pin-info-value">{giftInfo.giftAmount?.toLocaleString()} CM</span>
+                                      <span className="gift-pin-info-label">선물할 TS:</span>
+                    <span className="gift-pin-info-value">{giftInfo.giftAmount?.toLocaleString()} TS</span>
                 </div>
                 <div className="gift-pin-info-item">
                   <span className="gift-pin-info-label">받는 사람:</span>

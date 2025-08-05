@@ -238,7 +238,7 @@ const StoreDetailForm = () => {
                 <h3>가맹점 정보</h3>
                 <div className="storeDetail-detail-item cm">
                     <Coins className="storeDetail-detail-icon" size={16} />
-                    <span>사용 가능 CM: &nbsp;{store.userCmUse?.toLocaleString()}CM</span>
+                    <span>사용 가능 TS: &nbsp;{store.userCmUse?.toLocaleString()}TS</span>
                 </div>
                 <div className="storeDetail-store-details">
                     <div className="storeDetail-detail-item address">
