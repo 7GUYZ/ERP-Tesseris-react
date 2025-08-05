@@ -33,32 +33,43 @@ const ChargePage = () => {
 
   return (
     <ChargeLayout>
-      <BalanceDisplay 
-        label="현재 보유중인 CM" 
-        balance={currentBalance} 
-      />
+      {/* 상단 섹션: 현재 보유중인 TS */}
+      <div className="charge-section">
+        <BalanceDisplay 
+          label="현재 보유중인 TS" 
+          balance={currentBalance} 
+        />
+      </div>
       
-      <PaymentAmountForm 
-        paymentAmount={paymentAmount}
-        setPaymentAmount={setPaymentAmount}
-      />
+      {/* 중단 섹션: 결제 정보 */}
+      <div className="charge-section">
+        <PaymentAmountForm 
+          paymentAmount={paymentAmount}
+          setPaymentAmount={setPaymentAmount}
+        />
+        
+        <PaymentDetails 
+          totalPayment={totalPayment}
+          cmToCharge={cmToCharge}
+          cmRate={cmRate}
+        />
+      </div>
       
-      <PaymentDetails 
-        totalPayment={totalPayment}
-        cmToCharge={cmToCharge}
-        cmRate={cmRate}
-      />
-      
-      <BalanceDisplay 
-        label="충전 후 CM" 
-        balance={newBalance} 
-      />
-      <div id="payment-widget"></div>
-      <PaymentButton 
-        onClick={handlePayment}
-        disabled={!paymentAmount || parseFloat(paymentAmount) < 1000}
-        loading={loading}
-      />
+      {/* 하단 섹션: 충전 후 TS + 결제 버튼 */}
+      <div className="charge-section">
+        <BalanceDisplay 
+          label="충전 후 TS" 
+          balance={newBalance} 
+        />
+        
+        <div id="payment-widget"></div>
+        
+        <PaymentButton 
+          onClick={handlePayment}
+          disabled={!paymentAmount || parseFloat(paymentAmount) < 1000}
+          loading={loading}
+        />
+      </div>
     </ChargeLayout>
   );
 };

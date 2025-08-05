@@ -86,6 +86,18 @@ export const Map = ({ stores = [] }) => {
                 script.id = "kakao-map-script";
                 const apiKey = process.env.REACT_APP_KAKAO_MAP_API_KEY;
                 
+                // 환경변수 디버깅
+                console.log('🔍 환경변수 확인:', {
+                    apiKey: apiKey ? '설정됨' : '설정되지 않음',
+                    apiKeyValue: apiKey ? `${apiKey.substring(0, 8)}...` : '없음',
+                    envVars: Object.keys(process.env).filter(key => key.startsWith('REACT_APP_'))
+                });
+
+                if (!apiKey) {
+                    console.error('❌ 카카오 지도 API 키가 설정되지 않았습니다!');
+                    console.error('📝 환경변수 REACT_APP_KAKAO_MAP_API_KEY를 설정해주세요.');
+                    return;
+                }
 
                 script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
                 script.async = true;
@@ -309,8 +321,8 @@ const StoreListForm = () => {
                         <span className="storelist-info-value">{store.storeCategoryName || '정보 없음'}</span>
                     </div>
                     <div className="storelist-info-row">
-                        <span className="storelist-info-label">사용 가능 CM</span>
-                        <span className="storelist-info-value">{store.userCmUse ? store.userCmUse.toLocaleString() : '0'} CM</span>
+                                    <span className="storelist-info-label">사용 가능 TS</span>
+            <span className="storelist-info-value">{store.userCmUse ? store.userCmUse.toLocaleString() : '0'} TS</span>
                     </div>
                     <div className="storelist-info-row">
                         <span className="storelist-info-label">영업 상태</span>

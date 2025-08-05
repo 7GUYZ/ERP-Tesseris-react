@@ -9,7 +9,7 @@ import { api } from "../Http";
  */
 export const registerStore = (formData) => {
   const token = localStorage.getItem("access-token");
-  return api.post("/user/store/register", formData, {
+  return api.post("/store/register", formData, {
     headers: {
       Authorization: `${token}`,
       'Content-Type': 'multipart/form-data'
@@ -26,7 +26,7 @@ export const registerStore = (formData) => {
  */
 export const createPaymentRequest = (paymentData) => {
   const token = localStorage.getItem("access-token");
-  return api.post("/user/payment/create", paymentData, {
+  return api.post("/payment/create", paymentData, {
     headers: {
       Authorization: `${token}`
     }
@@ -40,7 +40,7 @@ export const createPaymentRequest = (paymentData) => {
  */
 export const confirmPayment = (confirmData) => {
   const token = localStorage.getItem("access-token");
-  return api.post("/user/payment/confirm", confirmData, {
+  return api.post("/payment/confirm", confirmData, {
     headers: {
       Authorization: `${token}`
     }

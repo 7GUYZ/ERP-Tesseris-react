@@ -240,7 +240,7 @@ const UserLogPage = () => {
   const formatAmount = (amount) => {
     if (amount === null || amount === undefined) return '0';
     const sign = amount < 0 ? '-' : '';
-    return sign + Math.abs(amount).toLocaleString() + ' CM';
+    return sign + Math.abs(amount).toLocaleString() + ' TS';
   };
 
   // 날짜 포맷팅
@@ -372,7 +372,7 @@ const UserLogPage = () => {
           <button className="back-button" onClick={() => navigate(-1)}>
             ←
           </button>
-          <h1 className="page-title">CM 사용 내역</h1>
+          <h1 className="page-title">TS 사용 내역</h1>
         </div>
 
         {/* 통계 정보 */}
