@@ -31,24 +31,24 @@ const BrokerageFeeForm = () => {
         // 백엔드 응답 구조에 맞게 데이터 변환
         const formattedData = [
           {
-            label: "CM수수료 총합",
+            label: "TS 수수료 총합",
             amount: apiData.cmValueChargeSum?.toLocaleString() || "0",
-            unit: "CM",
+            unit: "TS",
           },
           {
-            label: "수수료발생",
+            label: "수수료 발생",
             amount: apiData.cmValueTotalSum?.toLocaleString() || "0",
-            unit: "CM",
+            unit: "TS",
           },
           {
             label: "입금 대기",
             amount: apiData.cmValueWaitSum?.toLocaleString() || "0",
-            unit: "CM",
+            unit: "TS",
           },
           {
             label: "입금 완료",
             amount: apiData.cmValueYesSum?.toLocaleString() || "0",
-            unit: "CM",
+            unit: "TS",
           },
         ]
 
@@ -59,24 +59,24 @@ const BrokerageFeeForm = () => {
         // 에러 시 기본 데이터 표시
         setFeeData([
           {
-            label: "CM수수료 총합",
+            label: "TS 수수료 총합",
             amount: "0",
-            unit: "CM",
+            unit: "TS",
           },
           {
             label: "수수료발생",
             amount: "0",
-            unit: "CM",
+            unit: "TS",
           },
           {
             label: "입금 대기",
             amount: "0",
-            unit: "CM",
+            unit: "TS",
           },
           {
             label: "입금 완료",
             amount: "0",
-            unit: "CM",
+            unit: "TS",
           },
         ])
       }
@@ -87,24 +87,24 @@ const BrokerageFeeForm = () => {
       // 에러 시 기본 데이터 표시
       setFeeData([
         {
-          label: "CM수수료 총합",
+          label: "TS 수수료 총합",
           amount: "0",
-          unit: "CM",
+          unit: "TS",
         },
         {
           label: "수수료발생",
           amount: "0",
-          unit: "CM",
+          unit: "TS",
         },
         {
           label: "입금 대기",
           amount: "0",
-          unit: "CM",
+          unit: "TS",
         },
         {
           label: "입금 완료",
           amount: "0",
-          unit: "CM",
+          unit: "TS",
         },
       ])
     } finally {

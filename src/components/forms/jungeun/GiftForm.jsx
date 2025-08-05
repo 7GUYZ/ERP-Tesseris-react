@@ -201,7 +201,7 @@ export default function GiftForm() {
         }
     }
 
-    // 현재 CM 보유량 백엔드에서 가져오기
+            // 현재 TS 보유량 백엔드에서 가져오기
     useEffect(() => {
         const user_index = Number(JSON.parse(localStorage.getItem("user-info"))?.user_index);
         const fetchCurrentCM = async () => {
@@ -211,7 +211,7 @@ export default function GiftForm() {
                     setCurrentCM(response.data.data.currentCM);
                 }
             } catch (e) {
-                console.error("Error fetching current CM:", e);
+                console.error("Error fetching current TS:", e);
                 setCurrentCM(0);
             }
         };
@@ -223,20 +223,20 @@ export default function GiftForm() {
             {/* Page Title */}
             <div className="gift-page-header">
                 <h1 className="gift-page-title">선물하기</h1>
-                <p className="gift-page-subtitle">다른 사용자에게 CM을 선물할 수 있습니다</p>
+                <p className="gift-page-subtitle">다른 사용자에게 TS를 선물할 수 있습니다</p>
             </div>
 
             <div className="gift-container">
                 <div className="gift-content">
                     {/* Current CM Section */}
                     <div className="gift-section">
-                        <h2 className="gift-section-title">현재 CM 보유액</h2>
-                        <div className="gift-cm-card">
-                            <div className="gift-cm-status">
-                                <span className="gift-status-badge">현재 CM</span>
-                            </div>
-                            <div className="gift-cm-amount">{formatNumber(currentCM)} CM </div>
-                        </div>
+                                        <h2 className="gift-section-title">현재 TS 보유액</h2>
+                <div className="gift-cm-card">
+                    <div className="gift-cm-status">
+                        <span className="gift-status-badge">현재 TS</span>
+                    </div>
+                    <div className="gift-cm-amount">{formatNumber(currentCM)} TS </div>
+                </div>
                     </div>
 
                     {/* Recipient ID Section */}
@@ -319,7 +319,7 @@ export default function GiftForm() {
 
                     {/* Gift Amount Section */}
                     <div className="gift-section">
-                        <h2 className="gift-section-title">선물할 CM</h2>
+                        <h2 className="gift-section-title">선물할 TS</h2>
                         <div className="gift-input-group">
                             <input
                                 type="text"
@@ -328,22 +328,22 @@ export default function GiftForm() {
                                 value={giftAmount && giftAmount !== "" ? formatNumber(Number.parseInt(giftAmount)) : ""}
                                 onChange={handleGiftAmountChange}
                             />
-                            <span className="gift-currency">CM</span>
+                            <span className="gift-currency">TS</span>
                         </div>
                         <p className="gift-info-text">
-                            * 선물 금액은 최소 {formatNumber(minAmount)} ~ 최대 {formatNumber(maxAmount)} CM 입니다.
+                            * 선물 금액은 최소 {formatNumber(minAmount)} ~ 최대 {formatNumber(maxAmount)} TS 입니다.
                         </p>
                     </div>
 
                     {/* Remaining CM Section */}
                     <div className="gift-section">
-                        <h2 className="gift-section-title">선물 후 CM 보유액</h2>
-                        <div className="gift-cm-card">
-                            <div className="gift-cm-status">
-                                <span className="gift-status-badge">선물 후 CM</span>
-                            </div>
-                            <div className="gift-cm-amount">{formatNumber(Math.max(0, remainingCM))} CM</div>
-                        </div>
+                                        <h2 className="gift-section-title">선물 후 TS 보유액</h2>
+                <div className="gift-cm-card">
+                    <div className="gift-cm-status">
+                        <span className="gift-status-badge">선물 후 TS</span>
+                    </div>
+                    <div className="gift-cm-amount">{formatNumber(Math.max(0, remainingCM))} TS</div>
+                </div>
                     </div>
 
                     {/* Gift Button */}

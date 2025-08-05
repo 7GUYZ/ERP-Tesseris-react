@@ -321,8 +321,8 @@ const StoreListForm = () => {
                         <span className="storelist-info-value">{store.storeCategoryName || '정보 없음'}</span>
                     </div>
                     <div className="storelist-info-row">
-                        <span className="storelist-info-label">사용 가능 CM</span>
-                        <span className="storelist-info-value">{store.userCmUse ? store.userCmUse.toLocaleString() : '0'} CM</span>
+                                    <span className="storelist-info-label">사용 가능 TS</span>
+            <span className="storelist-info-value">{store.userCmUse ? store.userCmUse.toLocaleString() : '0'} TS</span>
                     </div>
                     <div className="storelist-info-row">
                         <span className="storelist-info-label">영업 상태</span>
