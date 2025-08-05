@@ -95,7 +95,7 @@ export const Map = ({ stores = [] }) => {
 
                 if (!apiKey) {
                     console.error('❌ 카카오 지도 API 키가 설정되지 않았습니다!');
-                    console.error('📝 .env 파일에 REACT_APP_KAKAO_MAP_API_KEY=d3847b4792faef3e7980502f1f8e30f2 를 추가하고 서버를 재시작해주세요.');
+                    console.error('📝 환경변수 REACT_APP_KAKAO_MAP_API_KEY를 설정해주세요.');
                     return;
                 }
 
