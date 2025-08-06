@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { customerManagementApi } from '../../api/auth/TaekjunAuth';
 import PinInput from '../../components/forms/jiyun/pin-change/PinInput';
+import PinCodeModal from '../../components/ui/taekjun/PinCodeModal';
 import '../../styles/taekjun/CustomerManagement.css';
 
 const CustomerManagement = () => {
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,8 +20,8 @@ const CustomerManagement = () => {
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   
-  // 필터 옵션
-  const memberOptions = ['전체', '일반 고객', '단골 고객', '추천 고객'];
+  // 필터 옵션 (추천 고객 제거)
+  const memberOptions = ['전체', '일반 고객', '단골 고객'];
   
   // 현재 로그인한 사용자의 storeUserIndex (로컬스토리지에서 가져옴)
   const [currentStoreUserIndex, setCurrentStoreUserIndex] = useState("");
@@ -28,12 +31,29 @@ const CustomerManagement = () => {
   const [couponForm, setCouponForm] = useState({
     couponName: '',
     couponPrice: '',
+    couponLimit: '3', // 기본값을 3으로 설정
+    pinCode: ''
+  });
+  
+  // 이벤트 쿠폰 발행 모달 상태
+  const [showEventCouponModal, setShowEventCouponModal] = useState(false);
+  const [eventCouponForm, setEventCouponForm] = useState({
+    eventName: '',
+    couponName: '',
+    couponPrice: '',
     couponLimit: '',
+    couponCondition: '1',
+    couponCount: '', // 발행할 쿠폰 개수 추가
     pinCode: ''
   });
 
   // 핀번호 입력 모달 상태
   const [showPinModal, setShowPinModal] = useState(false);
+
+  // 뒤로가기 함수
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   // 페이지 로드 시 로컬스토리지에서 user_index 가져오기
   useEffect(() => {
@@ -59,8 +79,8 @@ const CustomerManagement = () => {
     }
   }, []);
 
-  // 고객 목록 조회
-  const fetchCustomers = useCallback(async () => {
+  // 고객 목록 조회 (검색 조건 포함)
+  const fetchCustomers = useCallback(async (searchParams = null) => {
     if (!currentStoreUserIndex) {
       setError('사용자 정보가 없습니다.');
       return;
@@ -73,7 +93,15 @@ const CustomerManagement = () => {
       const params = {
         storeUserIndex: currentStoreUserIndex
       };
-      if (selectedMember !== '전체') params.member = selectedMember;
+      
+      // 검색 파라미터가 있으면 사용, 없으면 현재 상태 사용
+      const member = searchParams?.member ?? selectedMember;
+      const phone = searchParams?.phone ?? searchPhone;
+      
+      if (member && member !== '전체') params.member = member;
+      if (phone && phone.trim()) params.phone = phone.trim();
+      
+      console.log('검색 파라미터:', params);
       
       // 내 가맹점 고객 목록 조회 API 사용
       const response = await customerManagementApi.getMyCustomers(params);
@@ -89,18 +117,32 @@ const CustomerManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentStoreUserIndex, selectedMember]);
+  }, [currentStoreUserIndex, selectedMember, searchPhone]);
 
-  // 초기 데이터 로드 (userIndex가 있을 때만)
+  // 초기 데이터 로드 (userIndex가 있을 때만, 필터 없이 전체 조회)
   useEffect(() => {
     if (currentStoreUserIndex) {
-    fetchCustomers();
+      const params = {
+        storeUserIndex: currentStoreUserIndex
+      };
+      fetchCustomers(params);
     }
-  }, [currentStoreUserIndex, fetchCustomers]);
+  }, [currentStoreUserIndex]);
 
-  // 검색 실행
+  // 검색 실행 (버튼 클릭 또는 엔터키)
   const handleSearch = () => {
-    fetchCustomers();
+    console.log('검색 실행 - 전화번호:', searchPhone, '구분:', selectedMember);
+    fetchCustomers({
+      member: selectedMember,
+      phone: searchPhone
+    });
+  };
+
+  // 엔터키 검색
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   // 전체 선택/해제
@@ -171,6 +213,11 @@ const CustomerManagement = () => {
     setShowCouponModal(true);
   };
   
+  // 이벤트 쿠폰 발행 모달 열기
+  const handleOpenEventCouponModal = () => {
+    setShowEventCouponModal(true);
+  };
+  
   // 쿠폰 선물 모달 닫기
   const handleCloseCouponModal = () => {
     setShowCouponModal(false);
@@ -181,9 +228,31 @@ const CustomerManagement = () => {
     });
   };
   
+  // 이벤트 쿠폰 발행 모달 닫기
+  const handleCloseEventCouponModal = () => {
+    setShowEventCouponModal(false);
+    setEventCouponForm({
+      eventName: '',
+      couponName: '',
+      couponPrice: '',
+      couponLimit: '',
+      couponCondition: '',
+      couponCount: '', // 쿠폰 개수 초기화 추가
+      pinCode: ''
+    });
+  };
+  
   // 쿠폰 폼 입력 처리
   const handleCouponFormChange = (field, value) => {
     setCouponForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+  
+  // 이벤트 쿠폰 폼 입력 처리
+  const handleEventCouponFormChange = (field, value) => {
+    setEventCouponForm(prev => ({
       ...prev,
       [field]: value
     }));
@@ -233,15 +302,69 @@ const CustomerManagement = () => {
     }
   };
 
-  // 핀번호 입력 완료 핸들러
+  // 핀번호 입력 완료 핸들러 (쿠폰 선물용)
   const handlePinComplete = (pin) => {
-    handleCouponFormChange('pinCode', pin);
+    // 현재 열린 모달에 따라 핀번호 설정
+    if (showCouponModal) {
+      handleCouponFormChange('pinCode', pin);
+    } else if (showEventCouponModal) {
+      handleEventCouponFormChange('pinCode', pin);
+    }
     setShowPinModal(false);
     // 핀번호 입력 완료 후 성공 메시지 표시
     setSuccess('핀번호가 입력되었습니다.');
     setTimeout(() => {
       setSuccess('');
     }, 2000);
+  };
+  
+  // 이벤트 쿠폰 발행 실행
+  const handleIssueEventCoupon = async () => {
+    if (!eventCouponForm.eventName || !eventCouponForm.couponName || !eventCouponForm.couponPrice || !eventCouponForm.couponLimit || !eventCouponForm.couponCount || !eventCouponForm.pinCode) {
+      setError('모든 필드를 입력해주세요.');
+      return;
+    }
+
+    // 쿠폰 개수 검증 (1개 이상)
+    if (parseInt(eventCouponForm.couponCount) < 1) {
+      setError('발행할 쿠폰 개수는 1개 이상이어야 합니다.');
+      return;
+    }
+
+    // 핀번호 형식 검증 (6자리 숫자)
+    if (!/^\d{6}$/.test(eventCouponForm.pinCode)) {
+      setError('핀번호는 6자리 숫자로 입력해주세요.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+            const response = await customerManagementApi.issueEventCoupon({
+        eventName: eventCouponForm.eventName,
+        couponName: eventCouponForm.couponName,
+        couponPrice: parseInt(eventCouponForm.couponPrice),
+        couponLimit: parseInt(eventCouponForm.couponLimit),
+        couponCount: parseInt(eventCouponForm.couponCount),
+        pinCode: eventCouponForm.pinCode,
+        storeUserIndex: currentStoreUserIndex
+      });
+
+      if (response.data.success) {
+        setSuccess(response.data.message);
+        handleCloseEventCouponModal();
+        fetchCustomers(); // 목록 새로고침
+      } else {
+        setError(response.data.message);
+      }
+    } catch (err) {
+      console.error('이벤트 쿠폰 발행 오류:', err);
+      setError('이벤트 쿠폰 발행 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 핀번호 입력 모달 열기
@@ -259,10 +382,10 @@ const CustomerManagement = () => {
       <div className="customer-management-container">
         {/* 헤더 */}
         <div className="customer-management-header">
-          <div className="header-back">
+          <div className="header-back" onClick={handleGoBack}>
             <span className="back-arrow">←</span>
           </div>
-          <h1 className="header-title">고객 관리</h1>
+          <h1 className="header-title2">고객 관리</h1>
         </div>
 
         {/* 검색 및 필터 */}
@@ -272,6 +395,7 @@ const CustomerManagement = () => {
               type="text"
               value={searchPhone}
               onChange={(e) => setSearchPhone(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="전화번호 뒷 4자리"
               className="search-input"
             />
@@ -321,6 +445,13 @@ const CustomerManagement = () => {
             disabled={loading || selectedCustomers.length === 0}
           >
             쿠폰 선물
+          </button>
+          <button 
+            onClick={handleOpenEventCouponModal}
+            className="action-button event-coupon"
+            disabled={loading}
+          >
+            이벤트 쿠폰 발행
           </button>
         </div>
 
@@ -487,45 +618,162 @@ const CustomerManagement = () => {
           </div>
         )}
 
-        {/* 핀번호 입력 모달 */}
+        {/* 핀번호 입력 모달 - 최상위 레벨에서 렌더링 */}
         {showPinModal && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 99999
+          }}>
+            <PinCodeModal
+              isOpen={showPinModal}
+              onClose={handleClosePinModal}
+              onConfirm={handlePinComplete}
+              title="핀번호 입력"
+            />
+          </div>
+        )}
+        
+        {/* 이벤트 쿠폰 발행 모달 */}
+        {showEventCouponModal && (
           <div className="taekjun-coupon-modal-overlay">
-            <div className="taekjun-coupon-modal" style={{ 
-              maxWidth: '400px', 
-              width: '90%',
-              maxHeight: '80vh',
-              overflow: 'auto'
-            }}>
+            <div className="taekjun-coupon-modal">
               <div className="taekjun-coupon-modal-header">
-                <h3>핀번호 입력</h3>
+                <h3>이벤트 쿠폰 발행</h3>
                 <button 
-                  onClick={handleClosePinModal}
-                  className="taekjun-coupon-modal-close"
+                  onClick={handleCloseEventCouponModal}
+                  className="taekjun-coupon-modal-close-button"
                 >
-                  ✕
+                  ×
                 </button>
               </div>
-              <div className="taekjun-coupon-modal-body">
-                <div style={{ 
-                  textAlign: 'center', 
-                  padding: '20px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '20px'
-                }}>
-                  <p style={{ 
-                    marginBottom: '10px', 
-                    color: '#666',
-                    fontSize: '16px',
-                    fontWeight: '500'
-                  }}>
-                    핀번호를 입력해주세요
-                  </p>
-                  <div style={{ width: '100%' }}>
-                    <PinInput onComplete={handlePinComplete} />
+              
+              <div className="taekjun-coupon-modal-content">
+                <div className="taekjun-coupon-modal-form">
+                  <div className="taekjun-coupon-modal-form-group">
+                    <label>이벤트명</label>
+                    <input
+                      type="text"
+                      value={eventCouponForm.eventName}
+                      onChange={(e) => handleEventCouponFormChange('eventName', e.target.value)}
+                      placeholder="이벤트명을 입력하세요"
+                      className="taekjun-coupon-modal-form-input"
+                    />
+                  </div>
+                  
+                  <div className="taekjun-coupon-modal-form-group">
+                    <label>쿠폰명</label>
+                    <input
+                      type="text"
+                      value={eventCouponForm.couponName}
+                      onChange={(e) => handleEventCouponFormChange('couponName', e.target.value)}
+                      placeholder="쿠폰명을 입력하세요"
+                      className="taekjun-coupon-modal-form-input"
+                    />
+                  </div>
+                  
+                  <div className="taekjun-coupon-modal-form-group">
+                    <label>쿠폰 금액 (원)</label>
+                    <select
+                      value={eventCouponForm.couponPrice}
+                      onChange={(e) => handleEventCouponFormChange('couponPrice', e.target.value)}
+                      className="taekjun-coupon-modal-form-input"
+                    >
+                      <option value="">쿠폰 금액을 선택하세요</option>
+                      <option value="1000">1,000원</option>
+                      <option value="5000">5,000원</option>
+                      <option value="10000">10,000원</option>
+                      <option value="50000">50,000원</option>
+                    </select>
+                  </div>
+                  
+                  <div className="taekjun-coupon-modal-form-group">
+                    <label>사용 기간 (일)</label>
+                    <input
+                      type="number"
+                      value={eventCouponForm.couponLimit}
+                      onChange={(e) => handleEventCouponFormChange('couponLimit', e.target.value)}
+                      placeholder="사용 기간을 입력하세요"
+                      className="taekjun-coupon-modal-form-input"
+                      min="1"
+                      max="365"
+                    />
+                  </div>
+                  
+
+                  
+                  <div className="taekjun-coupon-modal-form-group">
+                    <label>발행할 쿠폰 개수</label>
+                    <input
+                      type="number"
+                      value={eventCouponForm.couponCount}
+                      onChange={(e) => handleEventCouponFormChange('couponCount', e.target.value)}
+                      placeholder="발행할 쿠폰 개수를 입력하세요"
+                      className="taekjun-coupon-modal-form-input"
+                      min="1"
+                      max="1000"
+                    />
+                  </div>
+                  
+                  <div className="taekjun-coupon-modal-form-group">
+                    <label>핀번호</label>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <input
+                        type="password"
+                        value={eventCouponForm.pinCode}
+                        placeholder="핀번호를 입력하세요"
+                        className="taekjun-coupon-modal-form-input"
+                        readOnly
+                        style={{ flex: 1 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleOpenPinModal}
+                        style={{
+                          padding: '8px 16px',
+                          backgroundColor: '#170F58',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        핀번호 입력
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="taekjun-coupon-modal-selected-info">
+                    <p>발행할 쿠폰 개수: {eventCouponForm.couponCount || 0}개</p>
+                    <p>필요 CM: {eventCouponForm.couponPrice && eventCouponForm.couponCount ? 
+                      (parseInt(eventCouponForm.couponPrice) * parseInt(eventCouponForm.couponCount)).toLocaleString() : 0}원</p>
+                    <p>이벤트 쿠폰이 발행되면 모든 고객에게 알림이 전송됩니다.</p>
                   </div>
                 </div>
+              </div>
+              
+              <div className="taekjun-coupon-modal-footer">
+                <button 
+                  onClick={handleCloseEventCouponModal}
+                  className="taekjun-coupon-modal-cancel-button"
+                  disabled={loading}
+                >
+                  취소
+                </button>
+                <button 
+                  onClick={handleIssueEventCoupon}
+                  className="taekjun-coupon-modal-confirm-button"
+                  disabled={loading || !eventCouponForm.eventName || !eventCouponForm.couponName || !eventCouponForm.couponPrice || !eventCouponForm.couponLimit || !eventCouponForm.couponCount || !eventCouponForm.pinCode}
+                >
+                  {loading ? '처리 중...' : '이벤트 쿠폰 발행'}
+                </button>
               </div>
             </div>
           </div>

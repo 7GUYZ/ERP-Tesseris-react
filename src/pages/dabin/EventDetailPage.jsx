@@ -256,7 +256,6 @@ export default function EventDetailPage() {
                 <div className="event-reg-coupon-store">
                   발급 가맹점: {coupon.storeName || '가맹점 정보 없음'}
                 </div>
-                <p className="event-reg-coupon-condition">쿠폰 사용 조건</p>
                 
                 <div className="event-reg-coupon-details">
                   <div className="event-reg-coupon-detail-item">

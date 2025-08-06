@@ -184,6 +184,17 @@
   box-shadow: 0 4px 12px rgba(253, 205, 0, 0.4);
 }
 
+.action-button.event-coupon {
+  background: #9C27B0;
+  color: white;
+}
+
+.action-button.event-coupon:hover:not(:disabled) {
+  background: #7B1FA2;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+}
+
 .action-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -343,8 +354,9 @@
     padding: 16px 20px;
   }
   
-  .header-title {
+  .header-title2 {
     font-size: 20px;
+    color: yellow;
   }
   
   .customer-search-section {
@@ -427,6 +439,16 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+/* 핀번호 모달이 쿠폰 모달 위에 나타나도록 더 높은 z-index 설정 */
+.taekjun-coupon-modal-overlay .modal-overlay {
+  z-index: 9999;
+}
+
+/* 핀번호 모달 컨테이너도 높은 z-index 설정 */
+.taekjun-coupon-modal-overlay .modal-container {
+  z-index: 9999;
 }
 
 .taekjun-coupon-modal {
