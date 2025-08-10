@@ -4,6 +4,7 @@ import { getBannerList, getPresignedUrl } from "../../../../api/auth/JihunAuth";
 
 export default function UserPromotionCard() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [lastSlide, setLastSlide] = useState(null);
   const [promotions, setPromotions] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -52,10 +53,16 @@ export default function UserPromotionCard() {
 
   const nextSlide = () => {
     if (isAnimating) return;
-    
+    if (promotions.length < 2) return;
+
     setIsAnimating(true);
-    setCurrentSlide((prev) => (prev + 1) % promotions.length);
-    
+    setCurrentSlide((prev) => {
+      const next = (prev + 1) % promotions.length;
+      // prev는 전환 직전의 활성 슬라이드 → lastSlide로 저장
+      setLastSlide(prev);
+      return next;
+    });
+
     // 애니메이션 완료 후 상태 리셋
     setTimeout(() => {
       setIsAnimating(false);
@@ -74,37 +81,32 @@ export default function UserPromotionCard() {
       {promotions.length > 0 && (
         <div className="usermain-promotioncard">
           <div className="usermain-promotioncard-inner">
-                         {promotions.map((promotion, index) => {
-               const prevIndex = (currentSlide - 1 + promotions.length) % promotions.length;
-               const nextIndex = (currentSlide + 1) % promotions.length;
-               
-               let className = 'usermain-promotioncard-slide';
-               let zIndex = 1;
-               
-               if (index === currentSlide) {
-                 className += ' active';
-                 zIndex = 4;
-               } else if (index === prevIndex) {
-                 className += ' slide-left';
-                 zIndex = 3;
-               } else if (index === nextIndex) {
-                 className += ' slide-right';
-                 zIndex = 2;
-               } else {
-                 className += ' slide-right';
-                 zIndex = 1;
-               }
-               
-               return (
-                 <div 
-                   key={index} 
-                   className={className}
-                   style={{ zIndex: zIndex }}
-                 >
-                   <img src={promotion} alt={`Banner ${index + 1}`} />
-                 </div>
-               );
-             })}
+            {promotions.map((promotion, index) => {
+              let className = 'usermain-promotioncard-slide';
+              let zIndex = 1;
+
+              if (index === currentSlide) {
+                // 현재 활성 슬라이드 (가운데)
+                className += ' active';
+                zIndex = 3;
+              } else if (index === lastSlide && isAnimating) {
+                // 전환 중일 때만 직전 슬라이드를 왼쪽으로 이탈시키고,
+                // 전환이 끝나면 오른쪽 대기 위치로 복귀시켜 다음 턴에서 우측→센터 진입
+                className += ' slide-left';
+                zIndex = 2;
+              } else {
+                // 나머지(다음 포함)는 오른쪽 대기 → 이후 활성화 시 오른쪽에서 진입
+                className += ' slide-right';
+                zIndex = 1;
+              }
+
+              const isVisible = index === currentSlide || (isAnimating && index === lastSlide);
+              return (
+                <div key={index} className={className} style={{ zIndex, visibility: isVisible ? 'visible' : 'hidden' }}>
+                  <img src={promotion} alt={`Banner ${index + 1}`} />
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
