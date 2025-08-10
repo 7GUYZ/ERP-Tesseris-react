@@ -15,11 +15,10 @@ export default function UserPromotionCard() {
     try {
       // 호출
       const response = await getBannerList();
-      console.log("배너 목록", response.data.data.map(banner => banner.bannerPhoto));
+      const visible = (response.data?.data || []).filter(b => b.bannerIsvisible === true);
       // 변환
-      if (response.data.data && response.data.data.length > 0) {
-        const bannersWithUrls = await fetchPresignedUrls(response.data.data);
-        console.log("포함된 배너 URL", bannersWithUrls.map(banner => banner.presignedUrl.data));
+      if (visible && visible.length > 0) {
+        const bannersWithUrls = await fetchPresignedUrls(visible);
         setPromotions(bannersWithUrls.map(banner => banner.presignedUrl.data));
       }
     } catch (error) {
