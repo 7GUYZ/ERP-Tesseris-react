@@ -1275,7 +1275,6 @@ body {
 
 .usermain-promotioncard-slide.slide-right {
   transform: translateX(100%);
-  opacity: 0;
 }
 
 .usermain-promotioncard-slide img {
