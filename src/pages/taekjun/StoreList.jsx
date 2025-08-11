@@ -289,7 +289,7 @@ const StoreList = () => {
           // 지도 모드
           <div className="map-container">
             {(() => {
-              const apiKey = process.env.REACT_APP_KAKAO_MAP_API_KEY;
+              const apiKey = process.env.REACT_APP_KAKAO_MAP_API_KEY || 'd3847b4792faef3e7980502f1f8e30f2';
               console.log('🔍 StoreList 지도 모드 - 환경변수 확인:', {
                 apiKey: apiKey ? '설정됨' : '설정되지 않음',
                 apiKeyValue: apiKey ? `${apiKey.substring(0, 8)}...` : '없음',

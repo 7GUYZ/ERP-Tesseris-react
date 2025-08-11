@@ -115,7 +115,25 @@ const CouponSelectionModal = ({ isOpen, onClose, onSelect, userIndex, storeUserI
                         </div>
                         <div className="coupon-selection-detail-item">
                           <span className="coupon-selection-detail-label">만료일</span>
-                          <span className="coupon-selection-detail-value">{coupon.couponLimitTime || '날짜 정보 없음'}</span>
+                          <span className="coupon-selection-detail-value">
+                            {coupon.couponLimitTime ? 
+                              (() => {
+                                const limitDate = new Date(coupon.couponLimitTime);
+                                const now = new Date();
+                                const diffTime = limitDate.getTime() - now.getTime();
+                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                
+                                if (diffDays <= 0) {
+                                  return <span style={{color: 'red', fontWeight: 'bold'}}>만료됨</span>;
+                                } else if (diffDays <= 3) {
+                                  return <span style={{color: 'orange', fontWeight: 'bold'}}>{limitDate.toLocaleDateString()} (D-{diffDays})</span>;
+                                } else {
+                                  return limitDate.toLocaleDateString();
+                                }
+                              })()
+                              : '날짜 정보 없음'
+                            }
+                          </span>
                         </div>
                       </div>
                     </div>
