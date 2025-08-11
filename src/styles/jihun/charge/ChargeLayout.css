@@ -1,23 +1,25 @@
 .charge-layout {
   min-height: 100vh;
   background: #F5F5F9;
-  padding: 32px 0;  /* 20px에서 32px로 증가 */
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .charge-container {
-  width: 100%;
-  margin: 0;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(23, 15, 88, 0.1);
-  overflow: hidden;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;  /* center에서 flex-start로 변경 */
+  gap: 1.0rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0px 20px;
+  width: 100%;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  min-height: auto;
+  justify-content: flex-start;
 }
 
 .charge-header {
@@ -42,12 +44,13 @@
 }
 
 .charge-content {
-  padding: 54px 16px 24px;  /* 상단 패딩을 24px에서 54px로 늘려서 30px 아래로 이동 */
+  padding: 20px 0;  /* 좌우 패딩 제거 (컨테이너에서 처리) */
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;  /* center에서 flex-start로 변경 */
-  gap: 32px;  /* 48px에서 32px로 줄임 */
+  justify-content: flex-start;
+  gap: 32px;
+  width: 100%;
 }
 
 /* 새로운 섹션 스타일 */
@@ -55,6 +58,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;  /* 섹션 내부 요소 간 간격 */
+  width: 100%;
+  max-width: 100%;
 }
 
 /* 중단 섹션 특별 스타일 */
@@ -70,16 +75,15 @@
 
 @media (max-width: 600px) {
   .charge-layout {
-    padding: 16px 0;  /* 0에서 16px로 변경 */
+    padding: 0;
   }
   .charge-container {
-    border-radius: 0;
-    min-height: 100vh;
-    box-shadow: none;
+    max-width: 100%;
+    padding: 0px 16px;
   }
   .charge-content {
-    padding: 46px 8px 16px;  /* 상단 패딩을 16px에서 46px로 늘려서 30px 아래로 이동 */
-    gap: 24px;  /* 32px에서 24px로 줄임 */
+    padding: 20px 0;  /* 좌우 패딩 제거 */
+    gap: 24px;
   }
   
   /* 모바일에서 섹션 내부 간격 조정 */
