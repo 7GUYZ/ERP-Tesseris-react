@@ -69,4 +69,4 @@ npm install js-cookie
 
 npm install date-fns
 
-운영환경 배포버전: 202508060930
+운영환경 배포버전: 202508111230 배포
